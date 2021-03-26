@@ -1,0 +1,9 @@
+config-version: 20
+settings:
+  limit-player-interactions: false
+  incoming-packet-spam-threshold: 300
+  unsupported-settings:
+    allow-headless-pistons: true
+    allow-piston-duplication: true
+    allow-permanent-block-break-exploits: true
+warnWhenSettingExcessiveVelocity: false

@@ -1,0 +1,8 @@
+settings:
+  allow-end: false
+spawn-limits:
+  water-ambient: 0
+  monsters: 0
+  animals: 0
+  water-animals: 0
+  ambient: 0

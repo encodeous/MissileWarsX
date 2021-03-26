@@ -1,0 +1,18 @@
+config-version: 12
+settings:
+  moved-too-quickly-multiplier: 200.0
+  moved-wrongly-threshold: 100.0
+  moved-too-quickly-threshold: 1000.0
+  player-shuffle: 100
+world-settings:
+  default:
+    entity-tracking-range:
+      players: 256
+      animals: 256
+      monsters: 256
+      misc: 256
+      other: 256
+advancements:
+  disable-saving: true
+  disabled:
+    - "*"

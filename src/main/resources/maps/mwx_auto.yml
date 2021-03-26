@@ -1,0 +1,38 @@
+schematic: "mwx_auto"
+auto-join-pads:
+  - -115, 67, 2
+  - -115, 67, 1
+  - -115, 67, 0
+  - -115, 67, -1
+  - -115, 67, -2
+spawn: "-100.5, 70, 0.5"
+spawn-yaw: 90
+green-spawn: "-26.5, 77, 65.5"
+green-yaw: 180
+red-spawn: "-26.5, 77, -64.5"
+red-yaw: 0
+green-lobby: "-82.5, 78, 21.5"
+green-lobby-yaw: -90
+red-lobby: "-82.5, 78, -20.5"
+red-lobby-yaw: -90
+green-portal:
+  - -6, 52, 72
+  - -48, 72, 72
+red-portal:
+  - -6, 52, -72
+  - -48, 72, -72
+bounding-box:
+  - 64, 0, -95
+  - -73, 255, 95
+max-bounding-box:
+  - 350, -64, 350
+  - -350, 319, -350
+barrier:
+  - -74, 319, -200
+  - -74, -64, 200
+return-to-lobby:
+  - -85, 79, 19
+  - -85, 79, -19
+spectate:
+  - -91, 69, 0
+  - -79, 78, 0

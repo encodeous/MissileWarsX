@@ -1,0 +1,148 @@
+max-team-size: 6
+resupply-seconds: 15
+draw-check-seconds: 5
+start-countdown-seconds: 15
+map: mwx_auto
+items:
+  - id: "shieldbuster"
+    material: witch_spawn_egg
+    name: "&fShieldbuster"
+    schematic: "shieldbuster"
+    item-type: missile
+    stack-size: 1
+    max-stack: 1
+    lore:
+      - "&7Spawns a Shieldbuster Missile"
+      - "&6Penetrates One Barrier"
+      - "&7Speed: &61.7 blocks/s"
+      - "&7TNT: &617"
+  - id: "guardian"
+    material: guardian_spawn_egg
+    name: "&fGuardian"
+    schematic: "guardian"
+    item-type: missile
+    stack-size: 1
+    max-stack: 1
+    lore:
+      - "&7Spawns a Guardian Missile"
+      - "&6Take it for a ride!"
+      - "&7Speed: &61.7 blocks/s"
+      - "&7TNT: &64"
+  - id: "lightning"
+    material: ocelot_spawn_egg
+    name: "&fLightning"
+    schematic: "lightning"
+    item-type: missile
+    stack-size: 1
+    max-stack: 1
+    lore:
+      - "&7Spawns a Lightning Missile"
+      - "&6&oOn your left!"
+      - "&7Speed: &63.3 blocks/s"
+      - "&7TNT: &612"
+  - id: "juggernaut"
+    material: ghast_spawn_egg
+    name: "&fJuggernaut"
+    schematic: "juggernaut"
+    item-type: missile
+    stack-size: 1
+    max-stack: 1
+    lore:
+      - "&7Spawns a Juggernaut Missile"
+      - "&6Armed to the teeth"
+      - "&7Speed: &61.7 blocks/s"
+      - "&7TNT: &622"
+  - id: "tomahawk"
+    material: creeper_spawn_egg
+    name: "&fTomahawk"
+    schematic: "tomahawk"
+    item-type: missile
+    stack-size: 1
+    max-stack: 1
+    lore:
+      - "&7Spawns a Tomahawk Missile"
+      - "&6The workhorse"
+      - "&7Speed: &61.7 blocks/s"
+      - "&7TNT: &615"
+  - id: "fireball"
+    material: blaze_spawn_egg
+    name: "&fFireball"
+    item-type: fireball
+    stack-size: 1
+    max-stack: 1
+    lore:
+      - "&7Spawns a punchable fireball"
+      - "&6Use it to explode incoming missiles!"
+  - id: "gunblade"
+    material: bow
+    name: "Gunblade"
+    item-type: gunblade
+    stack-size: 1
+    max-stack: 1
+    give-at-beginning: true
+    unbreakable: true
+    enchants:
+      flame: 1
+    lore:
+      - "&6Use it to attack others!"
+    attributes:
+      attack_damage:
+        amount: 2.5
+        operation: ADD_NUMBER
+  - id: "arrow"
+    name: "&fArrow"
+    material: arrow
+    item-type: item
+    stack-size: 3
+    max-stack: 3
+  - id: "shield"
+    name: "&fShield"
+    schematic: "shield"
+    material: snowball
+    item-type: shield
+    stack-size: 1
+    max-stack: 1
+    lore:
+      - "&7Deploys a Shield"
+      - "&6Use it to stop missiles!"
+break-speeds:
+  piston: 20
+  piston_head: 20
+  sticky_piston: 20
+  redstone_block: 200
+sounds:
+  start:
+    - block.beacon.power_select
+  join:
+    - block.piston.extend
+  leave:
+    - block.piston.contract
+  tick:
+    - block.dispenser.dispense
+  give_item:
+    - entity.item.pickup
+  fail:
+    - block.note_block.bass
+  #  Shield is special since there are two states
+  shield_throw:
+    - entity.snowball.throw
+  shield_deploy:
+    - item.shield.block
+    - block.glass.break
+  win:
+    - item.totem.use
+    - ui.toast.challenge_complete
+  lose:
+    - entity.elder_guardian.curse
+    - item.totem.use
+  draw:
+    - entity.elder_guardian.curse
+  deploy:
+    fireball:
+      - entity.blaze.shoot
+      - item.flintandsteel.use
+    missile:
+      - item.flintandsteel.use
+      - block.slime_block.place
+
+

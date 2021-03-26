@@ -1,0 +1,12 @@
+name: MissileWarsX
+version: '${project.version}'
+main: ca.encodeous.mwx.MwPlugin
+description: MissileWarsX - An open source implementation of the Legendary Missile Wars minigame
+api-version: 1.21.11
+depend:
+  - FastAsyncWorldEdit
+  - ProtocolLib
+permissions:
+  mwx.admin:
+    description: Admin access
+    default: op
