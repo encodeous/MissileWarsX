@@ -1,0 +1,63 @@
+name: MissileWarsX
+version: ${project.version}
+main: ca.encodeous.mwx.mwxplugin.MissileWarsX
+authors: [ Encodeous ]
+description: Missile Wars Plugin
+api-version: 1.13
+commands:
+#  Admin Commands
+  mwmake:
+    description: Creates a missile from a selection
+    usage: /<command> <pivot-x> <pivot-y> <pivot-z> <sel-x> <sel-y> <sel-z> <sel2-x> <sel2-y> <sel2-z> <missile-name>
+    permission: mwx.admin
+  mwteam:
+    description: Sets a player to a given team
+    usage: /<command> <player-name> <red/green/spectator/lobby>
+    aliases:
+      - mwt
+    permission: mwx.admin
+  mwpaste:
+    description: Pastes a saved missile without updating at a certain location
+    permission: mwx.admin
+    usage: /<command> <pivot-x> <pivot-y> <pivot-z> <missile-name> <red/green>
+  mwlaunch:
+    description: Pastes a saved missile and updates it at a certain location
+    permission: mwx.admin
+    usage: /<command> <pivot-x> <pivot-y> <pivot-z> <missile-name> <red/green>
+  mwgive:
+    description: Gives you the specified item
+    permission: mwx.admin
+    aliases:
+      - mwi
+    usage: /<command> [player-name] <missile-wars-item-id>
+  start:
+    description: Forcefully starts the game
+    permission: mwx.admin
+    usage: /<command>
+  end:
+    description: Forcefully resets the game
+    permission: mwx.admin
+    aliases:
+      - reset
+    usage: /<command>
+  mwreload:
+    description: Reloads the configuration file
+    permission: mwx.admin
+    usage: /<command>
+  mwedit:
+    description: Edit the missile wars template map, choose between the auto join or manual join map
+    permission: mwx.admin
+    usage: /<command> <auto/manual>
+# Info commands
+  mwitems:
+    description: Lists all registered items
+    usage: /<command>
+  mwmissiles:
+    description: Lists all registered missiles
+    usage: /<command>
+  spectate:
+    description: Spectate the game
+    usage: /<command>
+  lobby:
+    description: Return to the lobby
+    usage: /<command>
