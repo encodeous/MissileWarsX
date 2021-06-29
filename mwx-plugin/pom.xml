@@ -39,7 +39,7 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <finalName>${project.artifactId}-${project.version}</finalName>
-                            <outputDirectory>F:\encodeous\MissileWarsX\server\plugins</outputDirectory>
+<!--                            <outputDirectory>F:\encodeous\MissileWarsX\server\plugins</outputDirectory>-->
                             <outputDirectory>F:\encodeous\MissileWarsX\server-1-13\plugins</outputDirectory>
                             <shadedClassifierName>shaded</shadedClassifierName>
                             <shadedArtifactAttached>true</shadedArtifactAttached>

@@ -358,7 +358,6 @@ public class MissileWarsMatch {
                 AddPlayerToLobby(p);
             }
         }
-        CoreGame.Instance.mwImpl.MakePlayerTempInvincible(p);
     }
 
     public void AddPlayerToLobby(Player p){

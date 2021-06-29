@@ -13,7 +13,6 @@ import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.mwxcore.utils.WorldCopy;
 import ca.encodeous.mwx.mwxcore.world.*;
-import mc.bimmr.bimmcore.reflection.Reflection;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -36,7 +35,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MissileWars1_8 implements MissileWarsImplementation {
     // https://github.com/Bimmr/BimmCore
@@ -197,12 +195,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         ActionBarAPIOld.sendActionBar(p, Formatter.FCL(message));
     }
 
-    @Override
-    public void MakePlayerTempInvincible(Player p) {
-        p.setNoDamageTicks(20);
-    }
-
-    private ItemStack MakeArmour(Material mat, Color color){
+    public ItemStack MakeArmour(Material mat, Color color){
         ItemStack hstack = new ItemStack(mat);
         LeatherArmorMeta hdata = (LeatherArmorMeta) hstack.getItemMeta();
         hdata.setColor(color);
@@ -483,8 +476,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         }
     }
 
-    @Override
-    public void SpawnShield(Vector location, World world, boolean isRed) {
+    public Map<Vector, Integer> ShieldData(boolean isRed){
         // 1 - pink glass, 2 - white glass, 3 - red glass, 4 - light gray glass, 5 - gray glass, 6 - black glass, 7 - black glass panes, 8 - lime glass, 9 - green glass
         Map<Vector, Integer> shield = new HashMap<>();
         if(isRed){
@@ -545,6 +537,12 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         shield.put(new Vector(-2, 3, 0), 7);
         shield.put(new Vector(-2, -3, 0), 7);
         shield.put(new Vector(2, -3, 0), 7);
+        return shield;
+    }
+
+    @Override
+    public void SpawnShield(Vector location, World world, boolean isRed) {
+        Map<Vector, Integer> shield = ShieldData(isRed);
         for(Map.Entry<Vector, Integer> e : shield.entrySet()){
             Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();
             if(e.getValue() == 1){

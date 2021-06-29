@@ -1,4 +1,4 @@
-package mc.bimmr.bimmcore.reflection;
+package ca.encodeous.mwx.mwxcompat1_8;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

@@ -21,7 +21,6 @@ public interface MissileWarsImplementation {
     public Material GetPortalMaterial();
     public void SendTitle(Player p, String title, String subtitle);
     public void SendActionBar(Player p, String message);
-    public void MakePlayerTempInvincible(Player p);
     public void EquipPlayer(Player p, boolean isRedTeam, MissileWarsItem bow);
     public void ConfigureScoreboards(MissileWarsMatch match);
     public void RegisterEvents(MissileWarsEvents events, JavaPlugin plugin);
