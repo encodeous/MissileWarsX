@@ -5,6 +5,7 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
+import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
 import org.bukkit.GameMode;
@@ -48,6 +49,14 @@ public class MissileWarsEventHandler implements Listener {
             PropagatePortalBreak(event.getBlock());
         }
         CoreGame.Instance.mwMatch.Tracer.RemoveBlock(event.getBlock().getLocation().toVector());
+    }
+    @EventHandler
+    public void BlockPlaceEvent(BlockPlaceEvent event){
+        if(event.getBlock().getType() == Material.TNT){
+            CoreGame.Instance.mwMatch.Tracer.AddBlock(event.getPlayer().getUniqueId(), TraceType.TNT, event.getBlock().getLocation().toVector());
+        }else if(event.getBlock().getType() == Material.REDSTONE_BLOCK){
+            CoreGame.Instance.mwMatch.Tracer.AddBlock(event.getPlayer().getUniqueId(), TraceType.REDSTONE, event.getBlock().getLocation().toVector());
+        }
     }
     @EventHandler
     public void FoodChange(FoodLevelChangeEvent event) {
