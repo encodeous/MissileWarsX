@@ -47,6 +47,7 @@ public class MissileWarsEventHandler implements Listener {
         if(event.getBlock().getType() == CoreGame.Instance.mwImpl.GetPortalMaterial()){
             PropagatePortalBreak(event.getBlock());
         }
+        CoreGame.Instance.mwMatch.Tracer.RemoveBlock(event.getBlock().getLocation().toVector());
     }
     @EventHandler
     public void FoodChange(FoodLevelChangeEvent event) {
