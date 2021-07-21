@@ -68,7 +68,10 @@ public class MissileWarsMatch {
     public void RedWin(ArrayList<Player> credits){
         if(!credits.isEmpty()){
             Bukkit.broadcastMessage(Formatter.FCL("&fThe &aGreen &fteam's portal was blown up by " + FormatCredits(credits) + "&r!"));
+        }else{
+            Bukkit.broadcastMessage(Formatter.FCL("&fThe &aGreen &fteam's portal was blown up!"));
         }
+        Bukkit.broadcastMessage(Formatter.FCL("&6Congratulations &cRed &6team!"));
         for(Player p : Teams.keySet()){
             CoreGame.Instance.mwImpl.SendTitle(p, "&6The &cred &6team has won!", "&6Congratulations!");
         }
@@ -77,7 +80,10 @@ public class MissileWarsMatch {
     public void GreenWin(ArrayList<Player> credits){
         if(!credits.isEmpty()){
             Bukkit.broadcastMessage(Formatter.FCL("&fThe &cRed &fteam's portal was blown up by " + FormatCredits(credits) + "&r!"));
+        }else{
+            Bukkit.broadcastMessage(Formatter.FCL("&fThe &cRed &fteam's portal was blown up!"));
         }
+        Bukkit.broadcastMessage(Formatter.FCL("&6Congratulations &aGreen &6team!"));
         for(Player p : Teams.keySet()){
             CoreGame.Instance.mwImpl.SendTitle(p, "&6The &agreen &6team has won!", "&6Congratulations!");
         }
