@@ -6,6 +6,7 @@ import ca.encodeous.mwx.configuration.MissileWarsConfiguration;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.ResourceLoader;
@@ -132,33 +133,22 @@ public class CoreGame {
     }
 
     int endGameTask = -1;
-    int endGameCnt = 15;
     public void EndGameCountdown(){
         if(endGameTask != -1){
             return;
         }
-        endGameCnt = 15;
-        endGameTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(mwPlugin, new Runnable() {
+        Bukkit.broadcastMessage(Formatter.FCL("&9Resetting game in &65&a seconds!"));
+        endGameTask = Bukkit.getScheduler().scheduleSyncDelayedTask(mwPlugin, new Runnable() {
             @Override
             public void run() {
-                if(endGameCnt < 0){
-                    return;
-                }
-                if(endGameCnt == 0){
-                    Bukkit.broadcastMessage(Formatter.FCL("&9Resetting game...!"));
-                    EndMatch();
-                    endGameCnt = -1;
-                    return;
-                }
-                Bukkit.broadcastMessage(Formatter.FCL("&9Resetting game in &6" + endGameCnt + "&a seconds!"));
-                endGameCnt--;
+                Bukkit.broadcastMessage(Formatter.FCL("&9Resetting game...!"));
+                EndMatch();
             }
-        }, 0, 20);
+        }, 5 * 20);
     }
 
     public void EndMatch(){
         if(endGameTask != -1){
-            endGameCnt = 15;
             Bukkit.getScheduler().cancelTask(endGameTask);
             endGameTask = -1;
         }
@@ -169,7 +159,7 @@ public class CoreGame {
         for(Player p : mwMatch.Green) allPlayers.add(p);
         for(Player p : mwMatch.Spectators) allPlayers.add(p);
         for(Player p : allPlayers){
-            match.AddPlayerToLobby(p);
+            match.AddPlayerToTeam(p, PlayerTeam.None);
         }
         mwMatch.Dispose();
         mwMatch = match;
@@ -177,7 +167,7 @@ public class CoreGame {
 
     public MissileWarsItem GetItemById(String id){
         for(MissileWarsItem i : mwConfig.Items){
-            if(i.MissileWarsItemId.equals(id.toLowerCase())) return i;
+            if(i.MissileWarsItemId.equals(id)) return i;
         }
         return null;
     }

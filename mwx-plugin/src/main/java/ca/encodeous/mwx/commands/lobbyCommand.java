@@ -12,7 +12,7 @@ public class lobbyCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
             if(sender instanceof Player){
-                CoreGame.Instance.mwMatch.AddPlayerToLobby((Player) sender);
+                CoreGame.Instance.mwMatch.AddPlayerToTeam((Player) sender, PlayerTeam.None);
             }
             else{
                 sender.sendMessage("You are not a player...");

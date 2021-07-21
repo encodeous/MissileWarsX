@@ -1,7 +1,6 @@
 data:
   ==: ca.encodeous.mwx.configuration.Missile
-  attached-item-id: tomahawk_spawn
-  display-name: '&2&lTomahawk'
+  attached-item-id: Tomahawk
   schematic:
     ==: ca.encodeous.mwx.mwxcore.world.MissileSchematic
     blocks:
@@ -15,15 +14,15 @@ data:
         power: false
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 4.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 6.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: PISTON
@@ -35,8 +34,8 @@ data:
         power: false
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 7.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: PISTON
@@ -48,22 +47,22 @@ data:
         power: false
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 8.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 10.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 11.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: PISTON
@@ -75,174 +74,174 @@ data:
         power: false
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 12.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 14.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 15.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -5.0
+        x: 0.0
+        y: -4.0
         z: 16.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: REDSTONE
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -4.0
+        x: 0.0
+        y: -3.0
         z: 6.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: REDSTONE
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -4.0
+        x: 0.0
+        y: -3.0
         z: 10.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: REDSTONE
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -4.0
+        x: 0.0
+        y: -3.0
         z: 14.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: CLAY
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -4.0
+        x: 0.0
+        y: -3.0
         z: 15.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: -1.0
-        y: -4.0
+        x: 0.0
+        y: -3.0
         z: 16.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -5.0
+        x: 1.0
+        y: -4.0
         z: 6.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -5.0
+        x: 1.0
+        y: -4.0
         z: 10.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -5.0
+        x: 1.0
+        y: -4.0
         z: 11.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -5.0
+        x: 1.0
+        y: -4.0
         z: 12.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -5.0
+        x: 1.0
+        y: -4.0
         z: 14.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -5.0
+        x: 1.0
+        y: -4.0
         z: 15.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -5.0
+        x: 1.0
+        y: -4.0
         z: 16.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: CLAY
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 6.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: CLAY
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 7.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 8.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: CLAY
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 9.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: CLAY
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 10.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 11.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 12.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 15.0
     - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
-        x: 0.0
-        y: -4.0
+        x: 1.0
+        y: -3.0
         z: 16.0

@@ -14,7 +14,7 @@ public class mwmissilesCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
             List<String> results = CoreGame.Instance.mwMissiles.values().stream().map(x->{
-                return "&cId: "+x.MissileItemId + " - Name: " + x.MissileDisplayName;
+                return "&cId: "+x.MissileItemId;
             }).collect(Collectors.toList());
             String result = Formatter.FCL(String.join("\n", results));
             sender.sendMessage(result);

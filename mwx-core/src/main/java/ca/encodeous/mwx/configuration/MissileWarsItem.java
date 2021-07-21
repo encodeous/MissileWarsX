@@ -17,14 +17,6 @@ public class MissileWarsItem implements ConfigurationSerializable {
      */
     public ItemStack BaseItemStack;
     /**
-     * Display name for the item when given to the Red Team
-     */
-    public String RedItemName;
-    /**
-     * Display name for the item when given to the Green Team
-     */
-    public String GreenItemName;
-    /**
      * Number of this item that is given to the player each time
      */
     public int StackSize;
@@ -43,8 +35,6 @@ public class MissileWarsItem implements ConfigurationSerializable {
     public static MissileWarsItem deserialize(Map<String, Object> args) {
         MissileWarsItem item = new MissileWarsItem();
         item.MissileWarsItemId = (String)args.get("item-id");
-        item.RedItemName = (String)args.get("red-name");
-        item.GreenItemName = (String)args.get("green-name");
         item.StackSize = (Integer)args.get("stack-size");
         item.MaxStackSize = (Integer)args.get("max-stack-size");
         item.IsShield = (Boolean)args.get("is-shield");
@@ -56,8 +46,6 @@ public class MissileWarsItem implements ConfigurationSerializable {
     public Map<String, Object> serialize() {
         HashMap<String, Object> o = new HashMap<>();
         o.put("item-id", this.MissileWarsItemId);
-        o.put("red-name", this.RedItemName);
-        o.put("green-name", this.GreenItemName);
         o.put("base-item", this.BaseItemStack);
         o.put("stack-size", this.StackSize);
         o.put("max-stack-size", this.MaxStackSize);

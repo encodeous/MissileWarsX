@@ -1,22 +1,28 @@
 package ca.encodeous.mwx.mwxcore;
 
 import ca.encodeous.mwx.configuration.BalanceStrategy;
+import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 public class MissileWarsEvents {
     public void PlayerJoinEvent(Player p){
-        CoreGame.Instance.mwMatch.AddPlayerToLobby(p);
+        CoreGame.Instance.mwMatch.AddPlayerToTeam(p, PlayerTeam.None);
     }
     public void PlayerLeaveEvent(Player p){
         CoreGame.Instance.mwMatch.RemovePlayer(p);
@@ -47,31 +53,26 @@ public class MissileWarsEvents {
             }
             if(target == null) return;
             if (CoreGame.Instance.mwMatch.Map.ReturnToLobby.contains(target.getLocation().toVector())) {
-                CoreGame.Instance.mwMatch.AddPlayerToLobby(p);
+                CoreGame.Instance.mwMatch.AddPlayerToTeam(p, PlayerTeam.None);
             } else if (CoreGame.Instance.mwMatch.Map.Spectate.contains(target.getLocation().toVector())) {
-                CoreGame.Instance.mwMatch.AddSpectator(p);
+                CoreGame.Instance.mwMatch.AddPlayerToTeam(p, PlayerTeam.Spectator);
             }
         }
     }
-    public void BlockExplodeEvent(Block source, List<Block> blocks, Ref<Float> yield){
-        yield.val = (float) 0;
-        for(Block block : blocks){
-            if(block.getType() == Material.PORTAL){
-                if(CoreGame.Instance.mwMatch.Map.RedPortal.IsInBounds(block.getLocation().toVector())){
-                    CoreGame.Instance.mwMatch.GreenWin();
-                }else{
-                    CoreGame.Instance.mwMatch.RedWin();
-                }
-            }
-        }
-    }
-    public void BlockPhysicsEvent(Block block){
+    public void PortalChangedEvent(Block block, TNTPrimed entity){
         if(block.getType() == CoreGame.Instance.mwImpl.GetPortalMaterial()){
             if(CoreGame.Instance.mwMatch.hasStarted){
+                HashSet<UUID> credits = CoreGame.Instance.mwMatch.Tracer.FindCause(entity);
+                ArrayList<Player> players = new ArrayList<>();
+                for(UUID id : credits){
+                    if(Bukkit.getPlayer(id) != null){
+                        players.add(Bukkit.getPlayer(id));
+                    }
+                }
                 if(CoreGame.Instance.mwMatch.Map.RedPortal.IsInBounds(block.getLocation().toVector())){
-                    CoreGame.Instance.mwMatch.GreenWin();
+                    CoreGame.Instance.mwMatch.GreenWin(players);
                 }else{
-                    CoreGame.Instance.mwMatch.RedWin();
+                    CoreGame.Instance.mwMatch.RedWin(players);
                 }
             }
         }

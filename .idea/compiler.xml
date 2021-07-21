@@ -8,9 +8,16 @@
         <outputRelativeToContentRoot value="true" />
         <module name="mwx-compat-1-8" />
         <module name="mwx-core" />
-        <module name="mwx-plugin" />
         <module name="mwx-compat-1-13" />
+        <module name="mwx-plugin" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="mwx-compat-1-13" target="8" />
+      <module name="mwx-compat-1-8" target="8" />
+      <module name="mwx-core" target="8" />
+      <module name="mwx-parent" target="8" />
+      <module name="mwx-plugin" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

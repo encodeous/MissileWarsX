@@ -13,9 +13,9 @@ public class spectateCommand implements CommandExecutor {
         try{
             if(sender instanceof Player){
                 if(CoreGame.Instance.mwMatch.IsPlayerInTeam((Player) sender, PlayerTeam.Spectator)){
-                    CoreGame.Instance.mwMatch.AddPlayerToLobby((Player) sender);
+                    CoreGame.Instance.mwMatch.AddPlayerToTeam((Player) sender, PlayerTeam.None);
                 }else{
-                    CoreGame.Instance.mwMatch.AddSpectator((Player) sender);
+                    CoreGame.Instance.mwMatch.AddPlayerToTeam((Player) sender, PlayerTeam.Spectator);
                 }
             }
             else{

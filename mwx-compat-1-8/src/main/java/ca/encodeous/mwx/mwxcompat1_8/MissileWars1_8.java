@@ -1,6 +1,7 @@
 package ca.encodeous.mwx.mwxcompat1_8;
 
 import ca.encodeous.mwx.configuration.Missile;
+import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
@@ -8,6 +9,7 @@ import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.MissileWarsImplementation;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
@@ -16,10 +18,7 @@ import ca.encodeous.mwx.mwxcore.world.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -199,7 +198,6 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         ItemStack hstack = new ItemStack(mat);
         LeatherArmorMeta hdata = (LeatherArmorMeta) hstack.getItemMeta();
         hdata.setColor(color);
-        hdata.addEnchant(Enchantment.DURABILITY, 32767, true);
         hdata.spigot().setUnbreakable(true);
         hdata.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         hstack.setItemMeta(hdata);
@@ -207,13 +205,13 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     @Override
-    public void EquipPlayer(Player p, boolean isRedTeam, MissileWarsItem bow) {
-        Color c = isRedTeam? Color.RED : Color.GREEN;
+    public void EquipPlayer(Player p, boolean isRedTeam) {
+        Color c = isRedTeam? Color.RED : Color.LIME;
         if(CoreGame.Instance.mwConfig.UseHelmets) p.getInventory().setHelmet(MakeArmour(Material.LEATHER_HELMET, c));
         p.getInventory().setChestplate(MakeArmour(Material.LEATHER_CHESTPLATE, c));
         p.getInventory().setLeggings(MakeArmour(Material.LEATHER_LEGGINGS, c));
         p.getInventory().setBoots(MakeArmour(Material.LEATHER_BOOTS, c));
-        p.getInventory().setItem(0, CreateItem(bow, isRedTeam));
+        p.getInventory().addItem(CreateItem(CoreGame.Instance.GetItemById(MissileWarsCoreItem.GUNBLADE.getValue()), isRedTeam));
     }
 
     @Override
@@ -262,7 +260,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         world.setTicksPerMonsterSpawns(1000000000);
         world.setWaterAnimalSpawnLimit(0);
         world.setAnimalSpawnLimit(0);
-        world.setDifficulty(Difficulty.HARD);
+        world.setDifficulty(Difficulty.EASY);
     }
 
     @Override
@@ -303,13 +301,12 @@ public class MissileWars1_8 implements MissileWarsImplementation {
 
     @Override
     public ItemStack CreateItem(MissileWarsItem item, boolean isRedTeam) {
-        if(item.MissileWarsItemId.equals("arrow")){
+        if(item.MissileWarsItemId.equals("Arrow")){
             return item.BaseItemStack.clone();
         }
         ItemStack itemstack = item.BaseItemStack.clone();
         ItemMeta meta = itemstack.getItemMeta();
-        if(isRedTeam) meta.setDisplayName(Formatter.FCL(item.RedItemName+"&r"));
-        else meta.setDisplayName(Formatter.FCL(item.GreenItemName+"&r"));
+        meta.setDisplayName(Formatter.FCL("&6"+item.MissileWarsItemId+"&r"));
         ArrayList<String> lst = new ArrayList<>();
         if(meta.hasLore()) meta.getLore().stream().map(Formatter::FCL).forEach(lst::add);
         lst.add(Formatter.FCL("&0msw-internal:") + item.MissileWarsItemId);
@@ -320,7 +317,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     @Override
     public String GetItemId(ItemStack item) {
         if(item == null) return "";
-        if(item.getType() == Material.ARROW) return "arrow";
+        if(item.getType() == Material.ARROW) return MissileWarsCoreItem.ARROW.getValue();
         if(item.hasItemMeta()){
             if(!item.getItemMeta().hasLore()) return "";
             List<String> s = item.getItemMeta().getLore();
@@ -390,7 +387,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         return schematic;
     }
     @Override
-    public ArrayList<Vector> PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update) {
+    public ArrayList<Vector> PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
         ArrayList<Vector> placedBlocks = new ArrayList<>();
         List<MissileBlock> blocks;
         if(isRed){
@@ -400,7 +397,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         }
         Bounds box = new Bounds();
         for(MissileBlock block : blocks){
-            PlaceBlock(block, location, world, isRed);
+            PlaceBlock(block, location, world, isRed, p);
             box.stretch(location.clone().add(block.Location));
             if(block.Material == MissileMaterial.TNT){
                 placedBlocks.add(location.clone().add(block.Location));
@@ -426,7 +423,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     @Override
-    public void PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed) {
+    public void PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p) {
         Vector location = origin.clone().add(block.Location);
         Block realBlock = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
         if(block.Material == MissileMaterial.PISTON){
@@ -471,8 +468,10 @@ public class MissileWars1_8 implements MissileWarsImplementation {
             }
         }else if(block.Material == MissileMaterial.TNT){
             realBlock.setType(Material.TNT, false);
+            CoreGame.Instance.mwMatch.Tracer.AddBlock(p.getUniqueId(), TraceType.TNT, location);
         }else if(block.Material == MissileMaterial.REDSTONE){
             realBlock.setType(Material.REDSTONE_BLOCK, false);
+            CoreGame.Instance.mwMatch.Tracer.AddBlock(p.getUniqueId(), TraceType.REDSTONE, location);
         }
     }
 
@@ -592,66 +591,60 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     @Override
-    public void SummonFrozenFireball(Vector location, World world) {
-        ArmorStand a = (ArmorStand) world.spawnEntity(Utils.LocationFromVec(location, world).add(0,-1,0), EntityType.ARMOR_STAND);
+    public void SummonFrozenFireball(Vector location, World world, Player p) {
+        ArmorStand a = (ArmorStand) world.spawnEntity(Utils.LocationFromVec(location, world).add(0,-1.5,0), EntityType.ARMOR_STAND);
         a.setVisible(false);
         a.setGravity(false);
         Fireball e = (Fireball)world.spawnEntity(Utils.LocationFromVec(location, world), EntityType.FIREBALL);
-        e.setYield(1);
+        e.setYield(1.5f);
         a.setPassenger(e);
+        e.setIsIncendiary(true);
+    }
+
+    @Override
+    public void SetTntSource(TNTPrimed tnt, Player p) {
+        // Doesnt do anything in 1.8
     }
 
     @Override
     public ArrayList<MissileWarsItem> CreateDefaultItems() {
         ArrayList<MissileWarsItem> items = new ArrayList<>();
-        items.add(CreateItem("shield_buster_spawn",
-                "&c&lSpawn &7&lShield &6&lBuster",
-                "&a&lSpawn &7&lShield &6&lBuster",
+        items.add(CreateItem("Shieldbuster",
                 1, 1, CreateSpawnEgg(EntityType.WITCH, new String[]{
-                        "&7Spawns a Shield Buster Missile",
+                        "&7Spawns a Shieldbuster Missile",
                         "&6Penetrates One Barrier",
                         "&7Speed: &61.7 blocks/s",
                         "&7TNT: &617"
                 })));
-        items.add(CreateItem("guardian_spawn",
-                "&c&lSpawn &2&lGuardian",
-                "&a&lSpawn &2&lGuardian",
+        items.add(CreateItem("Guardian",
                 1, 1, CreateSpawnEgg(EntityType.GUARDIAN, new String[]{
                         "&7Spawns a Guardian Missile",
                         "&6Take it for a ride!",
                         "&7Speed: &61.7 blocks/s",
                         "&7TNT: &64"
                 })));
-        items.add(CreateItem("lightning_spawn",
-                "&c&lSpawn &e&lLightning",
-                "&a&lSpawn &e&lLightning",
+        items.add(CreateItem("Lightning",
                 1, 1, CreateSpawnEgg(EntityType.OCELOT, new String[]{
                         "&7Spawns a Lightning Missile",
                         "&6&oOn your left!",
                         "&7Speed: &63.3 blocks/s",
                         "&7TNT: &612"
                 })));
-        items.add(CreateItem("juggernaut_spawn",
-                "&c&lSpawn &4&lJuggernaut",
-                "&a&lSpawn &4&lJuggernaut",
+        items.add(CreateItem("Juggernaut",
                 1, 1, CreateSpawnEgg(EntityType.GHAST, new String[]{
                         "&7Spawns a Juggernaut Missile",
                         "&6Armed to the teeth",
                         "&7Speed: &61.7 blocks/s",
                         "&7TNT: &622"
                 })));
-        items.add(CreateItem("tomahawk_spawn",
-                "&c&lSpawn &2&lTomahawk",
-                "&a&lSpawn &2&lTomahawk",
+        items.add(CreateItem("Tomahawk",
                 1, 1, CreateSpawnEgg(EntityType.CREEPER, new String[]{
                         "&7Spawns a Tomahawk Missile",
                         "&6The workhorse",
                         "&7Speed: &61.7 blocks/s",
                         "&7TNT: &615"
                 })));
-        items.add(CreateItem("fireball_spawn",
-                "&c&lSpawn &6&lFireball",
-                "&a&lSpawn &6&lFireball",
+        items.add(CreateItem(MissileWarsCoreItem.FIREBALL.getValue(),
                 1, 1, CreateSpawnEgg(EntityType.BLAZE, new String[]{
                         "&7Spawns a punchable fireball",
                         "&6Use it to explode incoming missiles!"
@@ -664,15 +657,11 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         mt.setLore(Collections.singletonList("&6Use it to attack others!"));
         mt.spigot().setUnbreakable(true);
         gbis.setItemMeta(mt);
-        MissileWarsItem gbim = CreateItem("gunblade",
-                "&c&lGun&7-&6&lBlade",
-                "&a&lGun&7-&6&lBlade",
+        MissileWarsItem gbim = CreateItem(MissileWarsCoreItem.GUNBLADE.getValue(),
                 1, 1, gbis);
         gbim.IsExempt = true;
         items.add(gbim);
-        MissileWarsItem sim = CreateItem("shield_spawn",
-                "&c&lDeploy &6&lShield",
-                "&a&lDeploy &6&lShield",
+        MissileWarsItem sim = CreateItem(MissileWarsCoreItem.SHIELD.getValue(),
                 1, 1, CreateOtherItem(Material.SNOW_BALL, new String[]{
                                 "&7Throw it in the air to deploy a barrier",
                                 "&cIt is destroyed if it hits a block",
@@ -681,20 +670,17 @@ public class MissileWars1_8 implements MissileWarsImplementation {
                 ));
         sim.IsShield = true;
         items.add(sim);
-        items.add(CreateItem("arrow",
-                "Arrow",
-                "Arrow",
+        items.add(CreateItem(MissileWarsCoreItem.ARROW.getValue(),
                 3, 3, CreateOtherItem(Material.ARROW, new String[0])));
         return items;
     }
-    public MissileWarsItem CreateItem(String id, String rd, String gd, int ss, int mss, ItemStack stack){
+
+    public MissileWarsItem CreateItem(String id, int ss, int mss, ItemStack stack){
         MissileWarsItem i = new MissileWarsItem();
         i.MissileWarsItemId = id;
         i.MaxStackSize = mss;
         i.StackSize = ss;
         i.BaseItemStack = stack;
-        i.RedItemName = rd;
-        i.GreenItemName = gd;
         i.IsExempt = false;
         i.IsShield = false;
         return i;

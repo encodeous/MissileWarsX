@@ -44,7 +44,6 @@ public class mwmakeCommand implements CommandExecutor {
                 Missile missile = new Missile();
                 missile.Schematic = schem;
                 missile.MissileItemId = name;
-                missile.MissileDisplayName = "&c&lreplace me " + name;
                 CoreGame.Instance.mwMissiles.put(missile.MissileItemId, missile);
                 p.sendMessage(Formatter.FCL("&aSuccessfully created missile!"));
                 return true;

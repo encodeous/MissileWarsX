@@ -2,8 +2,11 @@ package ca.encodeous.mwx.mwxcore.gamestate;
 
 import ca.encodeous.mwx.configuration.BalanceStrategy;
 import ca.encodeous.mwx.configuration.Missile;
+import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
+import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
+import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
@@ -13,19 +16,20 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
+import org.hamcrest.core.Is;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class MissileWarsMatch {
     // Map info
@@ -45,6 +49,7 @@ public class MissileWarsMatch {
     public int CountTaskId = -1;
     public int ItemTaskId = -1;
     public Scoreboard mwScoreboard;
+    public TraceEngine Tracer;
     Random mwRand = new Random();
 
     public void Initialize(){
@@ -56,20 +61,57 @@ public class MissileWarsMatch {
         Red = new HashSet<>();
         Spectators = new HashSet<>();
         Teams = new HashMap<>();
+        Tracer = new TraceEngine();
         CoreGame.Instance.mwImpl.ConfigureScoreboards(this);
     }
 
-    public void RedWin(){
+    public void RedWin(ArrayList<Player> credits){
+        if(!credits.isEmpty()){
+            Bukkit.broadcastMessage(Formatter.FCL("&fThe &aGreen &fteam's portal was blown up by " + FormatCredits(credits) + "&r!"));
+        }
         for(Player p : Teams.keySet()){
             CoreGame.Instance.mwImpl.SendTitle(p, "&6The &cred &6team has won!", "&6Congratulations!");
         }
         EndGame();
     }
-    public void GreenWin(){
+    public void GreenWin(ArrayList<Player> credits){
+        if(!credits.isEmpty()){
+            Bukkit.broadcastMessage(Formatter.FCL("&fThe &cRed &fteam's portal was blown up by " + FormatCredits(credits) + "&r!"));
+        }
         for(Player p : Teams.keySet()){
             CoreGame.Instance.mwImpl.SendTitle(p, "&6The &agreen &6team has won!", "&6Congratulations!");
         }
         EndGame();
+    }
+
+    public String FormatCredits(ArrayList<Player> credits){
+        StringBuilder winString = new StringBuilder();
+        if(credits.size() >= 2){
+            for(int i = 0; i < credits.size() - 1; i++){
+                if(i != 0) winString.append("&r, ");
+                winString.append(credits.get(i).getDisplayName());
+            }
+            winString.append("&r and ");
+            winString.append(credits.get(credits.size() - 1).getDisplayName());
+        }else{
+            winString.append(credits.get(0).getDisplayName());
+        }
+        return winString.toString();
+    }
+
+    public void InterceptTntIgnition(HashSet<UUID> sources, UUID latestSource,  Block block, boolean isExplosion, boolean redstoneActivated){
+        TrackedBlock trace = Tracer.GetSources(block);
+        if(trace == null) return;
+        sources.addAll(trace.Sources);
+        Tracer.RemoveBlock(trace.Position);
+        TNTPrimed tnt = block.getWorld().spawn(block.getLocation().add(0.5, 0, 0.5), TNTPrimed.class);
+        if(isExplosion){
+            tnt.setFuseTicks(mwRand.nextInt(20) + 10);
+        }else{
+            tnt.setFuseTicks(40);
+        }
+        if(latestSource != null) CoreGame.Instance.mwImpl.SetTntSource(tnt, Bukkit.getPlayer(latestSource));
+        Tracer.AddEntity(tnt, sources, redstoneActivated);
     }
 
     public void EndGame(){
@@ -86,55 +128,42 @@ public class MissileWarsMatch {
     public void GreenPad(Player p){
         if(!Map.SeparateJoin) return;
         RemovePlayer(p);
-        AddGreenPlayer(p);
+        AddPlayerToTeam(p, PlayerTeam.Green);
     }
     public void RedPad(Player p){
         if(!Map.SeparateJoin) return;
         RemovePlayer(p);
-        AddRedPlayer(p);
+        AddPlayerToTeam(p, PlayerTeam.Red);
     }
     public void AutoPad(Player p){
         if(Map.SeparateJoin) return;
         RemovePlayer(p);
+        PlayerTeam team = null;
         if(CoreGame.Instance.mwConfig.Strategy == BalanceStrategy.BALANCED_FIXED){
             if(Red.size() == Green.size()){
-                if(p.getName().hashCode() % 2 == 0){
-                    AddRedPlayer(p);
-                }else{
-                    AddGreenPlayer(p);
-                }
+                if(p.getName().hashCode() % 2 == 0) team = PlayerTeam.Red;
+                else team = PlayerTeam.Green;
             }else{
-                if(Red.size() < Green.size()){
-                    AddRedPlayer(p);
-                }else{
-                    AddGreenPlayer(p);
-                }
+                if(Red.size() < Green.size()) team = PlayerTeam.Red;
+                else team = PlayerTeam.Green;
             }
         }else if(CoreGame.Instance.mwConfig.Strategy == BalanceStrategy.BALANCED_GREEN){
             if(Red.size() == Green.size()){
-                AddGreenPlayer(p);
+                team = PlayerTeam.Green;
             }else{
-                if(Red.size() < Green.size()){
-                    AddRedPlayer(p);
-                }else{
-                    AddGreenPlayer(p);
-                }
+                if(Red.size() < Green.size()) team = PlayerTeam.Red;
+                else team = PlayerTeam.Green;
             }
         }else if(CoreGame.Instance.mwConfig.Strategy == BalanceStrategy.BALANCED_RANDOM){
             if(Red.size() == Green.size()){
-                if(mwRand.nextInt() % 2 == 0){
-                    AddRedPlayer(p);
-                }else{
-                    AddGreenPlayer(p);
-                }
+                if(mwRand.nextInt() % 2 == 0) team = PlayerTeam.Red;
+                else team = PlayerTeam.Green;
             }else{
-                if(Red.size() < Green.size()){
-                    AddRedPlayer(p);
-                }else{
-                    AddGreenPlayer(p);
-                }
+                if(Red.size() < Green.size()) team = PlayerTeam.Red;
+                else team = PlayerTeam.Green;
             }
         }
+        AddPlayerToTeam(p, team);
     }
     public void GiveItems(){
         ItemTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(CoreGame.Instance.mwPlugin, new Runnable() {
@@ -166,30 +195,42 @@ public class MissileWarsMatch {
         }, 0, 20);
     }
 
-    public void GivePlayerItem(Player p, MissileWarsItem item, boolean isRed){
+    public int CountItem(Player p, MissileWarsItem item){
         int curCnt = 0;
-        for(ItemStack i : p.getInventory()){
+        if(CoreGame.Instance.mwImpl.GetItemId(p.getItemOnCursor()).equals(item.MissileWarsItemId)){
+            curCnt += p.getItemOnCursor().getAmount();
+        }
+        for(ItemStack i : p.getOpenInventory().getBottomInventory()){
             String id = CoreGame.Instance.mwImpl.GetItemId(i);
             if(id.equals(item.MissileWarsItemId)){
                 curCnt += i.getAmount();
             }
         }
+        for(ItemStack i : p.getOpenInventory().getTopInventory()){
+            String id = CoreGame.Instance.mwImpl.GetItemId(i);
+            if(id.equals(item.MissileWarsItemId)){
+                curCnt += i.getAmount();
+            }
+        }
+        return curCnt;
+    }
+
+    public void GivePlayerItem(Player p, MissileWarsItem item, boolean isRed){
+        int curCnt = CountItem(p, item);
         if(item.MaxStackSize > curCnt){
             ItemStack citem = CoreGame.Instance.mwImpl.CreateItem(item, isRed);
             citem.setAmount(Math.min(item.StackSize, item.MaxStackSize - curCnt));
-            p.getInventory().addItem(citem);
-        }else{
-            if(isRed){
-                CoreGame.Instance.mwImpl.SendActionBar(p, "&6You already have a "+item.RedItemName + "&6.");
-            }else{
-                CoreGame.Instance.mwImpl.SendActionBar(p, "&6You already have a "+item.GreenItemName + "&6.");
+            if(!p.getInventory().addItem(citem).isEmpty()){
+                CoreGame.Instance.mwImpl.SendActionBar(p, "&cYour inventory does not have enough space to receive any items.");
             }
+        }else{
+            CoreGame.Instance.mwImpl.SendActionBar(p, "&6You already have a &f"+item.MissileWarsItemId + "&6.");
         }
     }
 
     public void CountdownGame(){
         if(CountTaskId != -1) return;
-        mwCnt = 30;
+        mwCnt = 15;
         CountTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(CoreGame.Instance.mwPlugin, new Runnable() {
             @Override
             public void run() {
@@ -223,11 +264,13 @@ public class MissileWarsMatch {
 
     public void GameStarted(){
         for(Player p : Green){
-            TeleportGreenPlayer(p);
+            TeleportPlayer(p, PlayerTeam.Green);
+            p.setGameMode(GameMode.SURVIVAL);
             p.sendMessage(Formatter.FCL("&cYou have entered a game, type &6/leave §cto return to missile wars lobby."));
         }
         for(Player p : Red){
-            TeleportRedPlayer(p);
+            TeleportPlayer(p, PlayerTeam.Red);
+            p.setGameMode(GameMode.SURVIVAL);
             p.sendMessage(Formatter.FCL("&cYou have entered a game, type &6/leave §cto return to missile wars lobby."));
         }
         GiveItems();
@@ -249,19 +292,37 @@ public class MissileWarsMatch {
         }
     }
 
-    public void TeleportRedPlayer(Player p){
-        Location loc = Utils.LocationFromVec(Map.RedSpawn, Map.MswWorld);
-        loc.setYaw(Map.RedYaw);
-        loc.setPitch(0);
-        p.teleport(loc);
-        p.setGameMode(GameMode.SURVIVAL);
-    }
-    public void TeleportGreenPlayer(Player p){
-        Location loc = Utils.LocationFromVec(Map.GreenSpawn, Map.MswWorld);
-        loc.setYaw(Map.GreenYaw);
-        loc.setPitch(0);
-        p.teleport(loc);
-        p.setGameMode(GameMode.SURVIVAL);
+    public Location GetTeamSpawn(PlayerTeam team){
+        if(hasStarted){
+            if(team == PlayerTeam.Green){
+                Location loc = Utils.LocationFromVec(Map.GreenSpawn, Map.MswWorld);
+                loc.setYaw(Map.GreenYaw);
+                loc.setPitch(0);
+                return loc;
+            }else if(team == PlayerTeam.Red){
+                Location loc = Utils.LocationFromVec(Map.RedSpawn, Map.MswWorld);
+                loc.setYaw(Map.RedYaw);
+                loc.setPitch(0);
+                return loc;
+            }else{
+                Location loc = Utils.LocationFromVec(Map.Spawn, Map.MswWorld);
+                loc.setYaw(Map.SpawnYaw);
+                loc.setPitch(0);
+                return loc;
+            }
+        }else{
+            Location loc = null;
+            if(team == PlayerTeam.Green){
+                loc = Utils.LocationFromVec(Map.GreenLobby, Map.MswWorld);
+            }else if(team == PlayerTeam.Red){
+                loc = Utils.LocationFromVec(Map.RedLobby, Map.MswWorld);
+            }else{
+                loc = Utils.LocationFromVec(Map.Spawn, Map.MswWorld);
+            }
+            loc.setYaw(Map.SpawnYaw);
+            loc.setPitch(0);
+            return loc;
+        }
     }
 
     public boolean IsPlayerInTeam(Player p, PlayerTeam team){
@@ -271,57 +332,36 @@ public class MissileWarsMatch {
         return false;
     }
 
-    public void AddRedPlayer(Player p){
+    public void AddPlayerToTeam(Player p, PlayerTeam team){
+        if(IsPlayerInTeam(p, team)) return;
         RemovePlayer(p);
-        // give player items
-        CoreGame.Instance.mwImpl.EquipPlayer(p, true, CoreGame.Instance.GetItemById("gunblade"));
-        // add to teams
-        mwRed.addEntry(p.getName());
-        Red.add(p);
-        Teams.put(p, PlayerTeam.Red);
-        TeamColorBroadcast(p, p.getName() + " has joined the red team!");
-        if(hasStarted){
-            TeleportRedPlayer(p);
-            return;
+        if(team == PlayerTeam.Green || team == PlayerTeam.Red){
+            CoreGame.Instance.mwImpl.EquipPlayer(p, team == PlayerTeam.Red);
+            if(hasStarted) p.setGameMode(GameMode.SURVIVAL);
         }
-        // teleport player
-        p.setGameMode(GameMode.ADVENTURE);
-        Location loc = Utils.LocationFromVec(Map.RedLobby, Map.MswWorld);
-        loc.setYaw(Map.SpawnYaw);
-        loc.setPitch(0);
-        p.teleport(loc);
-        CheckGameReadyState();
-    }
-    public void AddGreenPlayer(Player p){
-        RemovePlayer(p);
-        // give player items
-        CoreGame.Instance.mwImpl.EquipPlayer(p, false, CoreGame.Instance.GetItemById("gunblade"));
-        // add to teams
-        mwGreen.addEntry(p.getName());
-        Green.add(p);
-        Teams.put(p, PlayerTeam.Green);
-        TeamColorBroadcast(p, p.getName() + " has joined the green team!");
-        if(hasStarted){
-            TeleportGreenPlayer(p);
-            return;
+        Teams.put(p, team);
+        SetPlayerDisplayName(team, p);
+        if(team == PlayerTeam.Red){
+            mwRed.addEntry(p.getName());
+            Red.add(p);
+            TeamColorBroadcast(p, p.getName() + " has joined the red team!");
+        }else if(team == PlayerTeam.Green){
+            mwGreen.addEntry(p.getName());
+            Green.add(p);
+            TeamColorBroadcast(p, p.getName() + " has joined the green team!");
+        }else if(team == PlayerTeam.None){
+            mwLobby.addEntry(p.getName());
+            Lobby.add(p);
+            Bukkit.broadcastMessage(Formatter.FCL("&7"+p.getDisplayName()+" has joined the lobby!"));
+            p.setGameMode(GameMode.ADVENTURE);
+        }else{
+            mwSpectate.addEntry(p.getName());
+            Spectators.add(p);
+            p.sendMessage(Formatter.FCL("&9You are now spectating. Type &6/lobby&9 to return to the lobby."));
+            p.setGameMode(GameMode.SPECTATOR);
         }
-        // teleport player
-        p.setGameMode(GameMode.ADVENTURE);
-        Location loc = Utils.LocationFromVec(Map.GreenLobby, Map.MswWorld);
-        loc.setYaw(Map.SpawnYaw);
-        loc.setPitch(0);
-        p.teleport(loc);
         CheckGameReadyState();
-    }
-    public void AddSpectator(Player p){
-        if(IsPlayerInTeam(p, PlayerTeam.Spectator)) return;
-        RemovePlayer(p);
-        p.sendMessage(Formatter.FCL("&9You are now spectating. Type &6/lobby&9 to return to the lobby."));
-        Spectators.add(p);
-        mwSpectate.addEntry(p.getName());
-        p.setGameMode(GameMode.SPECTATOR);
-        Teams.put(p, PlayerTeam.Spectator);
-        TeamColorBroadcast(p, p.getName() + " is now spectating!");
+        if(team != PlayerTeam.Spectator) TeleportPlayer(p, team);
     }
 
     public void TeamColorBroadcast(Player p, String message){
@@ -336,43 +376,14 @@ public class MissileWarsMatch {
         }
     }
 
-    public void RespawnPlayer(Player p){
-        p.setVelocity(new Vector());
-        p.setHealth(20);
-        //p.res
-        if(IsPlayerInTeam(p, PlayerTeam.Spectator)){
-            Location loc = Utils.LocationFromVec(Map.Spawn, Map.MswWorld);
-            loc.setYaw(Map.SpawnYaw);
-            loc.setPitch(0);
-            p.teleport(loc);
-        }else{
-            if(hasStarted){
-                if(IsPlayerInTeam(p, PlayerTeam.Green)){
-                    TeleportGreenPlayer(p);
-                }else if(IsPlayerInTeam(p, PlayerTeam.Red)){
-                    TeleportRedPlayer(p);
-                }else{
-                    AddPlayerToLobby(p);
-                }
-            }else{
-                AddPlayerToLobby(p);
-            }
-        }
+    public void TeleportPlayer(Player p, PlayerTeam team){
+        Location loc = GetTeamSpawn(team);
+        p.setBedSpawnLocation(loc, true);
+        p.teleport(loc);
     }
 
-    public void AddPlayerToLobby(Player p){
-        if(p.isOnline()){
-            RemovePlayer(p);
-            p.setScoreboard(mwScoreboard);
-            Bukkit.broadcastMessage(Formatter.FCL("&7"+p.getName()+" has joined the lobby!"));
-            Lobby.add(p);
-            Location loc = Utils.LocationFromVec(Map.Spawn, Map.MswWorld);
-            loc.setYaw(Map.SpawnYaw);
-            loc.setPitch(0);
-            mwLobby.addEntry(p.getName());
-            p.teleport(loc);
-            p.setGameMode(GameMode.ADVENTURE);
-        }
+    public void SetPlayerDisplayName(PlayerTeam team, Player p){
+        p.setDisplayName(Formatter.ResolveTeamColor(team) + Formatter.FCL(p.getName() + "&r"));
     }
 
     public void CleanPlayer(Player p){
@@ -383,6 +394,8 @@ public class MissileWarsMatch {
 
     public void RemovePlayer(Player p){
         CleanPlayer(p);
+        boolean affectGame = false;
+        if(Green.contains(p) || Red.contains(p)) affectGame = true;
         Teams.remove(p);
         Lobby.remove(p);
         Spectators.remove(p);
@@ -392,45 +405,35 @@ public class MissileWarsMatch {
         mwGreen.removeEntry(p.getName());
         mwSpectate.removeEntry(p.getName());
         mwLobby.removeEntry(p.getName());
-        CheckGameReadyState();
+        if(affectGame) CheckGameReadyState();
     }
 
     public void MissileWarsItemInteract(Player p, Action action, BlockFace face, Block target, String mwItemId, ItemStack item, boolean isInAir, Ref<Boolean> cancel, Ref<Boolean> use){
         if(hasStarted){
-            if(IsPlayerInTeam(p, PlayerTeam.Red)){
+            if(IsPlayerInTeam(p, PlayerTeam.Red) || IsPlayerInTeam(p, PlayerTeam.Green)){
                 if(CoreGame.Instance.mwMissiles.containsKey(mwItemId) && !isInAir){
                     Missile ms = CoreGame.Instance.mwMissiles.get(mwItemId);
-                    CoreGame.Instance.mwImpl.PlaceMissile(ms, target.getLocation().toVector(), target.getWorld(), true, true);
+                    CoreGame.Instance.mwImpl.PlaceMissile(ms, target.getLocation().toVector(), target.getWorld(), IsPlayerInTeam(p, PlayerTeam.Red), true, p);
                     cancel.val = true;
                     use.val = true;
                 }else{
-                    LaunchShield(p, mwItemId, cancel, use, true);
-                    if(mwItemId.equals("fireball_spawn")) DeployFireball(target, cancel, use);
-                }
-            }else if(IsPlayerInTeam(p, PlayerTeam.Green)){
-                if(CoreGame.Instance.mwMissiles.containsKey(mwItemId) && !isInAir){
-                    Missile ms = CoreGame.Instance.mwMissiles.get(mwItemId);
-                    CoreGame.Instance.mwImpl.PlaceMissile(ms, target.getLocation().toVector(), target.getWorld(), false, true);
-                    cancel.val = true;
-                    use.val = true;
-                }else {
-                    LaunchShield(p, mwItemId, cancel, use, false);
-                    if(mwItemId.equals("fireball_spawn")) DeployFireball(target, cancel, use);
+                    LaunchShield(p, mwItemId, cancel, use, IsPlayerInTeam(p, PlayerTeam.Red));
+                    if(mwItemId.equals(MissileWarsCoreItem.FIREBALL.getValue())) DeployFireball(target, cancel, use, p);
                 }
             }
         }
     }
 
     public HashSet<UUID> AliveSnowballs = new HashSet<>();
-    private void DeployFireball(Block clickedBlock, Ref<Boolean> cancel, Ref<Boolean> use){
+    private void DeployFireball(Block clickedBlock, Ref<Boolean> cancel, Ref<Boolean> use, Player p){
         if(clickedBlock == null) return;
         Vector loc = clickedBlock.getLocation().toVector().add(new Vector(0.5, 2, 0.5));
-        CoreGame.Instance.mwImpl.SummonFrozenFireball(loc, clickedBlock.getWorld());
+        CoreGame.Instance.mwImpl.SummonFrozenFireball(loc, clickedBlock.getWorld(), p);
         cancel.val = true;
         use.val = true;
     }
     private void LaunchShield(Player p, String mwItemId, Ref<Boolean> cancel, Ref<Boolean> use, boolean isRed) {
-        if(mwItemId.equals("shield_spawn")){
+        if(mwItemId.equals(MissileWarsCoreItem.SHIELD.getValue())){
             final Snowball shield = p.launchProjectile(Snowball.class);
             AliveSnowballs.add(shield.getUniqueId());
             Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, new Runnable() {

@@ -111,5 +111,7 @@ $RECYCLE.BIN/
 # Common working directory
 run/
 
-server/
-server-1-13/
+*/server/
+*/server-1-13/
+
+ignored/

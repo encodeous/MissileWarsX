@@ -1,15 +1,23 @@
 package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.configuration.Missile;
+import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
+import ca.encodeous.mwx.mwxcompat1_13.nms.NMSCraftLivingEntity;
+import ca.encodeous.mwx.mwxcompat1_13.nms.NMSCraftTNTPrimed;
+import ca.encodeous.mwx.mwxcompat1_13.nms.NMSEntityLiving;
+import ca.encodeous.mwx.mwxcompat1_13.nms.NMSEntityTNTPrimed;
 import ca.encodeous.mwx.mwxcompat1_8.MissileWarsEventHandler;
+import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.mwxcore.world.*;
+import me.theminecoder.minecraft.nmsproxy.proxy.NMSProxyProvider;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -25,13 +33,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8 {
-
+    public static NMSProxyProvider proxy;
     @Override
     public MCVersion GetImplVersion() {
         return MCVersion.v1_13;
@@ -53,30 +63,50 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
     }
     @Override
     public void RegisterEvents(MissileWarsEvents events, JavaPlugin plugin) {
+        proxy = NMSProxyProvider.get(plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new ca.encodeous.mwx.mwxcompat1_13.MissileWarsEventHandler(events), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new ca.encodeous.mwx.mwxcompat1_13.PaperEventHandler(), plugin);
+    }
+
+    @Override
+    public void SetTntSource(TNTPrimed tnt, Player p) {
+        NMSEntityLiving player = proxy.getNMSObject(NMSEntityLiving.class, ((proxy.getNMSObject(NMSCraftLivingEntity.class, p)).getHandle()).getProxyHandle());
+        NMSEntityTNTPrimed tntPrimed = proxy.getNMSObject(NMSEntityTNTPrimed.class, proxy.getNMSObject(NMSCraftTNTPrimed.class,tnt).getHandle().getProxyHandle());
+        tntPrimed.source(player);
     }
 
     @Override
     public void ConfigureScoreboards(MissileWarsMatch mtch) {
-        mtch.mwScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        mtch.mwGreen = mtch.mwScoreboard.registerNewTeam("green");
+        mtch.mwScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        mtch.mwGreen = GetTeam("green", mtch.mwScoreboard);
         mtch.mwGreen.setColor(ChatColor.GREEN);
+        mtch.mwGreen.setAllowFriendlyFire(true);
         mtch.mwGreen.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+        mtch.mwGreen.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
 
-        mtch.mwRed = mtch.mwScoreboard.registerNewTeam("red");
+        mtch.mwRed = GetTeam("red", mtch.mwScoreboard);
         mtch.mwRed.setColor(ChatColor.RED);
+        mtch.mwRed.setAllowFriendlyFire(true);
         mtch.mwRed.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+        mtch.mwRed.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
 
-        mtch.mwSpectate = mtch.mwScoreboard.registerNewTeam("spectator");
+        mtch.mwSpectate = GetTeam("spectator", mtch.mwScoreboard);
         mtch.mwSpectate.setColor(ChatColor.BLUE);
         mtch.mwSpectate.setAllowFriendlyFire(false);
         mtch.mwSpectate.setCanSeeFriendlyInvisibles(true);
         mtch.mwSpectate.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
+        mtch.mwSpectate.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
 
-        mtch.mwLobby = mtch.mwScoreboard.registerNewTeam("lobby");
+        mtch.mwLobby = GetTeam("lobby", mtch.mwScoreboard);
         mtch.mwLobby.setColor(ChatColor.GRAY);
         mtch.mwLobby.setAllowFriendlyFire(false);
         mtch.mwLobby.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+        mtch.mwLobby.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
+    }
+
+    public Team GetTeam(String team, Scoreboard board){
+        if(board.getTeam(team) == null) return board.registerNewTeam(team);
+        else return board.getTeam(team);
     }
 
     @Override
@@ -136,7 +166,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
         return schematic;
     }
     @Override
-    public ArrayList<Vector> PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update) {
+    public ArrayList<Vector> PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
         ArrayList<Vector> placedBlocks = new ArrayList<>();
         List<MissileBlock> blocks;
         if(isRed){
@@ -146,7 +176,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
         }
         Bounds box = new Bounds();
         for(MissileBlock block : blocks){
-            PlaceBlock(block, location, world, isRed);
+            PlaceBlock(block, location, world, isRed, p);
             box.stretch(location.clone().add(block.Location));
             if(block.Material == MissileMaterial.TNT){
                 placedBlocks.add(location.clone().add(block.Location));
@@ -175,7 +205,6 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
         ItemStack hstack = new ItemStack(mat);
         LeatherArmorMeta hdata = (LeatherArmorMeta) hstack.getItemMeta();
         hdata.setColor(color);
-        hdata.addEnchant(Enchantment.DURABILITY, 32767, true);
         hdata.setUnbreakable(true);
         hdata.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         hstack.setItemMeta(hdata);
@@ -183,7 +212,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
     }
 
     @Override
-    public void PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed) {
+    public void PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p) {
         Vector location = origin.clone().add(block.Location);
         Block realBlock = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
         if(block.Material == MissileMaterial.PISTON){
@@ -217,62 +246,52 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
             }
         }else if(block.Material == MissileMaterial.TNT){
             realBlock.setType(Material.TNT, false);
+            CoreGame.Instance.mwMatch.Tracer.AddBlock(p.getUniqueId(), TraceType.TNT, location);
         }else if(block.Material == MissileMaterial.REDSTONE){
             realBlock.setType(Material.REDSTONE_BLOCK, false);
+            CoreGame.Instance.mwMatch.Tracer.AddBlock(p.getUniqueId(), TraceType.REDSTONE, location);
         }
     }
 
     @Override
     public ArrayList<MissileWarsItem> CreateDefaultItems() {
         ArrayList<MissileWarsItem> items = new ArrayList<>();
-        items.add(CreateItem("shield_buster_spawn",
-                "&c&lSpawn &f&lShield &6&lBuster",
-                "&a&lSpawn &f&lShield &6&lBuster",
+        items.add(CreateItem("Shieldbuster",
                 1, 1, CreateItem(Material.WITCH_SPAWN_EGG, new String[]{
-                        "&7Spawns a Shield Buster Missile",
+                        "&7Spawns a Shieldbuster Missile",
                         "&6Penetrates One Barrier",
                         "&7Speed: &61.7 blocks/s",
                         "&7TNT: &617"
                 })));
-        items.add(CreateItem("guardian_spawn",
-                "&c&lSpawn &6&lGuardian",
-                "&a&lSpawn &6&lGuardian",
+        items.add(CreateItem("Guardian",
                 1, 1, CreateItem(Material.GUARDIAN_SPAWN_EGG, new String[]{
                         "&7Spawns a Guardian Missile",
                         "&6Take it for a ride!",
                         "&7Speed: &61.7 blocks/s",
                         "&7TNT: &64"
                 })));
-        items.add(CreateItem("lightning_spawn",
-                "&c&lSpawn &6&lLightning",
-                "&a&lSpawn &6&lLightning",
+        items.add(CreateItem("Lightning",
                 1, 1, CreateItem(Material.OCELOT_SPAWN_EGG, new String[]{
                         "&7Spawns a Lightning Missile",
                         "&6&oOn your left!",
                         "&7Speed: &63.3 blocks/s",
                         "&7TNT: &612"
                 })));
-        items.add(CreateItem("juggernaut_spawn",
-                "&c&lSpawn &6&lJuggernaut",
-                "&a&lSpawn &6&lJuggernaut",
+        items.add(CreateItem("Juggernaut",
                 1, 1, CreateItem(Material.GHAST_SPAWN_EGG, new String[]{
                         "&7Spawns a Juggernaut Missile",
                         "&6Armed to the teeth",
                         "&7Speed: &61.7 blocks/s",
                         "&7TNT: &622"
                 })));
-        items.add(CreateItem("tomahawk_spawn",
-                "&c&lSpawn &6&lTomahawk",
-                "&a&lSpawn &6&lTomahawk",
+        items.add(CreateItem("Tomahawk",
                 1, 1, CreateItem(Material.CREEPER_SPAWN_EGG, new String[]{
                         "&7Spawns a Tomahawk Missile",
                         "&6The workhorse",
                         "&7Speed: &61.7 blocks/s",
                         "&7TNT: &615"
                 })));
-        items.add(CreateItem("fireball_spawn",
-                "&c&lSpawn &6&lFireball",
-                "&a&lSpawn &6&lFireball",
+        items.add(CreateItem(MissileWarsCoreItem.FIREBALL.getValue(),
                 1, 1, CreateItem(Material.BLAZE_SPAWN_EGG, new String[]{
                         "&7Spawns a punchable fireball",
                         "&6Use it to explode incoming missiles!"
@@ -285,15 +304,11 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
         mt.setUnbreakable(true);
         mt.setLore(Collections.singletonList("&6Use it to attack others!"));
         gbis.setItemMeta(mt);
-        MissileWarsItem gbim = CreateItem("gunblade",
-                "&c&lGun&7-&6&lBlade",
-                "&a&lGun&7-&6&lBlade",
+        MissileWarsItem gbim = CreateItem(MissileWarsCoreItem.GUNBLADE.getValue(),
                 1, 1, gbis);
         gbim.IsExempt = true;
         items.add(gbim);
-        MissileWarsItem sim = CreateItem("shield_spawn",
-                "&c&lDeploy &6&lShield",
-                "&a&lDeploy &6&lShield",
+        MissileWarsItem sim = CreateItem(MissileWarsCoreItem.SHIELD.getValue(),
                 1, 1, CreateItem(Material.SNOWBALL, new String[]{
                                 "&7Throw it in the air to deploy a barrier",
                                 "&cIt is destroyed if it hits a block",
@@ -302,9 +317,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
                 ));
         sim.IsShield = true;
         items.add(sim);
-        items.add(CreateItem("arrow",
-                "Arrow",
-                "Arrow",
+        items.add(CreateItem(MissileWarsCoreItem.ARROW.getValue(),
                 3, 3, CreateItem(Material.ARROW, new String[0])));
         return items;
     }

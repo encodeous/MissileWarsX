@@ -1,23 +1,33 @@
 package ca.encodeous.mwx.mwxcompat1_8;
 
+import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
+import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
+import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
+
+import java.util.*;
+
+import static ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine.PropagatePortalBreak;
+import static org.bukkit.Bukkit.getServer;
 
 public class MissileWarsEventHandler implements Listener {
     private MissileWarsEvents mwEvents;
@@ -28,6 +38,15 @@ public class MissileWarsEventHandler implements Listener {
     public void PlayerJoinEvent(PlayerJoinEvent event){
         event.setJoinMessage("");
         mwEvents.PlayerJoinEvent(event.getPlayer());
+    }
+    @EventHandler
+    public void BlockBreakEvent(BlockBreakEvent event){
+        if(event.getBlock().getType() == Material.BEDROCK || event.getBlock().getType() == Material.OBSIDIAN){
+            event.setCancelled(true);
+        }
+        if(event.getBlock().getType() == CoreGame.Instance.mwImpl.GetPortalMaterial()){
+            PropagatePortalBreak(event.getBlock());
+        }
     }
     @EventHandler
     public void FoodChange(FoodLevelChangeEvent event) {
@@ -50,9 +69,7 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void BlockExplodeEvent(BlockExplodeEvent event){
-        Ref<Float> yield = new Ref<>(event.getYield());
-        mwEvents.BlockExplodeEvent(event.getBlock(), event.blockList(), yield);
-        event.setYield(yield.val);
+        event.setYield(0);
     }
     @EventHandler
     public void ExplodeEvent(EntityExplodeEvent e){
@@ -64,32 +81,72 @@ public class MissileWarsEventHandler implements Listener {
                             && block.getType() != Material.PISTON_EXTENSION
                             && block.getType() != Material.PISTON_STICKY_BASE
                             && block.getType() != Material.PISTON_MOVING_PIECE
+                            && block.getType() != Material.STAINED_CLAY
+                            && block.getType() != Material.REDSTONE_BLOCK
             );
         }
+        if(e.getEntity() instanceof TNTPrimed){
+            Optional<Block> block = e.blockList().stream().filter(x->x.getType() == CoreGame.Instance.mwImpl.GetPortalMaterial()).findAny();
+            block.ifPresent(value -> {
+                mwEvents.PortalChangedEvent(value, (TNTPrimed) e.getEntity());
+                PropagatePortalBreak(value);
+            });
+        }
     }
+
     @EventHandler
-    public void EntityDamageEvent(EntityDamageByEntityEvent e){
-        if(e.getEntity() instanceof Fireball && e.getEntity().getVehicle() != null && e.getEntity().getVehicle().getType() == EntityType.ARMOR_STAND && e.getDamager() instanceof Player){
+    public void EntityDamageByEntityEvent(EntityDamageByEntityEvent e){
+        if(e.getEntity() instanceof Fireball && e.getEntity().getVehicle() != null && e.getEntity().getVehicle().getType() == EntityType.ARMOR_STAND && !(e.getDamager() instanceof TNTPrimed)){
             Entity vehicle = e.getEntity().getVehicle();
+            if(e.getDamager() instanceof Projectile) {
+                ((Fireball) e.getEntity()).setDirection(e.getDamager().getVelocity().normalize());
+                ((Fireball) e.getEntity()).setShooter(TraceEngine.ResolveShooter((Projectile) e.getDamager()));
+            }else{
+                ((Fireball) e.getEntity()).setShooter((ProjectileSource) e.getDamager());
+            }
             e.getEntity().leaveVehicle();
             vehicle.remove();
         }
-        if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
-            boolean rt = CoreGame.Instance.mwMatch.IsPlayerInTeam((Player) e.getEntity(), PlayerTeam.Red);
-            boolean rt1 = CoreGame.Instance.mwMatch.IsPlayerInTeam((Player) e.getDamager(), PlayerTeam.Red);
-            if(rt == rt1){
-                // prevent friendly fire
+    }
+
+    @EventHandler
+    public void PlayerDamageEvent(EntityDamageEvent e) {
+        if(e.getEntity() instanceof Player){
+            Player p = (Player) e.getEntity();
+            if(!CoreGame.Instance.mwMatch.IsPlayerInTeam(p, PlayerTeam.Red) && !CoreGame.Instance.mwMatch.IsPlayerInTeam(p, PlayerTeam.Green)){
                 e.setCancelled(true);
             }
         }
     }
     @EventHandler
-    public void ArmourStandEvent(PlayerArmorStandManipulateEvent e){
-        e.setCancelled(true);
+    public void PlayerRespawnEvent(PlayerRespawnEvent e) {
+        e.setRespawnLocation(CoreGame.Instance.mwMatch.GetTeamSpawn(CoreGame.Instance.mwMatch.Teams.get(e.getPlayer())));
     }
     @EventHandler
-    public void BlockPhysicsEvent(BlockPhysicsEvent event){
-        mwEvents.BlockPhysicsEvent(event.getBlock());
+    public void PistonPushEvent(BlockPistonExtendEvent e){
+        CoreGame.Instance.mwMatch.Tracer.TransformBlocks(e.getBlocks(), e.getDirection());
+    }
+    @EventHandler
+    public void PistonPullEvent(BlockPistonRetractEvent e){
+        CoreGame.Instance.mwMatch.Tracer.TransformBlocks(e.getBlocks(), e.getDirection().getOppositeFace());
+    }
+    @EventHandler
+    public void PlayerDeath(PlayerDeathEvent e) {
+        Player p = e.getEntity();
+        getServer().getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    p.spigot().respawn();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 3);
+    }
+    @EventHandler
+    public void ArmourStandEvent(PlayerArmorStandManipulateEvent e){
+        e.setCancelled(true);
     }
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent e){
@@ -108,27 +165,39 @@ public class MissileWarsEventHandler implements Listener {
         if(cancel.val){
             e.setCancelled(true);
         }
+        Player p = (Player) e.getPlayer().getInventory().getHolder();
+        ReequipGunblade(p);
+    }
+    public void ReequipGunblade(Player p){
+        if(p.getGameMode() == GameMode.CREATIVE) return;
+        if(CoreGame.Instance.mwMatch.IsPlayerInTeam(p, PlayerTeam.Green) || CoreGame.Instance.mwMatch.IsPlayerInTeam(p, PlayerTeam.Red)){
+            if(CoreGame.Instance.mwMatch.CountItem(p, CoreGame.Instance.GetItemById(MissileWarsCoreItem.GUNBLADE.getValue())) == 0){
+                CoreGame.Instance.mwImpl.EquipPlayer(p, CoreGame.Instance.mwMatch.IsPlayerInTeam(p, PlayerTeam.Red));
+            }
+        }
     }
     @EventHandler
     public void PlayerInventoryInteractEvent(InventoryClickEvent event){
+        if(event.getInventory().getHolder() instanceof Player){
+            Player p = (Player) event.getInventory().getHolder();
+            if(p.getGameMode() == GameMode.CREATIVE) return;
+            ReequipGunblade(p);
+        }
         if(event.getSlotType() == InventoryType.SlotType.ARMOR){
             event.setCancelled(true);
         }
     }
     @EventHandler
     public void ItemDropEvent(PlayerDropItemEvent event){
-        event.setCancelled(true);
+        if(event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        if(event.getItemDrop().getItemStack().getType() != Material.ARROW){
+            event.setCancelled(true);
+        }
     }
     @EventHandler
     public void ProjectileHitEvent(ProjectileHitEvent event){
         if(event.getEntity() instanceof Snowball){
             CoreGame.Instance.mwMatch.AliveSnowballs.remove(event.getEntity().getUniqueId());
         }
-    }
-    @EventHandler
-    public void PlayerDeathEvent(PlayerDeathEvent event){
-        CoreGame.Instance.mwMatch.TeamColorBroadcast(event.getEntity(), event.getDeathMessage());
-        event.setDeathMessage("");
-        CoreGame.Instance.mwMatch.RespawnPlayer(event.getEntity());
     }
 }
