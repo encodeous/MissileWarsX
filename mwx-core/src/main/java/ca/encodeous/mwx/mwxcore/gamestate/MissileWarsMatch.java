@@ -7,6 +7,7 @@ import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
+import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
@@ -105,20 +106,8 @@ public class MissileWarsMatch {
         return winString.toString();
     }
 
-    public void InterceptTntIgnition(HashSet<UUID> sources, UUID latestSource,  Block block, boolean isExplosion, boolean redstoneActivated){
-        TrackedBlock trace = Tracer.GetSources(block);
-        if(trace == null) return;
-        sources.addAll(trace.Sources);
-        Tracer.RemoveBlock(trace.Position);
-        TNTPrimed tnt = block.getWorld().spawn(block.getLocation().add(0.5, 0, 0.5), TNTPrimed.class);
-        if(isExplosion){
-            tnt.setFuseTicks(mwRand.nextInt(20) + 10);
-        }else{
-            tnt.setFuseTicks(40);
-        }
-        if(latestSource != null) CoreGame.Instance.mwImpl.SetTntSource(tnt, Bukkit.getPlayer(latestSource));
-        Tracer.AddEntity(tnt, sources, redstoneActivated);
-    }
+
+
 
     public void EndGame(){
         if(hasStarted){
@@ -129,6 +118,38 @@ public class MissileWarsMatch {
             }
             CoreGame.Instance.EndGameCountdown();
         }
+    }
+
+    public boolean checkCanSpawn(PlayerTeam team, ArrayList<Vector> blocks, World world, boolean isShield){
+        // referenced from OpenMissileWars
+        int threshold = 0;
+        for(Vector vec : blocks){
+            Block block = world.getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+            Material mat = block.getType();
+            if(mat == Material.OBSIDIAN || mat == Material.BEDROCK
+                    || mat == CoreGame.Instance.mwImpl.GetPortalMaterial()
+                    || mat == Material.BARRIER) return false;
+            if(vec.getBlockX() <= -72) return false;
+            if(isShield) continue;
+            boolean crossMid;
+            if (team == PlayerTeam.Red) {
+                crossMid = vec.getBlockZ() >= 0;
+            } else {
+                crossMid = vec.getBlockZ() <= 0;
+            }
+
+            boolean isSameTeamBlock = CoreGame.Instance.mwImpl.IsBlockOfTeam(team, block);
+            if(!isSameTeamBlock && crossMid){
+                threshold--;
+            }
+            if(isSameTeamBlock){
+                threshold++;
+            }
+            if(CoreGame.Instance.mwImpl.IsBlockOfTeam(PlayerTeam.None, block) && !crossMid){
+                threshold++;
+            }
+        }
+        return threshold < 5;
     }
 
     public void GreenPad(Player p){
@@ -414,14 +435,24 @@ public class MissileWarsMatch {
         if(affectGame) CheckGameReadyState();
     }
 
+    public static void SendCannotPlaceMessage(Player p){
+        p.sendMessage(Formatter.FCL("&cYou cannot deploy that there."));
+    }
+
     public void MissileWarsItemInteract(Player p, Action action, BlockFace face, Block target, String mwItemId, ItemStack item, boolean isInAir, Ref<Boolean> cancel, Ref<Boolean> use){
         if(hasStarted){
             if(IsPlayerInTeam(p, PlayerTeam.Red) || IsPlayerInTeam(p, PlayerTeam.Green)){
                 if(CoreGame.Instance.mwMissiles.containsKey(mwItemId) && !isInAir){
                     Missile ms = CoreGame.Instance.mwMissiles.get(mwItemId);
-                    CoreGame.Instance.mwImpl.PlaceMissile(ms, target.getLocation().toVector(), target.getWorld(), IsPlayerInTeam(p, PlayerTeam.Red), true, p);
+                    boolean result = CoreGame.Instance.mwImpl.PlaceMissile(ms, target.getLocation().toVector(),
+                            target.getWorld(), IsPlayerInTeam(p, PlayerTeam.Red), true, p);
+                    if(result){
+                        use.val = true;
+                    }else{
+                        use.val = false;
+                        SendCannotPlaceMessage(p);
+                    }
                     cancel.val = true;
-                    use.val = true;
                 }else{
                     LaunchShield(p, mwItemId, cancel, use, IsPlayerInTeam(p, PlayerTeam.Red));
                     if(mwItemId.equals(MissileWarsCoreItem.FIREBALL.getValue())) DeployFireball(target, cancel, use, p);
@@ -445,7 +476,10 @@ public class MissileWarsMatch {
             Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, new Runnable() {
                 public void run() {
                     if(CoreGame.Instance.mwConfig.AllowShieldHit || AliveSnowballs.contains(shield.getUniqueId())){
-                        CoreGame.Instance.mwImpl.SpawnShield(shield.getLocation().toVector(), shield.getWorld(), isRed);
+                        boolean result = CoreGame.Instance.mwImpl.SpawnShield(shield.getLocation().toVector(), shield.getWorld(), isRed);
+                        if(!result){
+                            MissileWarsMatch.SendCannotPlaceMessage(p);
+                        }
                         AliveSnowballs.remove(shield.getUniqueId());
                         shield.remove();
                     }

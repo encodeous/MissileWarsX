@@ -4,6 +4,7 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Fireball;
@@ -16,9 +17,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.UUID;
 
 public class PaperEventHandler implements Listener {
+    private Random rand = new Random();
     @EventHandler(priority = EventPriority.HIGHEST)
     public void TntPrimeEvent(TNTPrimeEvent e){
         if(e.getReason() == TNTPrimeEvent.PrimeReason.FIRE) e.setCancelled(true);
@@ -34,10 +37,10 @@ public class PaperEventHandler implements Listener {
                     if(!blockt.Sources.isEmpty()) latestSource = blockt.Sources.stream().findAny().get();
                 }
             }
-            CoreGame.Instance.mwMatch.InterceptTntIgnition(sources, latestSource, e.getBlock(), false, true);
+            InterceptTntIgnition(sources, latestSource, e.getBlock(), false, true);
         }else if(e.getReason() == TNTPrimeEvent.PrimeReason.ITEM){
             sources.add(e.getPrimerEntity().getUniqueId());
-            CoreGame.Instance.mwMatch.InterceptTntIgnition(sources, e.getPrimerEntity().getUniqueId(), e.getBlock(), false, false);
+            InterceptTntIgnition(sources, e.getPrimerEntity().getUniqueId(), e.getBlock(), false, false);
         }else if(e.getReason() == TNTPrimeEvent.PrimeReason.PROJECTILE){
             ProjectileSource shooter = TraceEngine.ResolveShooter((Projectile) e.getPrimerEntity());
             UUID latestSource = null;
@@ -46,9 +49,9 @@ public class PaperEventHandler implements Listener {
                 sources.add(latestSource);
             }
             if(e.getPrimerEntity() instanceof Fireball){
-                CoreGame.Instance.mwMatch.InterceptTntIgnition(sources, latestSource, e.getBlock(), true, false);
+                InterceptTntIgnition(sources, latestSource, e.getBlock(), true, false);
             }else{
-                CoreGame.Instance.mwMatch.InterceptTntIgnition(sources, latestSource, e.getBlock(), false, false);
+                InterceptTntIgnition(sources, latestSource, e.getBlock(), false, false);
             }
         }else if(e.getReason() == TNTPrimeEvent.PrimeReason.EXPLOSION){
             UUID latestSource = null;
@@ -58,7 +61,23 @@ public class PaperEventHandler implements Listener {
                 latestSource = CoreGame.Instance.mwMatch.Tracer.FindRootCause((TNTPrimed)e.getPrimerEntity());
                 isRedstoneActivated = CoreGame.Instance.mwMatch.Tracer.IsRedstoneActivated((TNTPrimed)e.getPrimerEntity());
             }
-            CoreGame.Instance.mwMatch.InterceptTntIgnition(sources, latestSource, e.getBlock(), true, isRedstoneActivated);
+            InterceptTntIgnition(sources, latestSource, e.getBlock(), true, isRedstoneActivated);
         }
+    }
+
+    public void InterceptTntIgnition(HashSet<UUID> sources, UUID latestSource,  Block block, boolean isExplosion, boolean redstoneActivated){
+        TrackedBlock trace = CoreGame.Instance.mwMatch.Tracer.GetSources(block);
+        if(trace == null) return;
+        sources.addAll(trace.Sources);
+        CoreGame.Instance.mwMatch.Tracer.RemoveBlock(trace.Position);
+        block.getWorld().spawn(block.getLocation().add(0.5, 0, 0.5), TNTPrimed.class, tnt->{
+            if(isExplosion){
+                tnt.setFuseTicks(rand.nextInt(20) + 10);
+            }else{
+                tnt.setFuseTicks(80);
+            }
+            if(latestSource != null) CoreGame.Instance.mwImpl.SetTntSource(tnt, Bukkit.getPlayer(latestSource));
+            CoreGame.Instance.mwMatch.Tracer.AddEntity(tnt, sources, redstoneActivated);
+        });
     }
 }

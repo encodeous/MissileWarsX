@@ -9,6 +9,7 @@ import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.MissileWarsImplementation;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
@@ -30,150 +31,11 @@ import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.util.Vector;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class MissileWars1_8 implements MissileWarsImplementation {
     // https://github.com/Bimmr/BimmCore
-    public static class TitleAPI {
 
-        private static Class<?> chatSerializer;
-        private static Method serializer;
-        private static Class<?> chatBaseComponent;
-        private static Constructor<?> chatConstructor;
-        private static Constructor<?> timeConstructor;
-        private static Class<?> titleAction;
-        private static Object timeEnum, titleEnum, subEnum, resetEnum;
-
-        static {
-            chatBaseComponent = Reflection.getNMSClass("IChatBaseComponent");
-            chatSerializer = Reflection.getNMSClass("IChatBaseComponent$ChatSerializer");
-            titleAction = Reflection.getNMSClass("PacketPlayOutTitle$EnumTitleAction");
-
-            try {
-                serializer = chatSerializer.getMethod("a", String.class);
-
-                Class<?> packetType = Reflection.getNMSClass("PacketPlayOutTitle");
-                chatConstructor = packetType.getConstructor(titleAction, chatBaseComponent);
-                timeConstructor = packetType.getConstructor(titleAction, chatBaseComponent, Integer.TYPE, Integer.TYPE, Integer.TYPE);
-
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-
-            titleEnum = titleAction.getEnumConstants()[0];
-            subEnum = titleAction.getEnumConstants()[1];
-
-            if (Reflection.getVersion().startsWith("v1_7_") || Reflection.getVersion().startsWith("v1_8_") || Reflection.getVersion().startsWith("v1_9_") || Reflection.getVersion().startsWith("v1_10_"))
-                timeEnum = titleAction.getEnumConstants()[2];
-            else {
-                timeEnum = titleAction.getEnumConstants()[3];
-                resetEnum = titleAction.getEnumConstants()[5];
-            }
-
-        }
-
-        /**
-         * Send title.
-         *
-         * @param player   the player
-         * @param title    the title
-         * @param subTitle the sub title
-         * @param fadeIn   the fade in
-         * @param show     the show
-         * @param fadeOut  the fade out
-         */
-        public static void sendTitle(Player player, String title, String subTitle, int fadeIn, int show, int fadeOut) {
-            try {
-                Object lengthPacket = timeConstructor.newInstance(timeEnum, null, fadeIn, show, fadeOut);
-                sendPacket(player, lengthPacket);
-
-                Object titleSerialized = serializer.invoke(null, "{\"text\":\"" + title + "\"}");
-                Object titlePacket = chatConstructor.newInstance(titleEnum, titleSerialized);
-                sendPacket(player, titlePacket);
-
-                if (subTitle != "") {
-                    Object subSerialized = serializer.invoke(null, "{\"text\":\"" + subTitle + "\"}");
-                    Object subPacket = chatConstructor.newInstance(subEnum, subSerialized);
-                    sendPacket(player, subPacket);
-                }
-
-            } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /**
-         * Reset.
-         *
-         * @param player the player
-         */
-        public static void reset(Player player) {
-            try {
-                if (resetEnum == null)
-                    sendTitle(player, "", "", 0, 0, 0);
-                else {
-                    Object titlePacket = chatConstructor.newInstance(resetEnum, null);
-                    sendPacket(player, titlePacket);
-                }
-            } catch (InvocationTargetException | IllegalAccessException | InstantiationException e) {
-                e.printStackTrace();
-            }
-        }
-        private static Class<?> classPacket = Reflection.getNMSClass("Packet");
-        public static void sendPacket(Player player, Object packet) {
-            Object handle = Reflection.getHandle(player);
-            Object playerConnection = Reflection.get(handle.getClass(), "playerConnection", handle);
-            Method methodSend = Reflection.getMethod(playerConnection.getClass(), "sendPacket", classPacket);
-            Reflection.invokeMethod(methodSend, playerConnection, new Object[]{packet});
-        }
-    }
-    static class ActionBarAPIOld {
-        private static Class<?> classPacket = Reflection.getNMSClass("Packet");
-        private static Class<?>       chatSerializer;
-        private static Class<?>       chatBaseComponent;
-        private static Method serializer;
-        private static Constructor<?> chatConstructor;
-        static {
-            chatBaseComponent = Reflection.getNMSClass("IChatBaseComponent");
-            chatSerializer = Reflection.getNMSClass("IChatBaseComponent$ChatSerializer");
-
-            try {
-                serializer = chatSerializer.getMethod("a", String.class);
-
-                Class<?> packetType = Reflection.getNMSClass("PacketPlayOutChat");
-                chatConstructor = packetType.getConstructor(chatBaseComponent, byte.class);
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-        }
-        public static void sendPacket(Player player, Object packet) {
-            Object handle = Reflection.getHandle(player);
-            Object playerConnection = Reflection.get(handle.getClass(), "playerConnection", handle);
-            Method methodSend = Reflection.getMethod(playerConnection.getClass(), "sendPacket", classPacket);
-            Reflection.invokeMethod(methodSend, playerConnection, new Object[]{packet});
-        }
-        /**
-         * Send the title
-         *
-         * @param player
-         * @param msg
-         */
-        private static void sendActionBar(Player player, String msg) {
-            try {
-                Object serialized = serializer.invoke(null, "{\"text\":\"" + msg + "\"}");
-
-                Object packet = chatConstructor.newInstance(serialized, (byte) 2);
-                sendPacket(player, packet);
-
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
     @Override
     public MCVersion GetImplVersion() {
         return MCVersion.v1_8;
@@ -188,10 +50,9 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     public void SendTitle(Player p, String title, String subtitle) {
         TitleAPI.sendTitle(p, Formatter.FCL(title), Formatter.FCL(subtitle), 10, 20 * 5, 10);
     }
-
     @Override
     public void SendActionBar(Player p, String message) {
-        ActionBarAPIOld.sendActionBar(p, Formatter.FCL(message));
+        ActionBarAPI.sendActionBar(p, Formatter.FCL(message));
     }
 
     public ItemStack MakeArmour(Material mat, Color color){
@@ -387,22 +248,9 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         return schematic;
     }
     @Override
-    public ArrayList<Vector> PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
-        ArrayList<Vector> placedBlocks = new ArrayList<>();
-        List<MissileBlock> blocks;
-        if(isRed){
-            blocks = missile.Schematic.Blocks;
-        }else{
-            blocks = missile.Schematic.CreateOppositeSchematic().Blocks;
-        }
-        Bounds box = new Bounds();
-        for(MissileBlock block : blocks){
-            PlaceBlock(block, location, world, isRed, p);
-            box.stretch(location.clone().add(block.Location));
-            if(block.Material == MissileMaterial.TNT){
-                placedBlocks.add(location.clone().add(block.Location));
-            }
-        }
+    public boolean PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
+        Bounds box = PreProcessMissilePlacement(missile, location, world, isRed, p);
+        if (box == null) return false;
         if(update){
             for(int i = box.getMinX(); i <= box.getMaxX(); i++){
                 for(int j = box.getMinY(); j <= box.getMaxY(); j++){
@@ -419,7 +267,31 @@ public class MissileWars1_8 implements MissileWarsImplementation {
                 }
             }
         }
-        return placedBlocks;
+        return true;
+    }
+
+    protected Bounds PreProcessMissilePlacement(Missile missile, Vector location, World world, boolean isRed, Player p) {
+        List<MissileBlock> blocks;
+        if(isRed){
+            blocks = missile.Schematic.Blocks;
+        }else{
+            blocks = missile.Schematic.CreateOppositeSchematic().Blocks;
+        }
+        Bounds box = new Bounds();
+        ArrayList<Vector> placedBlocks = new ArrayList<>();
+        for(MissileBlock block : blocks){
+            placedBlocks.add(location.clone().add(block.Location));
+        }
+        if(!CoreGame.Instance.mwMatch.checkCanSpawn(isRed ? PlayerTeam.Red : PlayerTeam.Green, placedBlocks, world, false))
+            return null;
+        for(MissileBlock block : blocks){
+            PlaceBlock(block, location, world, isRed, p);
+            box.stretch(location.clone().add(block.Location));
+            if(block.Material == MissileMaterial.TNT){
+                placedBlocks.add(location.clone().add(block.Location));
+            }
+        }
+        return box;
     }
 
     @Override
@@ -540,8 +412,14 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     @Override
-    public void SpawnShield(Vector location, World world, boolean isRed) {
+    public boolean SpawnShield(Vector location, World world, boolean isRed) {
         Map<Vector, Integer> shield = ShieldData(isRed);
+        ArrayList<Vector> realLocation = new ArrayList<>();
+        for(Vector key : shield.keySet()){
+            realLocation.add(location.clone().add(key));
+        }
+        if(!CoreGame.Instance.mwMatch.checkCanSpawn(isRed ?
+                PlayerTeam.Red : PlayerTeam.Green, realLocation, world, true)) return false;
         for(Map.Entry<Vector, Integer> e : shield.entrySet()){
             Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();
             if(e.getValue() == 1){
@@ -588,22 +466,48 @@ public class MissileWars1_8 implements MissileWarsImplementation {
             block.setType(mat, true);
             block.setData(data, true);
         }
+        return true;
     }
 
     @Override
     public void SummonFrozenFireball(Vector location, World world, Player p) {
-        ArmorStand a = (ArmorStand) world.spawnEntity(Utils.LocationFromVec(location, world).add(0,-1.5,0), EntityType.ARMOR_STAND);
+        ArmorStand a = world.spawn(Utils.LocationFromVec(location, world), ArmorStand.class);
         a.setVisible(false);
         a.setGravity(false);
-        Fireball e = (Fireball)world.spawnEntity(Utils.LocationFromVec(location, world), EntityType.FIREBALL);
+        a.setMarker(true);
+        Fireball e = world.spawn(Utils.LocationFromVec(location, world), Fireball.class);
         e.setYield(1.5f);
-        a.setPassenger(e);
+        e.setShooter(p);
         e.setIsIncendiary(true);
+        e.setVelocity(new Vector(0, 1, 0));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, () -> {
+            if (e.isDead()) {
+                a.remove();
+            } else {
+                a.setPassenger(e);
+            }
+        }, 2);
     }
 
     @Override
     public void SetTntSource(TNTPrimed tnt, Player p) {
         // Doesnt do anything in 1.8
+    }
+
+    @Override
+    public boolean IsBlockOfTeam(PlayerTeam team, Block block) {
+        if (block.getType() == Material.STAINED_GLASS){
+            DyeColor color = DyeColor.getByData(block.getData());
+            if(team == PlayerTeam.Green){
+                return color == DyeColor.GREEN || color == DyeColor.LIME;
+            }else if(team == PlayerTeam.Red){
+                return color == DyeColor.RED || color == DyeColor.PINK;
+            }
+            else if(team == PlayerTeam.None){
+                return color == DyeColor.WHITE;
+            }
+        }
+        return false;
     }
 
     @Override

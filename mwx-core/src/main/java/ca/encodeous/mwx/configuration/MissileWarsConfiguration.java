@@ -18,7 +18,7 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
     /**
      * Number of seconds between Resupplies
      */
-    public int ResupplySeconds = 11;
+    public int ResupplySeconds = 15;
     /**
      * Registered Missile Wars Items
      */

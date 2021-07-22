@@ -4,11 +4,13 @@ import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.ItemStack;
@@ -31,10 +33,11 @@ public interface MissileWarsImplementation {
     public ItemStack CreateItem(MissileWarsItem item, boolean isRedTeam);
     public String GetItemId(ItemStack item);
     public MissileSchematic GetSchematic(Vector pivot, Bounds boundingBox, World world);
-    public ArrayList<Vector> PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p);
+    public boolean PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p);
     public void PlaceBlock(MissileBlock missile, Vector origin, World world, boolean isRed, Player p);
-    public void SpawnShield(Vector location, World world, boolean isRed);
+    public boolean SpawnShield(Vector location, World world, boolean isRed);
     public void SummonFrozenFireball(Vector location, World world, Player p);
     public void SetTntSource(TNTPrimed tnt, Player p);
+    public boolean IsBlockOfTeam(PlayerTeam team, Block block);
     public ArrayList<MissileWarsItem> CreateDefaultItems();
 }

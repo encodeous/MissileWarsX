@@ -12,6 +12,7 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
@@ -166,22 +167,9 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
         return schematic;
     }
     @Override
-    public ArrayList<Vector> PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
-        ArrayList<Vector> placedBlocks = new ArrayList<>();
-        List<MissileBlock> blocks;
-        if(isRed){
-            blocks = missile.Schematic.Blocks;
-        }else{
-            blocks = missile.Schematic.CreateOppositeSchematic().Blocks;
-        }
-        Bounds box = new Bounds();
-        for(MissileBlock block : blocks){
-            PlaceBlock(block, location, world, isRed, p);
-            box.stretch(location.clone().add(block.Location));
-            if(block.Material == MissileMaterial.TNT){
-                placedBlocks.add(location.clone().add(block.Location));
-            }
-        }
+    public boolean PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
+        Bounds box = PreProcessMissilePlacement(missile, location, world, isRed, p);
+        if (box == null) return false;
         if(update){
             for(int i = box.getMinX(); i <= box.getMaxX(); i++){
                 for(int j = box.getMinY(); j <= box.getMaxY(); j++){
@@ -198,7 +186,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
                 }
             }
         }
-        return placedBlocks;
+        return true;
     }
 
     public ItemStack MakeArmour(Material mat, Color color){
@@ -251,6 +239,20 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
             realBlock.setType(Material.REDSTONE_BLOCK, false);
             CoreGame.Instance.mwMatch.Tracer.AddBlock(p.getUniqueId(), TraceType.REDSTONE, location);
         }
+    }
+
+    @Override
+    public boolean IsBlockOfTeam(PlayerTeam team, Block block) {
+        Material mat = block.getType();
+        if(team == PlayerTeam.Green){
+            return mat == Material.GREEN_STAINED_GLASS || mat == Material.LIME_STAINED_GLASS;
+        }else if(team == PlayerTeam.Red){
+            return mat == Material.RED_STAINED_GLASS || mat == Material.PINK_STAINED_GLASS;
+        }
+        else if(team == PlayerTeam.None){
+            return mat == Material.WHITE_STAINED_GLASS;
+        }
+        return false;
     }
 
     @Override
@@ -321,9 +323,38 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
                 3, 3, CreateItem(Material.ARROW, new String[0])));
         return items;
     }
+
     @Override
-    public void SpawnShield(Vector location, World world, boolean isRed) {
+    public void SummonFrozenFireball(Vector location, World world, Player p) {
+        ArmorStand a = world.spawn(Utils.LocationFromVec(location, world), ArmorStand.class, stand->{
+            stand.setVisible(false);
+            stand.setGravity(false);
+            stand.setMarker(true);
+        });
+        Fireball e = world.spawn(Utils.LocationFromVec(location, world), Fireball.class, fb->{
+            fb.setYield(1.5f);
+            fb.setShooter(p);
+            fb.setIsIncendiary(true);
+            fb.setVelocity(new Vector(0, 1, 0));
+        });
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, () -> {
+            if (e.isDead()) {
+                a.remove();
+            } else {
+                a.setPassenger(e);
+            }
+        }, 2);
+    }
+
+    @Override
+    public boolean SpawnShield(Vector location, World world, boolean isRed) {
         Map<Vector, Integer> shield = ShieldData(isRed);
+        ArrayList<Vector> realLocation = new ArrayList<>();
+        for(Vector key : shield.keySet()){
+            realLocation.add(location.clone().add(key));
+        }
+        if(!CoreGame.Instance.mwMatch.checkCanSpawn(isRed ?
+                PlayerTeam.Red : PlayerTeam.Green, realLocation, world, true)) return false;
         for(Map.Entry<Vector, Integer> e : shield.entrySet()){
             Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();
             if(e.getValue() == 1){
@@ -359,6 +390,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
             Material mat = block.getType();
             block.setType(mat, true);
         }
+        return true;
     }
 
     public ItemStack CreateItem(Material type, String[] lore){
