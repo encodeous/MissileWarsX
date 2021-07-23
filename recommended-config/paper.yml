@@ -1,0 +1,37 @@
+config-version: 20
+settings:
+  limit-player-interactions: false
+  incoming-packet-spam-threshold: 300
+  unsupported-settings:
+    allow-headless-pistons: true
+    allow-piston-duplication: true
+    allow-permanent-block-break-exploits: true
+warnWhenSettingExcessiveVelocity: false
+world-settings:
+  default:
+    armor-stands-tick: false
+    use-vanilla-world-scoreboard-name-coloring: true
+    auto-save-interval: -1
+    armor-stands-do-collision-entity-lookups: false
+    generator-settings:
+      canyon: false
+      caves: false
+      dungeon: false
+      fortress: false
+      mineshaft: false
+      monument: false
+      stronghold: false
+      temple: false
+      village: false
+      flat-bedrock: true
+    use-async-lighting: true
+    optimize-explosions: true
+    prevent-tnt-from-moving-in-water: false
+    anti-xray:
+      enabled: false
+    spawn-limits:
+      monsters: 0
+      animals: 0
+      water-animals: 0
+      water-ambient: 0
+      ambient: -1

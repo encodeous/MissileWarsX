@@ -1,0 +1,15 @@
+settings:
+  allow-end: false
+spawn-limits:
+  water-ambient: 0
+  monsters: 0
+  animals: 0
+  water-animals: 0
+  ambient: 0
+ticks-per:
+  water-spawns: 9999999
+  water-ambient-spawns: 9999999
+  ambient-spawns: 9999999
+  animal-spawns: 9999999
+  monster-spawns: 9999999
+  autosave: 6000
