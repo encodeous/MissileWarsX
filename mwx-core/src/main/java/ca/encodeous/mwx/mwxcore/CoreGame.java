@@ -51,6 +51,7 @@ public class CoreGame {
     // Missile Wars
     public MissileWarsImplementation mwImpl;
     public MissileWarsMatch mwMatch = null;
+    public MissileWarsMatch newMatch = null;
     public HashMap<String, Missile> mwMissiles = null;
     public World mwAuto = null, mwManual = null;
     public int mwWorldCount = 0;
@@ -144,22 +145,37 @@ public class CoreGame {
         }, 5 * 20);
     }
 
+    public void PrepareEndMatch(){
+        if(newMatch != null){
+            EndMatch();
+        }else{
+            newMatch = CreateMatch();
+        }
+    }
+
     public void EndMatch(){
         if(endGameTask != -1){
             Bukkit.getScheduler().cancelTask(endGameTask);
             endGameTask = -1;
         }
-        MissileWarsMatch match = CreateMatch();
+        if(mwMatch.isStarting){
+            mwMatch.isStarting = false;
+            return;
+        }
+        if(newMatch == null){
+            PrepareEndMatch();
+        }
         HashSet<Player> allPlayers = new HashSet<>();
         for(Player p : mwMatch.Lobby) allPlayers.add(p);
         for(Player p : mwMatch.Red) allPlayers.add(p);
         for(Player p : mwMatch.Green) allPlayers.add(p);
         for(Player p : mwMatch.Spectators) allPlayers.add(p);
         for(Player p : allPlayers){
-            match.AddPlayerToTeam(p, PlayerTeam.None);
+            newMatch.AddPlayerToTeam(p, PlayerTeam.None);
         }
         mwMatch.Dispose();
-        mwMatch = match;
+        mwMatch = newMatch;
+        newMatch = null;
     }
 
     public MissileWarsItem GetItemById(String id){

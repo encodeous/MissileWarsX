@@ -1,8 +1,15 @@
 package ca.encodeous.mwx.mwxcompat1_13;
 
+import ca.encodeous.mwx.mwxcompat1_13.nms.NMSCraftPlayer;
+import ca.encodeous.mwx.mwxcompat1_13.nms.NMSCraftTNTPrimed;
+import ca.encodeous.mwx.mwxcompat1_13.nms.NMSEntityLiving;
+import ca.encodeous.mwx.mwxcompat1_13.nms.NMSEntityTNTPrimed;
+import ca.encodeous.mwx.mwxcompat1_13.nms.nms_1_17.*;
 import ca.encodeous.mwx.mwxcore.CoreGame;
+import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
+import ca.encodeous.simplenms.proxy.NMSCore;
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -24,6 +31,10 @@ public class PaperEventHandler implements Listener {
     private Random rand = new Random();
     @EventHandler(priority = EventPriority.HIGHEST)
     public void TntPrimeEvent(TNTPrimeEvent e){
+        if(e.getBlock().getX() <= -72){
+            e.setCancelled(true);
+            return;
+        }
         if(e.getReason() == TNTPrimeEvent.PrimeReason.FIRE) e.setCancelled(true);
         HashSet<UUID> sources = new HashSet<>();
         e.getBlock().setType(Material.AIR, false);
@@ -76,8 +87,21 @@ public class PaperEventHandler implements Listener {
             }else{
                 tnt.setFuseTicks(80);
             }
-            if(latestSource != null) CoreGame.Instance.mwImpl.SetTntSource(tnt, Bukkit.getPlayer(latestSource));
+            if(latestSource != null) SetTntSource(tnt, Bukkit.getPlayer(latestSource));
             CoreGame.Instance.mwMatch.Tracer.AddEntity(tnt, sources, redstoneActivated);
         });
+    }
+
+    public void SetTntSource(TNTPrimed tnt, Player p) {
+        if(p == null) return;
+        if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_17.getValue()){
+            NMSCraftTNTPrimed_1_17 craftTnt = NMSCore.getNMSObject(NMSCraftTNTPrimed_1_17.class, tnt);
+            craftTnt.setSource(p);
+        }
+        else{
+            NMSEntityLiving player = NMSCore.getNMSObject(NMSEntityLiving.class, ((NMSCore.getNMSObject(NMSCraftPlayer.class, p)).getHandle()).getProxyHandle());
+            NMSEntityTNTPrimed tntPrimed = NMSCore.getNMSObject(NMSEntityTNTPrimed.class, NMSCore.getNMSObject(NMSCraftTNTPrimed.class,tnt).getHandle().getProxyHandle());
+            tntPrimed.source(player);
+        }
     }
 }

@@ -1,10 +1,10 @@
 package ca.encodeous.mwx.mwxcompat1_13.nms;
 
-import me.theminecoder.minecraft.nmsproxy.NMSProxy;
-import me.theminecoder.minecraft.nmsproxy.annotations.NMSClass;
-import me.theminecoder.minecraft.nmsproxy.annotations.NMSMethod;
+import ca.encodeous.simplenms.NMSProxy;
+import ca.encodeous.simplenms.annotations.NMSClass;
+import ca.encodeous.simplenms.annotations.NMSMethod;
 
-@NMSClass(type = NMSClass.Type.NMS, className = "EntityLiving")
+@NMSClass(type = NMSClass.NMSType.NMS, value = "EntityLiving")
 public interface NMSEntityLiving extends NMSProxy {
     @NMSMethod
     public NMSEntity getHandle();

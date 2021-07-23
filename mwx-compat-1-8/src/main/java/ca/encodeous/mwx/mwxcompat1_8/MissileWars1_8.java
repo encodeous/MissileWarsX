@@ -282,7 +282,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         for(MissileBlock block : blocks){
             placedBlocks.add(location.clone().add(block.Location));
         }
-        if(!CoreGame.Instance.mwMatch.checkCanSpawn(isRed ? PlayerTeam.Red : PlayerTeam.Green, placedBlocks, world, false))
+        if(!CoreGame.Instance.mwMatch.CheckCanSpawn(isRed ? PlayerTeam.Red : PlayerTeam.Green, placedBlocks, world, false))
             return null;
         for(MissileBlock block : blocks){
             PlaceBlock(block, location, world, isRed, p);
@@ -418,7 +418,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         for(Vector key : shield.keySet()){
             realLocation.add(location.clone().add(key));
         }
-        if(!CoreGame.Instance.mwMatch.checkCanSpawn(isRed ?
+        if(!CoreGame.Instance.mwMatch.CheckCanSpawn(isRed ?
                 PlayerTeam.Red : PlayerTeam.Green, realLocation, world, true)) return false;
         for(Map.Entry<Vector, Integer> e : shield.entrySet()){
             Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();
@@ -471,11 +471,11 @@ public class MissileWars1_8 implements MissileWarsImplementation {
 
     @Override
     public void SummonFrozenFireball(Vector location, World world, Player p) {
-        ArmorStand a = world.spawn(Utils.LocationFromVec(location, world), ArmorStand.class);
+        ArmorStand a = world.spawn(Utils.LocationFromVec(location.add(new Vector(0,-1.5,0)), world), ArmorStand.class);
         a.setVisible(false);
         a.setGravity(false);
         a.setMarker(true);
-        Fireball e = world.spawn(Utils.LocationFromVec(location, world), Fireball.class);
+        Fireball e = world.spawn(Utils.LocationFromVec(location.add(new Vector(0,-1.5,0)), world), Fireball.class);
         e.setYield(1.5f);
         e.setShooter(p);
         e.setIsIncendiary(true);
@@ -487,11 +487,6 @@ public class MissileWars1_8 implements MissileWarsImplementation {
                 a.setPassenger(e);
             }
         }, 2);
-    }
-
-    @Override
-    public void SetTntSource(TNTPrimed tnt, Player p) {
-        // Doesnt do anything in 1.8
     }
 
     @Override
@@ -555,8 +550,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
                 })));
         ItemStack gbis = new ItemStack(Material.BOW);
         ItemMeta mt = gbis.getItemMeta();
-        mt.addEnchant(Enchantment.DAMAGE_ALL, 5, true);
-        mt.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+        mt.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
         mt.addEnchant(Enchantment.ARROW_FIRE, 1, true);
         mt.setLore(Collections.singletonList("&6Use it to attack others!"));
         mt.spigot().setUnbreakable(true);

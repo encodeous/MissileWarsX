@@ -40,7 +40,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <finalName>${project.artifactId}-${project.version}</finalName>
 <!--                            <outputDirectory>F:\encodeous\MissileWarsX\ignored\server\plugins</outputDirectory>-->
-                            <outputDirectory>F:\encodeous\MissileWarsX\ignored\server-1-13\plugins</outputDirectory>
+                            <outputDirectory>F:\encodeous\MissileWarsX\ignored\server-latest\plugins</outputDirectory>
                             <shadedClassifierName>shaded</shadedClassifierName>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
 
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

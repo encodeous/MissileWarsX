@@ -1,7 +1,7 @@
 package ca.encodeous.mwx.mwxcompat1_13.nms;
 
-import me.theminecoder.minecraft.nmsproxy.annotations.NMSClass;
+import ca.encodeous.simplenms.annotations.NMSClass;
 
-@NMSClass(type = NMSClass.Type.CRAFTBUKKIT, className = "entity.CraftTNTPrimed")
+@NMSClass(type = NMSClass.NMSType.CRAFTBUKKIT, value = "entity.CraftTNTPrimed")
 public interface NMSCraftTNTPrimed extends NMSEntityTNTPrimed {
 }

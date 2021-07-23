@@ -21,10 +21,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.github.theminecoder</groupId>
-            <artifactId>NMSProxy</artifactId>
-            <version>0.3</version>
-            <scope>compile</scope>
+            <groupId>com.github.encodeous</groupId>
+            <artifactId>SimpleNMS</artifactId>
+            <version>f96af9aca1</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>

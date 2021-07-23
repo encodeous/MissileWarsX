@@ -37,7 +37,6 @@ public interface MissileWarsImplementation {
     public void PlaceBlock(MissileBlock missile, Vector origin, World world, boolean isRed, Player p);
     public boolean SpawnShield(Vector location, World world, boolean isRed);
     public void SummonFrozenFireball(Vector location, World world, Player p);
-    public void SetTntSource(TNTPrimed tnt, Player p);
     public boolean IsBlockOfTeam(PlayerTeam team, Block block);
     public ArrayList<MissileWarsItem> CreateDefaultItems();
 }

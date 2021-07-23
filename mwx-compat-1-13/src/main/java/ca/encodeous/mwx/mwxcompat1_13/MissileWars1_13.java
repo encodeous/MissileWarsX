@@ -3,11 +3,6 @@ package ca.encodeous.mwx.mwxcompat1_13;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
-import ca.encodeous.mwx.mwxcompat1_13.nms.NMSCraftLivingEntity;
-import ca.encodeous.mwx.mwxcompat1_13.nms.NMSCraftTNTPrimed;
-import ca.encodeous.mwx.mwxcompat1_13.nms.NMSEntityLiving;
-import ca.encodeous.mwx.mwxcompat1_13.nms.NMSEntityTNTPrimed;
-import ca.encodeous.mwx.mwxcompat1_8.MissileWarsEventHandler;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
@@ -18,7 +13,6 @@ import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.mwxcore.world.*;
-import me.theminecoder.minecraft.nmsproxy.proxy.NMSProxyProvider;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -38,11 +32,9 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
 public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8 {
-    public static NMSProxyProvider proxy;
     @Override
     public MCVersion GetImplVersion() {
         return MCVersion.v1_13;
@@ -64,18 +56,9 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
     }
     @Override
     public void RegisterEvents(MissileWarsEvents events, JavaPlugin plugin) {
-        proxy = NMSProxyProvider.get(plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new ca.encodeous.mwx.mwxcompat1_13.MissileWarsEventHandler(events), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new ca.encodeous.mwx.mwxcompat1_13.PaperEventHandler(), plugin);
     }
-
-    @Override
-    public void SetTntSource(TNTPrimed tnt, Player p) {
-        NMSEntityLiving player = proxy.getNMSObject(NMSEntityLiving.class, ((proxy.getNMSObject(NMSCraftLivingEntity.class, p)).getHandle()).getProxyHandle());
-        NMSEntityTNTPrimed tntPrimed = proxy.getNMSObject(NMSEntityTNTPrimed.class, proxy.getNMSObject(NMSCraftTNTPrimed.class,tnt).getHandle().getProxyHandle());
-        tntPrimed.source(player);
-    }
-
     @Override
     public void ConfigureScoreboards(MissileWarsMatch mtch) {
         mtch.mwScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
@@ -300,8 +283,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
                 })));
         ItemStack gbis = new ItemStack(Material.BOW);
         ItemMeta mt = gbis.getItemMeta();
-        mt.addEnchant(Enchantment.DAMAGE_ALL, 5, true);
-        mt.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+        mt.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
         mt.addEnchant(Enchantment.ARROW_FIRE, 1, true);
         mt.setUnbreakable(true);
         mt.setLore(Collections.singletonList("&6Use it to attack others!"));
@@ -353,7 +335,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
         for(Vector key : shield.keySet()){
             realLocation.add(location.clone().add(key));
         }
-        if(!CoreGame.Instance.mwMatch.checkCanSpawn(isRed ?
+        if(!CoreGame.Instance.mwMatch.CheckCanSpawn(isRed ?
                 PlayerTeam.Red : PlayerTeam.Green, realLocation, world, true)) return false;
         for(Map.Entry<Vector, Integer> e : shield.entrySet()){
             Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();

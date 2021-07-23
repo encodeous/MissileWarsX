@@ -79,6 +79,7 @@ public final class MissileWarsX extends JavaPlugin {
         getCommand("spectate").setExecutor(new spectateCommand());
         getCommand("mwteam").setExecutor(new mwteamCommand());
         getCommand("lobby").setExecutor(new lobbyCommand());
+        getCommand("ping").setExecutor(new pingCommand());
 
         MissileWars.InitializeGame();
 

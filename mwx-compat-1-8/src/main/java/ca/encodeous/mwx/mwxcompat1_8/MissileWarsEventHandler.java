@@ -7,11 +7,9 @@ import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
+import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -64,8 +62,11 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void PlayerLeaveEvent(PlayerQuitEvent event){
-        event.setQuitMessage("");
+        event.setQuitMessage(Formatter.FCL(event.getPlayer().getDisplayName() + " has left the game."));
         mwEvents.PlayerLeaveEvent(event.getPlayer());
+        if(Bukkit.getOnlinePlayers().size() == 1 && CoreGame.Instance.mwMatch.hasStarted || CoreGame.Instance.mwMatch.isStarting){
+            CoreGame.Instance.EndMatch();
+        }
     }
     @EventHandler
     public void PlayerMoveEvent(PlayerMoveEvent event){
@@ -130,7 +131,8 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void PlayerRespawnEvent(PlayerRespawnEvent e) {
-        e.setRespawnLocation(CoreGame.Instance.mwMatch.GetTeamSpawn(CoreGame.Instance.mwMatch.Teams.get(e.getPlayer())));
+        if(CoreGame.Instance.mwMatch.Teams.containsKey(e.getPlayer()))
+            e.setRespawnLocation(CoreGame.Instance.mwMatch.GetTeamSpawn(CoreGame.Instance.mwMatch.Teams.get(e.getPlayer())));
     }
     @EventHandler
     public void PistonPushEvent(BlockPistonExtendEvent e){
@@ -153,6 +155,12 @@ public class MissileWarsEventHandler implements Listener {
                 }
             }
         }, 3);
+    }
+    @EventHandler
+    public void BlockPhysicsEvent(BlockPhysicsEvent e){
+        if(e.getChangedType() == CoreGame.Instance.mwImpl.GetPortalMaterial()){
+            e.setCancelled(true);
+        }
     }
     @EventHandler
     public void ArmourStandEvent(PlayerArmorStandManipulateEvent e){

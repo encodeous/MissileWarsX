@@ -16,9 +16,9 @@ public class mwendCommand implements CommandExecutor {
                 for(Player p : Bukkit.getOnlinePlayers()){
                     CoreGame.Instance.mwImpl.SendTitle(p, "&9The game has been ended.", "&9Stopped by an Admin.");
                 }
-                Bukkit.broadcastMessage(Formatter.FCL("&9Resetting game...!"));
                 CoreGame.Instance.mwMatch.EndGame();
             }else{
+                Bukkit.broadcastMessage(Formatter.FCL("&9Resetting game...!"));
                 CoreGame.Instance.EndMatch();
             }
 

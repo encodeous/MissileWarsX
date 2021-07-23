@@ -107,8 +107,6 @@ public class MissileWarsMatch {
     }
 
 
-
-
     public void EndGame(){
         if(hasStarted){
             this.hasStarted = false;
@@ -116,11 +114,12 @@ public class MissileWarsMatch {
             for(Player p : Teams.keySet()){
                 p.setGameMode(GameMode.SPECTATOR);
             }
+            CoreGame.Instance.PrepareEndMatch();
             CoreGame.Instance.EndGameCountdown();
         }
     }
 
-    public boolean checkCanSpawn(PlayerTeam team, ArrayList<Vector> blocks, World world, boolean isShield){
+    public boolean CheckCanSpawn(PlayerTeam team, ArrayList<Vector> blocks, World world, boolean isShield){
         // referenced from OpenMissileWars
         int threshold = 0;
         for(Vector vec : blocks){
@@ -130,6 +129,7 @@ public class MissileWarsMatch {
                     || mat == CoreGame.Instance.mwImpl.GetPortalMaterial()
                     || mat == Material.BARRIER) return false;
             if(vec.getBlockX() <= -72) return false;
+            if(vec.getBlockY() <= 0) return false;
             if(isShield) continue;
             boolean crossMid;
             if (team == PlayerTeam.Red) {
@@ -283,6 +283,7 @@ public class MissileWarsMatch {
                 }
                 for(Player p : Teams.keySet()){
                     p.setLevel(mwCnt);
+                    p.setExp(0);
                 }
                 mwCnt--;
             }
@@ -293,12 +294,10 @@ public class MissileWarsMatch {
         for(Player p : Green){
             TeleportPlayer(p, PlayerTeam.Green);
             p.setGameMode(GameMode.SURVIVAL);
-            p.sendMessage(Formatter.FCL("&cYou have entered a game, type &6/leave §cto return to missile wars lobby."));
         }
         for(Player p : Red){
             TeleportPlayer(p, PlayerTeam.Red);
             p.setGameMode(GameMode.SURVIVAL);
-            p.sendMessage(Formatter.FCL("&cYou have entered a game, type &6/leave §cto return to missile wars lobby."));
         }
         GiveItems();
     }
@@ -309,12 +308,11 @@ public class MissileWarsMatch {
             isStarting = true;
             CountdownGame();
         }else{
-            if(isStarting){
-                Bukkit.broadcastMessage(Formatter.FCL("&9The game needs at least 2 players to start."));
-                isStarting = false;
-                for(Player p : Teams.keySet()){
-                    p.setLevel(0);
-                }
+            if(Red.size() + Green.size() == 1)
+                Bukkit.broadcastMessage(Formatter.FCL("&9The game needs at least 2 players to start. To forcefully start a game, run &6/start&9."));
+            isStarting = false;
+            for(Player p : Teams.keySet()){
+                p.setLevel(0);
             }
         }
     }
@@ -404,6 +402,9 @@ public class MissileWarsMatch {
     }
 
     public void TeleportPlayer(Player p, PlayerTeam team){
+        if((team == PlayerTeam.Green || team == PlayerTeam.Red) && hasStarted){
+            p.sendMessage(Formatter.FCL("&cYou have entered the game, type &6/lobby &cto return to missile wars lobby."));
+        }
         Location loc = GetTeamSpawn(team);
         p.setBedSpawnLocation(loc, true);
         p.teleport(loc);

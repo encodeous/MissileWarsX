@@ -11,7 +11,7 @@ public class mwstartCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
             if(CoreGame.Instance.mwMatch.isStarting){
-                CoreGame.Instance.mwMatch.mwCnt = 5;
+                sender.sendMessage("The game is already starting!");
             }else if(!CoreGame.Instance.mwMatch.hasStarted){
                 CoreGame.Instance.mwMatch.isStarting = true;
                 CoreGame.Instance.mwMatch.CountdownGame();
