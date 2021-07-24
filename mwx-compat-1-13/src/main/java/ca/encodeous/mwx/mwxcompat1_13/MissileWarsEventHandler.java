@@ -7,24 +7,21 @@ import ca.encodeous.mwx.mwxcore.utils.Ref;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.type.Fire;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
 import static ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine.PropagatePortalBreak;
 
 public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.MissileWarsEventHandler {
-    private MissileWarsEvents mwEvents;
+    private final MissileWarsEvents mwEvents;
 
     public MissileWarsEventHandler(MissileWarsEvents events) {
         super(events);
@@ -70,7 +67,7 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
                 Arrow arrow = (Arrow)event.getDamager();
                 if(arrow.getShooter() instanceof Player){
                     Player p2 = (Player) arrow.getShooter();
-                    if(CoreGame.Instance.mwMatch.Teams.get(p) == CoreGame.Instance.mwMatch.Teams.get(p2)){
+                    if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
                         event.setCancelled(true);
                     }
                 }
@@ -79,18 +76,18 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
                 ProjectileSource source = TraceEngine.ResolveShooter(fb);
                 if(source instanceof Player){
                     Player p2 = (Player) source;
-                    if(CoreGame.Instance.mwMatch.Teams.get(p) == CoreGame.Instance.mwMatch.Teams.get(p2)){
+                    if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
                         event.setCancelled(true);
                     }
                 }
             } else if(event.getDamager() instanceof TNTPrimed){
                 TNTPrimed tnt = (TNTPrimed)event.getDamager();
-                if(CoreGame.Instance.mwMatch.Tracer.IsRedstoneActivated(tnt)) return;
-                UUID id = CoreGame.Instance.mwMatch.Tracer.FindRootCause(tnt);
+                if(CoreGame.GetMatch().Tracer.IsRedstoneActivated(tnt)) return;
+                UUID id = CoreGame.GetMatch().Tracer.FindRootCause(tnt);
                 if(id != null){
                     Player p2 = Bukkit.getPlayer(id);
                     if(p2 != null){
-                        if(CoreGame.Instance.mwMatch.Teams.get(p) == CoreGame.Instance.mwMatch.Teams.get(p2)){
+                        if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
                             event.setCancelled(true);
                         }
                     }
@@ -111,7 +108,7 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
                             && block.getType() != Material.REDSTONE_BLOCK);
         }
         if(e.getEntity() instanceof TNTPrimed){
-            Optional<Block> block = e.blockList().stream().filter(x->x.getType() == CoreGame.Instance.mwImpl.GetPortalMaterial()).findAny();
+            Optional<Block> block = e.blockList().stream().filter(x->x.getType() == CoreGame.GetImpl().GetPortalMaterial()).findAny();
             block.ifPresent(value -> {
                 mwEvents.PortalChangedEvent(value, (TNTPrimed) e.getEntity());
                 PropagatePortalBreak(value);

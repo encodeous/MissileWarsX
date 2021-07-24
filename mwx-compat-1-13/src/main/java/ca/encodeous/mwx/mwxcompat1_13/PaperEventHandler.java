@@ -43,7 +43,7 @@ public class PaperEventHandler implements Listener {
             UUID latestSource = null;
             for(Block block : TraceEngine.GetNeighbors(e.getBlock())){
                 if(block.getType() == Material.REDSTONE_BLOCK){
-                    TrackedBlock blockt = CoreGame.Instance.mwMatch.Tracer.GetSources(block);
+                    TrackedBlock blockt = CoreGame.GetMatch().Tracer.GetSources(block);
                     sources.addAll(blockt.Sources);
                     if(!blockt.Sources.isEmpty()) latestSource = blockt.Sources.stream().findAny().get();
                 }
@@ -68,19 +68,19 @@ public class PaperEventHandler implements Listener {
             UUID latestSource = null;
             boolean isRedstoneActivated = false;
             if(e.getPrimerEntity() instanceof TNTPrimed){
-                sources.addAll(CoreGame.Instance.mwMatch.Tracer.FindCause((TNTPrimed)e.getPrimerEntity()));
-                latestSource = CoreGame.Instance.mwMatch.Tracer.FindRootCause((TNTPrimed)e.getPrimerEntity());
-                isRedstoneActivated = CoreGame.Instance.mwMatch.Tracer.IsRedstoneActivated((TNTPrimed)e.getPrimerEntity());
+                sources.addAll(CoreGame.GetMatch().Tracer.FindCause((TNTPrimed)e.getPrimerEntity()));
+                latestSource = CoreGame.GetMatch().Tracer.FindRootCause((TNTPrimed)e.getPrimerEntity());
+                isRedstoneActivated = CoreGame.GetMatch().Tracer.IsRedstoneActivated((TNTPrimed)e.getPrimerEntity());
             }
             InterceptTntIgnition(sources, latestSource, e.getBlock(), true, isRedstoneActivated);
         }
     }
 
     public void InterceptTntIgnition(HashSet<UUID> sources, UUID latestSource,  Block block, boolean isExplosion, boolean redstoneActivated){
-        TrackedBlock trace = CoreGame.Instance.mwMatch.Tracer.GetSources(block);
+        TrackedBlock trace = CoreGame.GetMatch().Tracer.GetSources(block);
         if(trace == null) return;
         sources.addAll(trace.Sources);
-        CoreGame.Instance.mwMatch.Tracer.RemoveBlock(trace.Position);
+        CoreGame.GetMatch().Tracer.RemoveBlock(trace.Position);
         block.getWorld().spawn(block.getLocation().add(0.5, 0, 0.5), TNTPrimed.class, tnt->{
             if(isExplosion){
                 tnt.setFuseTicks(rand.nextInt(20) + 10);
@@ -88,7 +88,7 @@ public class PaperEventHandler implements Listener {
                 tnt.setFuseTicks(80);
             }
             if(latestSource != null) SetTntSource(tnt, Bukkit.getPlayer(latestSource));
-            CoreGame.Instance.mwMatch.Tracer.AddEntity(tnt, sources, redstoneActivated);
+            CoreGame.GetMatch().Tracer.AddEntity(tnt, sources, redstoneActivated);
         });
     }
 

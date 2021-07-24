@@ -36,7 +36,7 @@ public class mwmakeCommand implements CommandExecutor {
                         Integer.parseInt(args[7]),
                         Integer.parseInt(args[8]));
                 String name = args[9];
-                MissileSchematic schem = MissileWarsX.Instance.mwImpl.GetSchematic(pivot, Bounds.of(a,b), p.getWorld());
+                MissileSchematic schem = MissileWarsX.Instance.mwImpl.GetStructureManager().GetSchematic(pivot, Bounds.of(a,b), p.getWorld());
                 if(schem == null){
                     p.sendMessage(Formatter.FCL("&cFailed creating missile! Valid blocks are: [PISTON, GLASS, STAINED_GLASS, SLIME_BLOCK, TNT, REDSTONE_BLOCK, STAINED_CLAY]. Schematics must also not be empty!"));
                     return true;

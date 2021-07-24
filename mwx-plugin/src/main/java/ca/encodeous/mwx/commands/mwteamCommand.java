@@ -18,13 +18,13 @@ public class mwteamCommand implements CommandExecutor {
                 return true;
             }
             if(args[1].equals("green")){
-                CoreGame.Instance.mwMatch.AddPlayerToTeam(p, PlayerTeam.Green);
+                CoreGame.GetMatch().AddPlayerToTeam(p, PlayerTeam.Green);
             } else if(args[1].equals("red")){
-                CoreGame.Instance.mwMatch.AddPlayerToTeam(p, PlayerTeam.Red);
+                CoreGame.GetMatch().AddPlayerToTeam(p, PlayerTeam.Red);
             } else if(args[1].equals("spectator")){
-                CoreGame.Instance.mwMatch.AddPlayerToTeam(p, PlayerTeam.Spectator);
+                CoreGame.GetMatch().AddPlayerToTeam(p, PlayerTeam.Spectator);
             } else if(args[1].equals("lobby")){
-                CoreGame.Instance.mwMatch.AddPlayerToTeam(p, PlayerTeam.None);
+                CoreGame.GetMatch().AddPlayerToTeam(p, PlayerTeam.None);
             }else{
                 return false;
             }

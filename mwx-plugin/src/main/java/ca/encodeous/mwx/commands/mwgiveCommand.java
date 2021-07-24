@@ -39,8 +39,8 @@ public class mwgiveCommand implements CommandExecutor {
                 sender.sendMessage("Item id not found! See items by running /mwitems");
                 return true;
             }
-            if(CoreGame.Instance.mwMatch.IsPlayerInTeam(p, PlayerTeam.Red) || CoreGame.Instance.mwMatch.IsPlayerInTeam(p, PlayerTeam.Green)){
-                ItemStack ritem = CoreGame.Instance.mwImpl.CreateItem(item, CoreGame.Instance.mwMatch.IsPlayerInTeam(p, PlayerTeam.Red));
+            if(CoreGame.GetMatch().IsPlayerInTeam(p, PlayerTeam.Red) || CoreGame.GetMatch().IsPlayerInTeam(p, PlayerTeam.Green)){
+                ItemStack ritem = CoreGame.GetImpl().CreateItem(item);
                 p.getInventory().addItem(ritem);
                 p.sendMessage(Formatter.FCL("&6You have been given &c" + item.MissileWarsItemId + "&6!"));
                 if(successMsg){

@@ -1,31 +1,21 @@
 package ca.encodeous.mwx.mwxcompat1_8;
 
-import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.MCVersion;
-import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
-import ca.encodeous.mwx.mwxcore.MissileWarsImplementation;
+import ca.encodeous.mwx.mwxcompat1_8.Structures.StructureCore;
+import ca.encodeous.mwx.mwxcore.*;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
-import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.mwxcore.utils.WorldCopy;
 import ca.encodeous.mwx.mwxcore.world.*;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.material.PistonBaseMaterial;
-import org.bukkit.material.PistonExtensionMaterial;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.util.Vector;
@@ -35,6 +25,8 @@ import java.util.*;
 
 public class MissileWars1_8 implements MissileWarsImplementation {
     // https://github.com/Bimmr/BimmCore
+
+    private static final StructureCore Structures = new StructureCore();
 
     @Override
     public MCVersion GetImplVersion() {
@@ -72,7 +64,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         p.getInventory().setChestplate(MakeArmour(Material.LEATHER_CHESTPLATE, c));
         p.getInventory().setLeggings(MakeArmour(Material.LEATHER_LEGGINGS, c));
         p.getInventory().setBoots(MakeArmour(Material.LEATHER_BOOTS, c));
-        p.getInventory().addItem(CreateItem(CoreGame.Instance.GetItemById(MissileWarsCoreItem.GUNBLADE.getValue()), isRedTeam));
+        p.getInventory().addItem(CreateItem(CoreGame.Instance.GetItemById(MissileWarsCoreItem.GUNBLADE.getValue())));
     }
 
     @Override
@@ -122,6 +114,10 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         world.setWaterAnimalSpawnLimit(0);
         world.setAnimalSpawnLimit(0);
         world.setDifficulty(Difficulty.EASY);
+        if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_14.getValue()){
+            world.setGameRuleValue("disableRaids", "true");
+        }
+        world.setGameRuleValue("announceAdvancements", "false");
     }
 
     @Override
@@ -161,21 +157,6 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     @Override
-    public ItemStack CreateItem(MissileWarsItem item, boolean isRedTeam) {
-        if(item.MissileWarsItemId.equals("Arrow")){
-            return item.BaseItemStack.clone();
-        }
-        ItemStack itemstack = item.BaseItemStack.clone();
-        ItemMeta meta = itemstack.getItemMeta();
-        meta.setDisplayName(Formatter.FCL("&6"+item.MissileWarsItemId+"&r"));
-        ArrayList<String> lst = new ArrayList<>();
-        if(meta.hasLore()) meta.getLore().stream().map(Formatter::FCL).forEach(lst::add);
-        lst.add(Formatter.FCL("&0msw-internal:") + item.MissileWarsItemId);
-        meta.setLore(lst);
-        itemstack.setItemMeta(meta);
-        return itemstack;
-    }
-    @Override
     public String GetItemId(ItemStack item) {
         if(item == null) return "";
         if(item.getType() == Material.ARROW) return MissileWarsCoreItem.ARROW.getValue();
@@ -190,283 +171,6 @@ public class MissileWars1_8 implements MissileWarsImplementation {
             }
         }
         return "";
-    }
-    @Override
-    public MissileSchematic GetSchematic(Vector pivot, Bounds boundingBox, World world) {
-        MissileSchematic schematic = new MissileSchematic();
-        schematic.Blocks = new ArrayList<>();
-        for(int i = boundingBox.getMinX(); i <= boundingBox.getMaxX(); i++){
-            for(int j = boundingBox.getMinY(); j <= boundingBox.getMaxY(); j++){
-                for(int k = boundingBox.getMinZ(); k <= boundingBox.getMaxZ(); k++) {
-                    Block block = world.getBlockAt(i, j, k);
-                    if (block.getType() == Material.AIR) continue;
-                    MissileBlock mBlock = new MissileBlock();
-                    mBlock.Location = new Vector(i,j,k).subtract(pivot);
-                    if (block.getType() == Material.PISTON_BASE) {
-                        mBlock.Material = MissileMaterial.PISTON;
-                        PistonBaseMaterial pbm = new PistonBaseMaterial(Material.PISTON_BASE, block.getData());
-                        mBlock.PistonData = new PistonData();
-                        mBlock.PistonData.IsHead = false;
-                        mBlock.PistonData.IsSticky = false;
-                        mBlock.PistonData.IsPowered = pbm.isPowered();
-                        mBlock.PistonData.Face = pbm.getFacing();
-                    } else if (block.getType() == Material.PISTON_STICKY_BASE) {
-                        mBlock.Material = MissileMaterial.PISTON;
-                        PistonBaseMaterial pbm = new PistonBaseMaterial(Material.PISTON_BASE, block.getData());
-                        mBlock.PistonData = new PistonData();
-                        mBlock.PistonData.IsHead = false;
-                        mBlock.PistonData.IsSticky = true;
-                        mBlock.PistonData.IsPowered = pbm.isPowered();
-                        mBlock.PistonData.Face = pbm.getFacing();
-                    } else if (block.getType() == Material.PISTON_EXTENSION) {
-                        PistonExtensionMaterial pem = new PistonExtensionMaterial(Material.PISTON_BASE, block.getData());
-                        mBlock.Material = MissileMaterial.PISTON;
-                        mBlock.PistonData = new PistonData();
-                        mBlock.PistonData.IsHead = true;
-                        mBlock.PistonData.IsSticky = pem.isSticky();
-                        mBlock.PistonData.Face = pem.getAttachedFace();
-                    } else if (block.getType() == Material.SLIME_BLOCK) {
-                        mBlock.Material = MissileMaterial.SLIME;
-                    } else if (block.getType() == Material.STAINED_GLASS) {
-                        mBlock.Material = MissileMaterial.GLASS;
-                    } else if (block.getType() == Material.GLASS) {
-                        mBlock.Material = MissileMaterial.GLASS;
-                    } else if (block.getType() == Material.TNT) {
-                        mBlock.Material = MissileMaterial.TNT;
-                    } else if (block.getType() == Material.REDSTONE_BLOCK) {
-                        mBlock.Material = MissileMaterial.REDSTONE;
-                    } else if (block.getType() == Material.STAINED_CLAY) {
-                        mBlock.Material = MissileMaterial.CLAY;
-                    } else {
-                        return null;
-                    }
-                    schematic.Blocks.add(mBlock);
-                }
-            }
-        }
-        if(schematic.Blocks.isEmpty()) return null;
-        return schematic;
-    }
-    @Override
-    public boolean PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
-        Bounds box = PreProcessMissilePlacement(missile, location, world, isRed, p);
-        if (box == null) return false;
-        if(update){
-            for(int i = box.getMinX(); i <= box.getMaxX(); i++){
-                for(int j = box.getMinY(); j <= box.getMaxY(); j++){
-                    for(int k = box.getMinZ(); k <= box.getMaxZ(); k++) {
-                        Block block = world.getBlockAt(i, j, k);
-                        Material originalType = block.getType();
-                        if(originalType == Material.SLIME_BLOCK || originalType == Material.REDSTONE_BLOCK){
-                            byte data = block.getData();
-                            block.setType(Material.STAINED_GLASS);
-                            block.setType(originalType);
-                            block.setData(data, true);
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    protected Bounds PreProcessMissilePlacement(Missile missile, Vector location, World world, boolean isRed, Player p) {
-        List<MissileBlock> blocks;
-        if(isRed){
-            blocks = missile.Schematic.Blocks;
-        }else{
-            blocks = missile.Schematic.CreateOppositeSchematic().Blocks;
-        }
-        Bounds box = new Bounds();
-        ArrayList<Vector> placedBlocks = new ArrayList<>();
-        for(MissileBlock block : blocks){
-            placedBlocks.add(location.clone().add(block.Location));
-        }
-        if(!CoreGame.Instance.mwMatch.CheckCanSpawn(isRed ? PlayerTeam.Red : PlayerTeam.Green, placedBlocks, world, false))
-            return null;
-        for(MissileBlock block : blocks){
-            PlaceBlock(block, location, world, isRed, p);
-            box.stretch(location.clone().add(block.Location));
-            if(block.Material == MissileMaterial.TNT){
-                placedBlocks.add(location.clone().add(block.Location));
-            }
-        }
-        return box;
-    }
-
-    @Override
-    public void PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p) {
-        Vector location = origin.clone().add(block.Location);
-        Block realBlock = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-        if(block.Material == MissileMaterial.PISTON){
-            if(block.PistonData.IsHead){
-                PistonExtensionMaterial pem = new PistonExtensionMaterial(Material.PISTON_EXTENSION);
-                pem.setFacingDirection(block.PistonData.Face);
-                pem.setSticky(block.PistonData.IsSticky);
-                realBlock.setType(Material.PISTON_EXTENSION, false);
-                realBlock.setData(pem.getData(), false);
-            }else{
-                if(block.PistonData.IsSticky){
-                    PistonBaseMaterial pbm = new PistonBaseMaterial(Material.PISTON_STICKY_BASE);
-                    pbm.setFacingDirection(block.PistonData.Face);
-                    pbm.setPowered(block.PistonData.IsPowered);
-                    realBlock.setType(Material.PISTON_STICKY_BASE, false);
-                    realBlock.setData(pbm.getData(), false);
-                }else{
-                    PistonBaseMaterial pbm = new PistonBaseMaterial(Material.PISTON_BASE);
-                    pbm.setFacingDirection(block.PistonData.Face);
-                    pbm.setPowered(block.PistonData.IsPowered);
-                    realBlock.setType(Material.PISTON_BASE, false);
-                    realBlock.setData(pbm.getData(), false);
-                }
-            }
-        }else if(block.Material == MissileMaterial.SLIME){
-            realBlock.setType(Material.SLIME_BLOCK, false);
-        }else if(block.Material == MissileMaterial.GLASS){
-            if(isRed){
-                realBlock.setType(Material.STAINED_GLASS, false);
-                realBlock.setData(DyeColor.RED.getData(), false);
-            }else{
-                realBlock.setType(Material.STAINED_GLASS, false);
-                realBlock.setData(DyeColor.GREEN.getData(), false);
-            }
-        }else if(block.Material == MissileMaterial.CLAY){
-            if(isRed){
-                realBlock.setType(Material.STAINED_CLAY, false);
-                realBlock.setData(DyeColor.RED.getData(), false);
-            }else{
-                realBlock.setType(Material.STAINED_CLAY, false);
-                realBlock.setData(DyeColor.GREEN.getData(), false);
-            }
-        }else if(block.Material == MissileMaterial.TNT){
-            realBlock.setType(Material.TNT, false);
-            CoreGame.Instance.mwMatch.Tracer.AddBlock(p.getUniqueId(), TraceType.TNT, location);
-        }else if(block.Material == MissileMaterial.REDSTONE){
-            realBlock.setType(Material.REDSTONE_BLOCK, false);
-            CoreGame.Instance.mwMatch.Tracer.AddBlock(p.getUniqueId(), TraceType.REDSTONE, location);
-        }
-    }
-
-    public Map<Vector, Integer> ShieldData(boolean isRed){
-        // 1 - pink glass, 2 - white glass, 3 - red glass, 4 - light gray glass, 5 - gray glass, 6 - black glass, 7 - black glass panes, 8 - lime glass, 9 - green glass
-        Map<Vector, Integer> shield = new HashMap<>();
-        if(isRed){
-            shield.put(new Vector(), 1);
-            shield.put(new Vector(1,0,0), 3);
-            shield.put(new Vector(0,1,0), 3);
-            shield.put(new Vector(-1,0,0), 3);
-            shield.put(new Vector(0,-1,0), 3);
-        }else{
-            shield.put(new Vector(), 8);
-            shield.put(new Vector(1,0,0), 9);
-            shield.put(new Vector(0,1,0), 9);
-            shield.put(new Vector(-1,0,0), 9);
-            shield.put(new Vector(0,-1,0), 9);
-        }
-        // light gray
-        shield.put(new Vector(-2, 0, 0), 4);
-        shield.put(new Vector(-3, 0, 0), 4);
-        shield.put(new Vector(2, 0, 0), 4);
-        shield.put(new Vector(3, 0, 0), 4);
-        shield.put(new Vector(0, -2, 0), 4);
-        shield.put(new Vector(0, -3, 0), 4);
-        shield.put(new Vector(0, 3, 0), 4);
-        shield.put(new Vector(0, 2, 0), 4);
-        // white
-        shield.put(new Vector(1, 1, 0), 2);
-        shield.put(new Vector(1, -1, 0), 2);
-        shield.put(new Vector(-1, -1, 0), 2);
-        shield.put(new Vector(-1, 1, 0), 2);
-        // gray
-        shield.put(new Vector(2, -1, 0), 5);
-        shield.put(new Vector(2, 1, 0), 5);
-        shield.put(new Vector(-2, -1, 0), 5);
-        shield.put(new Vector(-2, 1, 0), 5);
-        shield.put(new Vector(1, -2, 0), 5);
-        shield.put(new Vector(-1, -2, 0), 5);
-        shield.put(new Vector(1, 2, 0), 5);
-        shield.put(new Vector(-1, 2, 0), 5);
-        // black
-        shield.put(new Vector(1, -3, 0), 6);
-        shield.put(new Vector(-1, -3, 0), 6);
-        shield.put(new Vector(-1, 3, 0), 6);
-        shield.put(new Vector(1, 3, 0), 6);
-        shield.put(new Vector(-3, 1, 0), 6);
-        shield.put(new Vector(-3, -1, 0), 6);
-        shield.put(new Vector(3, 1, 0), 6);
-        shield.put(new Vector(3, -1, 0), 6);
-        shield.put(new Vector(2, 2, 0), 6);
-        shield.put(new Vector(2, -2, 0), 6);
-        shield.put(new Vector(-2, 2, 0), 6);
-        shield.put(new Vector(-2, -2, 0), 6);
-        // panes
-        shield.put(new Vector(3, 2, 0), 7);
-        shield.put(new Vector(3, -2, 0), 7);
-        shield.put(new Vector(-3, -2, 0), 7);
-        shield.put(new Vector(-3, 2, 0), 7);
-        shield.put(new Vector(2, 3, 0), 7);
-        shield.put(new Vector(-2, 3, 0), 7);
-        shield.put(new Vector(-2, -3, 0), 7);
-        shield.put(new Vector(2, -3, 0), 7);
-        return shield;
-    }
-
-    @Override
-    public boolean SpawnShield(Vector location, World world, boolean isRed) {
-        Map<Vector, Integer> shield = ShieldData(isRed);
-        ArrayList<Vector> realLocation = new ArrayList<>();
-        for(Vector key : shield.keySet()){
-            realLocation.add(location.clone().add(key));
-        }
-        if(!CoreGame.Instance.mwMatch.CheckCanSpawn(isRed ?
-                PlayerTeam.Red : PlayerTeam.Green, realLocation, world, true)) return false;
-        for(Map.Entry<Vector, Integer> e : shield.entrySet()){
-            Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();
-            if(e.getValue() == 1){
-                block.setType(Material.STAINED_GLASS, false);
-                block.setData(DyeColor.PINK.getData(), false);
-            }
-            if(e.getValue() == 2){
-                block.setType(Material.STAINED_GLASS, false);
-                block.setData(DyeColor.WHITE.getData(), false);
-            }
-            if(e.getValue() == 3){
-                block.setType(Material.STAINED_GLASS, false);
-                block.setData(DyeColor.RED.getData(), false);
-            }
-            if(e.getValue() == 4){
-                block.setType(Material.STAINED_GLASS, false);
-                block.setData(DyeColor.SILVER.getData(), false);
-            }
-            if(e.getValue() == 5){
-                block.setType(Material.STAINED_GLASS, false);
-                block.setData(DyeColor.GRAY.getData(), false);
-            }
-            if(e.getValue() == 6){
-                block.setType(Material.STAINED_GLASS, false);
-                block.setData(DyeColor.BLACK.getData(), false);
-            }
-            if(e.getValue() == 7){
-                block.setType(Material.STAINED_GLASS_PANE, false);
-                block.setData(DyeColor.BLACK.getData(), false);
-            }
-            if(e.getValue() == 8){
-                block.setType(Material.STAINED_GLASS, false);
-                block.setData(DyeColor.LIME.getData(), false);
-            }
-            if(e.getValue() == 9){
-                block.setType(Material.STAINED_GLASS, false);
-                block.setData(DyeColor.GREEN.getData(), false);
-            }
-        }
-        for(Map.Entry<Vector, Integer> e : shield.entrySet()){
-            Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();
-            byte data = block.getData();
-            Material mat = block.getType();
-            block.setType(mat, true);
-            block.setData(data, true);
-        }
-        return true;
     }
 
     @Override
@@ -490,113 +194,17 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     @Override
-    public boolean IsBlockOfTeam(PlayerTeam team, Block block) {
-        if (block.getType() == Material.STAINED_GLASS){
-            DyeColor color = DyeColor.getByData(block.getData());
-            if(team == PlayerTeam.Green){
-                return color == DyeColor.GREEN || color == DyeColor.LIME;
-            }else if(team == PlayerTeam.Red){
-                return color == DyeColor.RED || color == DyeColor.PINK;
-            }
-            else if(team == PlayerTeam.None){
-                return color == DyeColor.WHITE;
-            }
-        }
-        return false;
+    public ArrayList<MissileWarsItem> CreateDefaultItems() {
+        return MwConstants.CreateDefaultItems();
     }
 
     @Override
-    public ArrayList<MissileWarsItem> CreateDefaultItems() {
-        ArrayList<MissileWarsItem> items = new ArrayList<>();
-        items.add(CreateItem("Shieldbuster",
-                1, 1, CreateSpawnEgg(EntityType.WITCH, new String[]{
-                        "&7Spawns a Shieldbuster Missile",
-                        "&6Penetrates One Barrier",
-                        "&7Speed: &61.7 blocks/s",
-                        "&7TNT: &617"
-                })));
-        items.add(CreateItem("Guardian",
-                1, 1, CreateSpawnEgg(EntityType.GUARDIAN, new String[]{
-                        "&7Spawns a Guardian Missile",
-                        "&6Take it for a ride!",
-                        "&7Speed: &61.7 blocks/s",
-                        "&7TNT: &64"
-                })));
-        items.add(CreateItem("Lightning",
-                1, 1, CreateSpawnEgg(EntityType.OCELOT, new String[]{
-                        "&7Spawns a Lightning Missile",
-                        "&6&oOn your left!",
-                        "&7Speed: &63.3 blocks/s",
-                        "&7TNT: &612"
-                })));
-        items.add(CreateItem("Juggernaut",
-                1, 1, CreateSpawnEgg(EntityType.GHAST, new String[]{
-                        "&7Spawns a Juggernaut Missile",
-                        "&6Armed to the teeth",
-                        "&7Speed: &61.7 blocks/s",
-                        "&7TNT: &622"
-                })));
-        items.add(CreateItem("Tomahawk",
-                1, 1, CreateSpawnEgg(EntityType.CREEPER, new String[]{
-                        "&7Spawns a Tomahawk Missile",
-                        "&6The workhorse",
-                        "&7Speed: &61.7 blocks/s",
-                        "&7TNT: &615"
-                })));
-        items.add(CreateItem(MissileWarsCoreItem.FIREBALL.getValue(),
-                1, 1, CreateSpawnEgg(EntityType.BLAZE, new String[]{
-                        "&7Spawns a punchable fireball",
-                        "&6Use it to explode incoming missiles!"
-                })));
-        ItemStack gbis = new ItemStack(Material.BOW);
-        ItemMeta mt = gbis.getItemMeta();
-        mt.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
-        mt.addEnchant(Enchantment.ARROW_FIRE, 1, true);
-        mt.setLore(Collections.singletonList("&6Use it to attack others!"));
-        mt.spigot().setUnbreakable(true);
-        gbis.setItemMeta(mt);
-        MissileWarsItem gbim = CreateItem(MissileWarsCoreItem.GUNBLADE.getValue(),
-                1, 1, gbis);
-        gbim.IsExempt = true;
-        items.add(gbim);
-        MissileWarsItem sim = CreateItem(MissileWarsCoreItem.SHIELD.getValue(),
-                1, 1, CreateOtherItem(Material.SNOW_BALL, new String[]{
-                                "&7Throw it in the air to deploy a barrier",
-                                "&cIt is destroyed if it hits a block",
-                                "&6Deploys after 1.0s"
-                        }
-                ));
-        sim.IsShield = true;
-        items.add(sim);
-        items.add(CreateItem(MissileWarsCoreItem.ARROW.getValue(),
-                3, 3, CreateOtherItem(Material.ARROW, new String[0])));
-        return items;
+    public ItemStack CreateItem(MissileWarsItem item) {
+        return MwUtils.CreateItem(item);
     }
 
-    public MissileWarsItem CreateItem(String id, int ss, int mss, ItemStack stack){
-        MissileWarsItem i = new MissileWarsItem();
-        i.MissileWarsItemId = id;
-        i.MaxStackSize = mss;
-        i.StackSize = ss;
-        i.BaseItemStack = stack;
-        i.IsExempt = false;
-        i.IsShield = false;
-        return i;
-    }
-    public ItemStack CreateSpawnEgg(EntityType type, String[] lore){
-        ItemStack istack = new ItemStack(Material.MONSTER_EGG, 1, type.getTypeId());
-        ItemMeta meta = istack.getItemMeta();
-        meta.setLore(Arrays.asList(lore));
-        istack.setItemMeta(meta);
-        return istack;
-    }
-    public ItemStack CreateOtherItem(Material type, String[] lore){
-        ItemStack istack = new ItemStack(type);
-        if(lore.length != 0){
-            ItemMeta meta = istack.getItemMeta();
-            meta.setLore(Arrays.asList(lore));
-            istack.setItemMeta(meta);
-        }
-        return istack;
+    @Override
+    public StructureInterface GetStructureManager() {
+        return Structures;
     }
 }

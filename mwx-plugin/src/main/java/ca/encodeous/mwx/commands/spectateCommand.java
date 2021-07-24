@@ -12,10 +12,10 @@ public class spectateCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
             if(sender instanceof Player){
-                if(CoreGame.Instance.mwMatch.IsPlayerInTeam((Player) sender, PlayerTeam.Spectator)){
-                    CoreGame.Instance.mwMatch.AddPlayerToTeam((Player) sender, PlayerTeam.None);
+                if(CoreGame.GetMatch().IsPlayerInTeam((Player) sender, PlayerTeam.Spectator)){
+                    CoreGame.GetMatch().AddPlayerToTeam((Player) sender, PlayerTeam.None);
                 }else{
-                    CoreGame.Instance.mwMatch.AddPlayerToTeam((Player) sender, PlayerTeam.Spectator);
+                    CoreGame.GetMatch().AddPlayerToTeam((Player) sender, PlayerTeam.Spectator);
                 }
             }
             else{

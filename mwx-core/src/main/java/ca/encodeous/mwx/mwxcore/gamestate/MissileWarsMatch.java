@@ -63,7 +63,7 @@ public class MissileWarsMatch {
         Spectators = new HashSet<>();
         Teams = new HashMap<>();
         Tracer = new TraceEngine();
-        CoreGame.Instance.mwImpl.ConfigureScoreboards(this);
+        CoreGame.GetImpl().ConfigureScoreboards(this);
     }
 
     public void RedWin(ArrayList<Player> credits){
@@ -74,7 +74,7 @@ public class MissileWarsMatch {
         }
         Bukkit.broadcastMessage(Formatter.FCL("&6Congratulations &cRed &6team!"));
         for(Player p : Teams.keySet()){
-            CoreGame.Instance.mwImpl.SendTitle(p, "&6The &cred &6team has won!", "&6Congratulations!");
+            CoreGame.GetImpl().SendTitle(p, "&6The &cred &6team has won!", "&6Congratulations!");
         }
         EndGame();
     }
@@ -86,7 +86,7 @@ public class MissileWarsMatch {
         }
         Bukkit.broadcastMessage(Formatter.FCL("&6Congratulations &aGreen &6team!"));
         for(Player p : Teams.keySet()){
-            CoreGame.Instance.mwImpl.SendTitle(p, "&6The &agreen &6team has won!", "&6Congratulations!");
+            CoreGame.GetImpl().SendTitle(p, "&6The &agreen &6team has won!", "&6Congratulations!");
         }
         EndGame();
     }
@@ -126,7 +126,7 @@ public class MissileWarsMatch {
             Block block = world.getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
             Material mat = block.getType();
             if(mat == Material.OBSIDIAN || mat == Material.BEDROCK
-                    || mat == CoreGame.Instance.mwImpl.GetPortalMaterial()
+                    || mat == CoreGame.GetImpl().GetPortalMaterial()
                     || mat == Material.BARRIER) return false;
             if(vec.getBlockX() <= -72) return false;
             if(vec.getBlockY() <= 0) return false;
@@ -138,14 +138,14 @@ public class MissileWarsMatch {
                 crossMid = vec.getBlockZ() <= 0;
             }
 
-            boolean isSameTeamBlock = CoreGame.Instance.mwImpl.IsBlockOfTeam(team, block);
+            boolean isSameTeamBlock = CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(team, block);
             if(!isSameTeamBlock && crossMid){
                 threshold--;
             }
             if(isSameTeamBlock){
                 threshold++;
             }
-            if(CoreGame.Instance.mwImpl.IsBlockOfTeam(PlayerTeam.None, block) && !crossMid){
+            if(CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(PlayerTeam.None, block) && !crossMid){
                 threshold++;
             }
         }
@@ -203,10 +203,10 @@ public class MissileWarsMatch {
                         MissileWarsItem mwItem = CoreGame.Instance.mwConfig.Items.get(item);
                         if(mwItem.IsExempt) continue;
                         for(Player p : Green){
-                            GivePlayerItem(p, CoreGame.Instance.mwConfig.Items.get(item), false);
+                            GivePlayerItem(p, CoreGame.Instance.mwConfig.Items.get(item));
                         }
                         for(Player p : Red){
-                            GivePlayerItem(p, CoreGame.Instance.mwConfig.Items.get(item), true);
+                            GivePlayerItem(p, CoreGame.Instance.mwConfig.Items.get(item));
                         }
                         break;
                     }
@@ -224,17 +224,17 @@ public class MissileWarsMatch {
 
     public int CountItem(Player p, MissileWarsItem item){
         int curCnt = 0;
-        if(CoreGame.Instance.mwImpl.GetItemId(p.getItemOnCursor()).equals(item.MissileWarsItemId)){
+        if(CoreGame.GetImpl().GetItemId(p.getItemOnCursor()).equals(item.MissileWarsItemId)){
             curCnt += p.getItemOnCursor().getAmount();
         }
         for(ItemStack i : p.getOpenInventory().getBottomInventory()){
-            String id = CoreGame.Instance.mwImpl.GetItemId(i);
+            String id = CoreGame.GetImpl().GetItemId(i);
             if(id.equals(item.MissileWarsItemId)){
                 curCnt += i.getAmount();
             }
         }
         for(ItemStack i : p.getOpenInventory().getTopInventory()){
-            String id = CoreGame.Instance.mwImpl.GetItemId(i);
+            String id = CoreGame.GetImpl().GetItemId(i);
             if(id.equals(item.MissileWarsItemId)){
                 curCnt += i.getAmount();
             }
@@ -242,16 +242,16 @@ public class MissileWarsMatch {
         return curCnt;
     }
 
-    public void GivePlayerItem(Player p, MissileWarsItem item, boolean isRed){
+    public void GivePlayerItem(Player p, MissileWarsItem item){
         int curCnt = CountItem(p, item);
         if(item.MaxStackSize > curCnt){
-            ItemStack citem = CoreGame.Instance.mwImpl.CreateItem(item, isRed);
+            ItemStack citem = CoreGame.GetImpl().CreateItem(item);
             citem.setAmount(Math.min(item.StackSize, item.MaxStackSize - curCnt));
             if(!p.getInventory().addItem(citem).isEmpty()){
-                CoreGame.Instance.mwImpl.SendActionBar(p, "&cYour inventory does not have enough space to receive any items.");
+                CoreGame.GetImpl().SendActionBar(p, "&cYour inventory does not have enough space to receive any items.");
             }
         }else{
-            CoreGame.Instance.mwImpl.SendActionBar(p, "&6You already have a &f"+item.MissileWarsItemId + "&6.");
+            CoreGame.GetImpl().SendActionBar(p, "&6You already have a &f"+item.MissileWarsItemId + "&6.");
         }
     }
 
@@ -361,7 +361,7 @@ public class MissileWarsMatch {
         if(IsPlayerInTeam(p, team)) return;
         RemovePlayer(p);
         if(team == PlayerTeam.Green || team == PlayerTeam.Red){
-            CoreGame.Instance.mwImpl.EquipPlayer(p, team == PlayerTeam.Red);
+            CoreGame.GetImpl().EquipPlayer(p, team == PlayerTeam.Red);
             if(hasStarted) p.setGameMode(GameMode.SURVIVAL);
         }
         Teams.put(p, team);
@@ -445,7 +445,7 @@ public class MissileWarsMatch {
             if(IsPlayerInTeam(p, PlayerTeam.Red) || IsPlayerInTeam(p, PlayerTeam.Green)){
                 if(CoreGame.Instance.mwMissiles.containsKey(mwItemId) && !isInAir){
                     Missile ms = CoreGame.Instance.mwMissiles.get(mwItemId);
-                    boolean result = CoreGame.Instance.mwImpl.PlaceMissile(ms, target.getLocation().toVector(),
+                    boolean result = CoreGame.GetImpl().GetStructureManager().PlaceMissile(ms, target.getLocation().toVector(),
                             target.getWorld(), IsPlayerInTeam(p, PlayerTeam.Red), true, p);
                     if(result){
                         use.val = true;
@@ -466,7 +466,7 @@ public class MissileWarsMatch {
     private void DeployFireball(Block clickedBlock, Ref<Boolean> cancel, Ref<Boolean> use, Player p){
         if(clickedBlock == null) return;
         Vector loc = clickedBlock.getLocation().toVector().add(new Vector(0.5, 2, 0.5));
-        CoreGame.Instance.mwImpl.SummonFrozenFireball(loc, clickedBlock.getWorld(), p);
+        CoreGame.GetImpl().SummonFrozenFireball(loc, clickedBlock.getWorld(), p);
         cancel.val = true;
         use.val = true;
     }
@@ -477,7 +477,7 @@ public class MissileWarsMatch {
             Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, new Runnable() {
                 public void run() {
                     if(CoreGame.Instance.mwConfig.AllowShieldHit || AliveSnowballs.contains(shield.getUniqueId())){
-                        boolean result = CoreGame.Instance.mwImpl.SpawnShield(shield.getLocation().toVector(), shield.getWorld(), isRed);
+                        boolean result = CoreGame.GetImpl().GetStructureManager().SpawnShield(shield.getLocation().toVector(), shield.getWorld(), isRed);
                         if(!result){
                             MissileWarsMatch.SendCannotPlaceMessage(p);
                         }

@@ -30,13 +30,11 @@ public interface MissileWarsImplementation {
     public void FastCloneWorld(String targetName, String sourceName);
     public MissileWarsMap CreateManualJoinMap(String name);
     public MissileWarsMap CreateAutoJoinMap(String name);
-    public ItemStack CreateItem(MissileWarsItem item, boolean isRedTeam);
     public String GetItemId(ItemStack item);
-    public MissileSchematic GetSchematic(Vector pivot, Bounds boundingBox, World world);
-    public boolean PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p);
-    public void PlaceBlock(MissileBlock missile, Vector origin, World world, boolean isRed, Player p);
-    public boolean SpawnShield(Vector location, World world, boolean isRed);
     public void SummonFrozenFireball(Vector location, World world, Player p);
-    public boolean IsBlockOfTeam(PlayerTeam team, Block block);
     public ArrayList<MissileWarsItem> CreateDefaultItems();
+    public ItemStack CreateItem(MissileWarsItem item);
+
+    // Structures
+    public StructureInterface GetStructureManager();
 }

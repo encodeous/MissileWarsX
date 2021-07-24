@@ -12,11 +12,11 @@ public class mwendCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
-            if(CoreGame.Instance.mwMatch.hasStarted){
+            if(CoreGame.GetMatch().hasStarted){
                 for(Player p : Bukkit.getOnlinePlayers()){
-                    CoreGame.Instance.mwImpl.SendTitle(p, "&9The game has been ended.", "&9Stopped by an Admin.");
+                    CoreGame.GetImpl().SendTitle(p, "&9The game has been ended.", "&9Stopped by an Admin.");
                 }
-                CoreGame.Instance.mwMatch.EndGame();
+                CoreGame.GetMatch().EndGame();
             }else{
                 Bukkit.broadcastMessage(Formatter.FCL("&9Resetting game...!"));
                 CoreGame.Instance.EndMatch();

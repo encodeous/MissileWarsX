@@ -22,7 +22,7 @@ public class mwpasteCommand implements CommandExecutor {
                 Vector v = new Vector(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
                 if(CoreGame.Instance.mwMissiles.containsKey(args[3])){
                     Missile mws = CoreGame.Instance.mwMissiles.get(args[3]);
-                    boolean result = CoreGame.Instance.mwImpl.PlaceMissile(mws, v, p.getWorld(), args[4].equals("red"), false, p);
+                    boolean result = CoreGame.GetStructureManager().PlaceMissile(mws, v, p.getWorld(), args[4].equals("red"), false, p);
                     if(!result){
                         MissileWarsMatch.SendCannotPlaceMessage(p);
                     }

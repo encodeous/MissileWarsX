@@ -46,11 +46,23 @@ public class CoreGame {
         mwPlugin = plugin;
     }
 
+    public static MissileWarsImplementation GetImpl(){
+        return Instance.mwImpl;
+    }
+
+    public static MissileWarsMatch GetMatch(){
+        return Instance.mwMatch;
+    }
+
+    public static StructureInterface GetStructureManager(){
+        return Instance.mwImpl.GetStructureManager();
+    }
+
     public JavaPlugin mwPlugin;
 
     // Missile Wars
-    public MissileWarsImplementation mwImpl;
-    public MissileWarsMatch mwMatch = null;
+    private MissileWarsImplementation mwImpl;
+    private MissileWarsMatch mwMatch = null;
     public MissileWarsMatch newMatch = null;
     public HashMap<String, Missile> mwMissiles = null;
     public World mwAuto = null, mwManual = null;

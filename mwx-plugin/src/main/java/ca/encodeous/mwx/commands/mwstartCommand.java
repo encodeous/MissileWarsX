@@ -10,12 +10,12 @@ public class mwstartCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
-            if(CoreGame.Instance.mwMatch.isStarting){
+            if(CoreGame.GetMatch().isStarting){
                 sender.sendMessage("The game is already starting!");
-            }else if(!CoreGame.Instance.mwMatch.hasStarted){
-                CoreGame.Instance.mwMatch.isStarting = true;
-                CoreGame.Instance.mwMatch.CountdownGame();
-                CoreGame.Instance.mwMatch.mwCnt = 5;
+            }else if(!CoreGame.GetMatch().hasStarted){
+                CoreGame.GetMatch().isStarting = true;
+                CoreGame.GetMatch().CountdownGame();
+                CoreGame.GetMatch().mwCnt = 5;
             }else{
                 sender.sendMessage("Game already started!");
             }

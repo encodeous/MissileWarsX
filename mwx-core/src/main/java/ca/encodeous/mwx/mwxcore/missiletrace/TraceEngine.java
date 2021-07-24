@@ -9,13 +9,11 @@ import org.bukkit.entity.*;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import javax.sound.midi.Track;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class TraceEngine {
-    private HashMap<Vector, TrackedBlock> blocks = new HashMap<>();
-    private HashMap<UUID, TrackedEntity> entities = new HashMap<>();
+    private final HashMap<Vector, TrackedBlock> blocks = new HashMap<>();
+    private final HashMap<UUID, TrackedEntity> entities = new HashMap<>();
 
     public void AddBlock(UUID source, TraceType type, Vector loc){
         TrackedBlock block = blocks.getOrDefault(loc, new TrackedBlock());
@@ -34,8 +32,6 @@ public class TraceEngine {
 
     /**
      * Push the blocks in a direction and update the engine
-     * @param blocks
-     * @param face
      */
     public void TransformBlocks(List<Block> blocks, BlockFace face){
         ArrayList<Block> tracked = new ArrayList<>();
@@ -56,11 +52,10 @@ public class TraceEngine {
         }
     }
 
-    private TrackedBlock MergeBlockMeta(TrackedBlock a, TrackedBlock b){
-        if(a == null) return b;
+    private void MergeBlockMeta(TrackedBlock a, TrackedBlock b){
+        if(a == null) return;
         a.Sources.addAll(b.Sources);
         a.Type = b.Type;
-        return a;
     }
 
     private Vector PushBlockPos(Vector vec, BlockFace face){
@@ -80,7 +75,6 @@ public class TraceEngine {
 
     /**
      * Untrack an entity
-     * @param entity
      */
     public void RemoveEntity(UUID entity){
         entities.remove(entity);
@@ -88,8 +82,6 @@ public class TraceEngine {
 
     /**
      * Find the cause of the tnt explosion
-     * @param result
-     * @return
      */
     public HashSet<UUID> FindCause(TNTPrimed result){
         HashSet<UUID> causes = new HashSet<>();
@@ -111,8 +103,6 @@ public class TraceEngine {
 
     /**
      * Find the root cause of the explosion
-     * @param result
-     * @return
      */
     public UUID FindRootCause(TNTPrimed result){
         if(result.getSource() instanceof TNTPrimed){
@@ -129,8 +119,6 @@ public class TraceEngine {
     }
     /**
      * Resolve the (root) shooter of a projectile
-     * @param projectile
-     * @return
      */
     public static ProjectileSource ResolveShooter(Projectile projectile){
         if(projectile.getShooter() instanceof Projectile){
@@ -142,7 +130,6 @@ public class TraceEngine {
 
     /**
      * Untrack a block
-     * @param loc
      */
     public void RemoveBlock(Vector loc){
         blocks.remove(loc);
@@ -179,7 +166,7 @@ public class TraceEngine {
     private static void PropagatePortalBreakInternal(Block block, World world, HashSet<Block> visited, ArrayList<Block> remove){
         // Just a simple bfs :)
         visited.add(block);
-        if(block.getType() == CoreGame.Instance.mwImpl.GetPortalMaterial()){
+        if(block.getType() == CoreGame.GetImpl().GetPortalMaterial()){
             for(int i = 0; i < 6; i++){
                 Block newBlock = world.getBlockAt(block.getX() + offsetx[i], block.getY() + offsety[i], block.getZ() + offsetz[i]);
                 if(visited.contains(newBlock)) continue;
