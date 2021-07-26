@@ -7,9 +7,9 @@ spawn-limits:
   water-animals: 0
   ambient: 0
 ticks-per:
-  water-spawns: 9999999
-  water-ambient-spawns: 9999999
-  ambient-spawns: 9999999
-  animal-spawns: 9999999
-  monster-spawns: 9999999
-  autosave: 6000
+  water-spawns: 999999999
+  water-ambient-spawns: 999999999
+  ambient-spawns: 999999999
+  animal-spawns: 999999999
+  monster-spawns: 999999999
+  autosave: 999999999

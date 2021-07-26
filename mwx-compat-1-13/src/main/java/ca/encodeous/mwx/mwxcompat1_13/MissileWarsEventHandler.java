@@ -92,6 +92,13 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
                         }
                     }
                 }
+            } else if(event.getDamager() instanceof Player){
+                Player p2 = (Player) event.getDamager();
+                if(p2 != null){
+                    if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
+                        event.setCancelled(true);
+                    }
+                }
             }
         }
 
