@@ -8,6 +8,7 @@ import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
+import ca.encodeous.mwx.soundengine.SoundType;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -146,13 +147,21 @@ public class MissileWarsEventHandler implements Listener {
     @EventHandler
     public void PlayerDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
+        if(p.getKiller() != null){
+            if(CoreGame.GetMatch().Teams.get(p) != CoreGame.GetMatch().Teams.get(p.getKiller())){
+                CoreGame.GetImpl().PlaySound(p.getKiller(), SoundType.KILL_OTHER);
+            }else{
+                CoreGame.GetImpl().PlaySound(p.getKiller(), SoundType.KILL_TEAM);
+            }
+        }
         getServer().getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, () -> {
             try {
                 p.spigot().respawn();
+                CoreGame.GetImpl().PlaySound(p, SoundType.RESPAWN);
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
-        }, 3);
+        }, 2);
     }
     @EventHandler
     public void BlockPhysicsEvent(BlockPhysicsEvent e){

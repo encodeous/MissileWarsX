@@ -8,6 +8,8 @@ import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
+import ca.encodeous.mwx.soundengine.SoundType;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -34,7 +36,8 @@ public interface MissileWarsImplementation {
     public void SummonFrozenFireball(Vector location, World world, Player p);
     public ArrayList<MissileWarsItem> CreateDefaultItems();
     public ItemStack CreateItem(MissileWarsItem item);
-
+    public void PlaySound(Player p, SoundType type);
+    public void PlaySound(Location loc, SoundType type);
     // Structures
     public StructureInterface GetStructureManager();
 }

@@ -9,6 +9,7 @@ import ca.encodeous.mwx.mwxcore.StructureInterface;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
+import ca.encodeous.mwx.soundengine.SoundType;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -41,6 +42,90 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
     @Override
     public void SendTitle(Player p, String title, String subtitle) {
         p.sendTitle(Formatter.FCL(title), Formatter.FCL(subtitle), 10, 20 * 5, 10);
+    }
+
+    @Override
+    public void PlaySound(Player p, SoundType type) {
+        switch (type){
+            case WIN:
+                PlayPlayerSound(p, Sound.UI_TOAST_CHALLENGE_COMPLETE);
+                break;
+            case START:
+                PlayPlayerSound(p, Sound.BLOCK_BEACON_ACTIVATE);
+                break;
+            case SHIELD:
+                PlayPlayerSound(p, Sound.ITEM_SHIELD_BLOCK);
+                break;
+            case RESPAWN:
+                PlayPlayerSound(p, Sound.BLOCK_BEACON_ACTIVATE);
+                break;
+            case FIREBALL:
+                PlayPlayerSound(p, Sound.ITEM_FIRECHARGE_USE);
+                break;
+            case GAME_END:
+                PlayPlayerSound(p, Sound.BLOCK_END_PORTAL_SPAWN);
+                break;
+            case COUNTDOWN:
+                PlayPlayerSound(p, Sound.BLOCK_TRIPWIRE_CLICK_ON);
+                break;
+            case ITEM_GIVEN:
+                PlayPlayerSound(p, Sound.ENTITY_ITEM_PICKUP);
+                break;
+            case ITEM_NOT_GIVEN:
+                PlayPlayerSound(p, Sound.BLOCK_NOTE_BLOCK_BASS);
+                break;
+            case KILL_OTHER:
+                PlayPlayerSound(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                break;
+            case KILL_TEAM:
+                PlayPlayerSound(p, Sound.ENTITY_PLAYER_ATTACK_SWEEP);
+                break;
+            case TELEPORT:
+                PlayPlayerSound(p, Sound.ENTITY_ENDERMAN_TELEPORT);
+                break;
+        }
+    }
+
+    @Override
+    public void PlaySound(Location p, SoundType type) {
+        switch (type){
+            case WIN:
+                PlayWorldSound(p, Sound.UI_TOAST_CHALLENGE_COMPLETE);
+                break;
+            case START:
+                PlayWorldSound(p, Sound.BLOCK_BEACON_ACTIVATE);
+                break;
+            case SHIELD:
+                PlayWorldSound(p, Sound.ITEM_SHIELD_BLOCK);
+                break;
+            case RESPAWN:
+                PlayWorldSound(p, Sound.BLOCK_BEACON_ACTIVATE);
+                break;
+            case FIREBALL:
+                PlayWorldSound(p, Sound.ITEM_FIRECHARGE_USE);
+                break;
+            case GAME_END:
+                PlayWorldSound(p, Sound.BLOCK_END_PORTAL_SPAWN);
+                break;
+            case COUNTDOWN:
+                PlayWorldSound(p, Sound.BLOCK_TRIPWIRE_CLICK_ON);
+                break;
+            case ITEM_GIVEN:
+                PlayWorldSound(p, Sound.ENTITY_ITEM_PICKUP);
+                break;
+            case ITEM_NOT_GIVEN:
+                PlayWorldSound(p, Sound.BLOCK_NOTE_BLOCK_BASS);
+                break;
+            case KILL_OTHER:
+                PlayWorldSound(p, Sound.ENTITY_ARROW_HIT_PLAYER);
+                break;
+            case KILL_TEAM:
+                PlayWorldSound(p, Sound.ENTITY_PLAYER_ATTACK_SWEEP);
+                break;
+            case TELEPORT:
+                PlayWorldSound(p, Sound.ENTITY_ENDERMAN_TELEPORT);
+                break;
+        }
     }
 
     @Override

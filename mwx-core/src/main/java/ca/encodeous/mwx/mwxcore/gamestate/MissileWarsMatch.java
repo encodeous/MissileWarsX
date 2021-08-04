@@ -11,6 +11,7 @@ import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
+import ca.encodeous.mwx.soundengine.SoundType;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -73,6 +74,9 @@ public class MissileWarsMatch {
             Bukkit.broadcastMessage(Formatter.FCL("&fThe &aGreen &fteam's portal was blown up!"));
         }
         Bukkit.broadcastMessage(Formatter.FCL("&6Congratulations &cRed &6team!"));
+        for(Player p : Red){
+            CoreGame.GetImpl().PlaySound(p, SoundType.WIN);
+        }
         for(Player p : Teams.keySet()){
             CoreGame.GetImpl().SendTitle(p, "&6The &cred &6team has won!", "&6Congratulations!");
         }
@@ -85,6 +89,9 @@ public class MissileWarsMatch {
             Bukkit.broadcastMessage(Formatter.FCL("&fThe &cRed &fteam's portal was blown up!"));
         }
         Bukkit.broadcastMessage(Formatter.FCL("&6Congratulations &aGreen &6team!"));
+        for(Player p : Green){
+            CoreGame.GetImpl().PlaySound(p, SoundType.WIN);
+        }
         for(Player p : Teams.keySet()){
             CoreGame.GetImpl().SendTitle(p, "&6The &agreen &6team has won!", "&6Congratulations!");
         }
@@ -112,6 +119,7 @@ public class MissileWarsMatch {
             this.hasStarted = false;
             Bukkit.getScheduler().cancelTask(ItemTaskId);
             for(Player p : Teams.keySet()){
+                CoreGame.GetImpl().PlaySound(p, SoundType.GAME_END);
                 p.setGameMode(GameMode.SPECTATOR);
             }
             CoreGame.Instance.PrepareEndMatch();
@@ -248,9 +256,13 @@ public class MissileWarsMatch {
             ItemStack citem = CoreGame.GetImpl().CreateItem(item);
             citem.setAmount(Math.min(item.StackSize, item.MaxStackSize - curCnt));
             if(!p.getInventory().addItem(citem).isEmpty()){
+                CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_NOT_GIVEN);
                 CoreGame.GetImpl().SendActionBar(p, "&cYour inventory does not have enough space to receive any items.");
+            }else{
+                CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_GIVEN);
             }
         }else{
+            CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_NOT_GIVEN);
             CoreGame.GetImpl().SendActionBar(p, "&6You already have a &f"+item.MissileWarsItemId + "&6.");
         }
     }
@@ -282,6 +294,7 @@ public class MissileWarsMatch {
                     Bukkit.getScheduler().cancelTask(CountTaskId);
                 }
                 for(Player p : Teams.keySet()){
+                    CoreGame.GetImpl().PlaySound(p, SoundType.COUNTDOWN);
                     p.setLevel(mwCnt);
                     p.setExp(0);
                 }
@@ -363,6 +376,7 @@ public class MissileWarsMatch {
         if(team == PlayerTeam.Green || team == PlayerTeam.Red){
             CoreGame.GetImpl().EquipPlayer(p, team == PlayerTeam.Red);
             if(hasStarted) p.setGameMode(GameMode.SURVIVAL);
+            else p.setGameMode(GameMode.ADVENTURE);
         }
         Teams.put(p, team);
         SetPlayerDisplayName(team, p);
@@ -403,7 +417,10 @@ public class MissileWarsMatch {
 
     public void TeleportPlayer(Player p, PlayerTeam team){
         if((team == PlayerTeam.Green || team == PlayerTeam.Red) && hasStarted){
+            CoreGame.GetImpl().PlaySound(p, SoundType.START);
             p.sendMessage(Formatter.FCL("&cYou have entered the game, type &6/lobby &cto return to missile wars lobby."));
+        }else{
+            CoreGame.GetImpl().PlaySound(p, SoundType.TELEPORT);
         }
         Location loc = GetTeamSpawn(team);
         p.setBedSpawnLocation(loc, true);
@@ -465,6 +482,7 @@ public class MissileWarsMatch {
     public HashSet<UUID> AliveSnowballs = new HashSet<>();
     private void DeployFireball(Block clickedBlock, Ref<Boolean> cancel, Ref<Boolean> use, Player p){
         if(clickedBlock == null) return;
+        CoreGame.GetImpl().PlaySound(clickedBlock.getLocation().add(new Vector(0.5, 2, 0.5)), SoundType.FIREBALL);
         Vector loc = clickedBlock.getLocation().toVector().add(new Vector(0.5, 2, 0.5));
         CoreGame.GetImpl().SummonFrozenFireball(loc, clickedBlock.getWorld(), p);
         cancel.val = true;
@@ -479,7 +497,10 @@ public class MissileWarsMatch {
                     if(CoreGame.Instance.mwConfig.AllowShieldHit || AliveSnowballs.contains(shield.getUniqueId())){
                         boolean result = CoreGame.GetImpl().GetStructureManager().SpawnShield(shield.getLocation().toVector(), shield.getWorld(), isRed);
                         if(!result){
+                            CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_NOT_GIVEN);
                             MissileWarsMatch.SendCannotPlaceMessage(p);
+                        }else{
+                            CoreGame.GetImpl().PlaySound(shield.getLocation(), SoundType.SHIELD);
                         }
                         AliveSnowballs.remove(shield.getUniqueId());
                         shield.remove();

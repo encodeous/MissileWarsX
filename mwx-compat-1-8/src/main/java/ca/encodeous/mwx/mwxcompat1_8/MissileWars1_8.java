@@ -11,6 +11,7 @@ import ca.encodeous.mwx.mwxcore.utils.Formatter;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.mwxcore.utils.WorldCopy;
 import ca.encodeous.mwx.mwxcore.world.*;
+import ca.encodeous.mwx.soundengine.SoundType;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemFlag;
@@ -201,6 +202,98 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     @Override
     public ItemStack CreateItem(MissileWarsItem item) {
         return MwUtils.CreateItem(item);
+    }
+
+    @Override
+    public void PlaySound(Player p, SoundType type) {
+        switch (type){
+            case WIN:
+                PlayPlayerSound(p, Sound.LEVEL_UP);
+                break;
+            case START:
+                PlayPlayerSound(p, Sound.ORB_PICKUP);
+                break;
+            case SHIELD:
+                PlayPlayerSound(p, Sound.ITEM_BREAK);
+                break;
+            case RESPAWN:
+                PlayPlayerSound(p, Sound.CLICK);
+                break;
+            case FIREBALL:
+                PlayPlayerSound(p, Sound.GHAST_FIREBALL);
+                break;
+            case GAME_END:
+                PlayPlayerSound(p, Sound.WITHER_DEATH);
+                break;
+            case COUNTDOWN:
+                PlayPlayerSound(p, Sound.CLICK);
+                break;
+            case ITEM_GIVEN:
+                PlayPlayerSound(p, Sound.ITEM_PICKUP);
+                break;
+            case ITEM_NOT_GIVEN:
+                PlayPlayerSound(p, Sound.NOTE_PLING);
+                break;
+            case KILL_OTHER:
+                PlayPlayerSound(p, Sound.ARROW_HIT);
+                break;
+            case KILL_TEAM:
+                PlayPlayerSound(p, Sound.NOTE_STICKS);
+                break;
+            case TELEPORT:
+                PlayPlayerSound(p, Sound.ENDERMAN_TELEPORT);
+                break;
+        }
+    }
+
+    @Override
+    public void PlaySound(Location p, SoundType type) {
+        switch (type){
+            case WIN:
+                PlayWorldSound(p, Sound.LEVEL_UP);
+                break;
+            case START:
+                PlayWorldSound(p, Sound.ORB_PICKUP);
+                break;
+            case SHIELD:
+                PlayWorldSound(p, Sound.ITEM_BREAK);
+                break;
+            case RESPAWN:
+                PlayWorldSound(p, Sound.CLICK);
+                break;
+            case FIREBALL:
+                PlayWorldSound(p, Sound.GHAST_FIREBALL);
+                break;
+            case GAME_END:
+                PlayWorldSound(p, Sound.WITHER_DEATH);
+                break;
+            case COUNTDOWN:
+                PlayWorldSound(p, Sound.CLICK);
+                break;
+            case ITEM_GIVEN:
+                PlayWorldSound(p, Sound.ITEM_PICKUP);
+                break;
+            case ITEM_NOT_GIVEN:
+                PlayWorldSound(p, Sound.NOTE_PLING);
+                break;
+            case KILL_OTHER:
+                PlayWorldSound(p, Sound.ARROW_HIT);
+                break;
+            case KILL_TEAM:
+                PlayWorldSound(p, Sound.NOTE_STICKS);
+                break;
+            case TELEPORT:
+                PlayWorldSound(p, Sound.ENDERMAN_TELEPORT);
+                break;
+        }
+    }
+
+    public void PlayPlayerSound(Player p, Sound sound){
+        p.playSound(p.getLocation(), sound, 1, 1);
+    }
+
+    public void PlayWorldSound(Location loc, Sound sound){
+        loc.getWorld().playSound(loc, sound, 1, 0);
     }
 
     @Override
