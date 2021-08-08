@@ -24,8 +24,6 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-import static ca.encodeous.mwx.mwxcompat1_8.MwConstants.ShieldData;
-
 public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8 {
 
     private static final StructureCore Structures = new StructureCore();
@@ -140,6 +138,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
     @Override
     public void ConfigureScoreboards(MissileWarsMatch mtch) {
         mtch.mwScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        ResetScoreboard(mtch.mwScoreboard);
         mtch.mwGreen = GetTeam("green", mtch.mwScoreboard);
         mtch.mwGreen.setColor(ChatColor.GREEN);
         mtch.mwGreen.setAllowFriendlyFire(true);
@@ -165,6 +164,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
         mtch.mwLobby.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
         mtch.mwLobby.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
     }
+
 
     public Team GetTeam(String team, Scoreboard board){
         if(board.getTeam(team) == null) return board.registerNewTeam(team);

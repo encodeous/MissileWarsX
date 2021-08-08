@@ -19,6 +19,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.NameTagVisibility;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import java.io.File;
@@ -70,7 +73,8 @@ public class MissileWars1_8 implements MissileWarsImplementation {
 
     @Override
     public void ConfigureScoreboards(MissileWarsMatch mtch) {
-        mtch.mwScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        mtch.mwScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+        ResetScoreboard(mtch.mwScoreboard);
         mtch.mwGreen = mtch.mwScoreboard.registerNewTeam("green");
         mtch.mwGreen.setPrefix("§a");
         mtch.mwGreen.setNameTagVisibility(NameTagVisibility.ALWAYS);
@@ -89,6 +93,18 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         mtch.mwLobby.setPrefix("§7");
         mtch.mwLobby.setAllowFriendlyFire(false);
         mtch.mwLobby.setNameTagVisibility(NameTagVisibility.ALWAYS);
+    }
+
+    public void ResetScoreboard(Scoreboard scoreboard){
+        for(String x : scoreboard.getEntries()){
+            scoreboard.resetScores(x);
+        }
+        for(Objective x : scoreboard.getObjectives()){
+            x.unregister();
+        }
+        for(Team x : scoreboard.getTeams()){
+            x.unregister();
+        }
     }
 
     @Override
@@ -114,6 +130,9 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         world.setTicksPerMonsterSpawns(1000000000);
         world.setWaterAnimalSpawnLimit(0);
         world.setAnimalSpawnLimit(0);
+        world.setTime(6000);
+        world.setStorm(false);
+        world.setWeatherDuration(1000000000);
         world.setDifficulty(Difficulty.EASY);
         if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_14.getValue()){
             world.setGameRuleValue("disableRaids", "true");

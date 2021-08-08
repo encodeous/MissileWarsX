@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import tabtps.spigot.util.SpigotReflection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,7 +19,7 @@ public class pingCommand implements CommandExecutor {
         try{
             if(sender instanceof Player){
                 Player p = (Player) sender;
-                sender.sendMessage(Formatter.FCL("&6Your ping is &2"+p.getPing()+" &6ms."));
+                sender.sendMessage(Formatter.FCL("&6Your ping is &2"+ SpigotReflection.get().ping(p) +" &6ms."));
             }
             else{
                 sender.sendMessage("You are not a player...");

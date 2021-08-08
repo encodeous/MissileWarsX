@@ -21,6 +21,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.io.IOException;
@@ -182,6 +184,7 @@ public class CoreGame {
         for(Player p : mwMatch.Red) allPlayers.add(p);
         for(Player p : mwMatch.Green) allPlayers.add(p);
         for(Player p : mwMatch.Spectators) allPlayers.add(p);
+        newMatch.Initialize();
         for(Player p : allPlayers){
             newMatch.AddPlayerToTeam(p, PlayerTeam.None);
         }
@@ -205,7 +208,6 @@ public class CoreGame {
             match.Map = mwImpl.CreateAutoJoinMap("mwx_match_"+mwWorldCount);
         }
         mwWorldCount++;
-        match.Initialize();
         return match;
     }
 

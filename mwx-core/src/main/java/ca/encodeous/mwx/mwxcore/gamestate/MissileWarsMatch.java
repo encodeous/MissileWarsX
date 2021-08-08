@@ -21,6 +21,7 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
@@ -322,7 +323,7 @@ public class MissileWarsMatch {
             CountdownGame();
         }else{
             if(Red.size() + Green.size() == 1)
-                Bukkit.broadcastMessage(Formatter.FCL("&9The game needs at least 2 players to start. To forcefully start a game, run &6/start&9."));
+                Bukkit.broadcastMessage(Formatter.FCL("&9The game needs at least 1 player in each team to start. To forcefully start a game, run &6/start&9."));
             isStarting = false;
             for(Player p : Teams.keySet()){
                 p.setLevel(0);
@@ -396,6 +397,7 @@ public class MissileWarsMatch {
         }else{
             mwSpectate.addEntry(p.getName());
             Spectators.add(p);
+            TeamColorBroadcast(p, p.getName() + " is now spectating!");
             p.sendMessage(Formatter.FCL("&9You are now spectating. Type &6/lobby&9 to return to the lobby."));
             p.setGameMode(GameMode.SPECTATOR);
         }
@@ -432,7 +434,13 @@ public class MissileWarsMatch {
     }
 
     public void CleanPlayer(Player p){
+        for(PotionEffect effects : p.getActivePotionEffects()){
+            p.removePotionEffect(effects.getType());
+        }
+        p.setExp(0);
         p.setLevel(0);
+        p.setFireTicks(0);
+        p.setFoodLevel(20);
         p.getInventory().clear();
         p.setHealth(20);
     }
