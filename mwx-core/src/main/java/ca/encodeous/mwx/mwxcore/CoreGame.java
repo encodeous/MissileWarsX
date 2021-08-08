@@ -142,6 +142,7 @@ public class CoreGame {
         mwPlugin.getLogger().info("MissileWarsX fully loaded!");
 
         mwMatch = CreateMatch();
+        mwMatch.Initialize();
     }
 
     int endGameTask = -1;
