@@ -19,6 +19,12 @@
             </resource>
         </resources>
     </build>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -26,6 +32,11 @@
             <artifactId>spigot-api</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jpenilla</groupId>
+            <artifactId>jmplib</artifactId>
+            <version>78a60af1bc</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.TNTPrimed;
@@ -131,34 +132,51 @@ public class MissileWarsMatch {
     public boolean CheckCanSpawn(PlayerTeam team, ArrayList<Vector> blocks, World world, boolean isShield){
         // referenced from OpenMissileWars
         int threshold = 0;
+        Bounds bound = new Bounds();
         for(Vector vec : blocks){
-            Block block = world.getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
-            Material mat = block.getType();
-            if(mat == Material.OBSIDIAN || mat == Material.BEDROCK
-                    || mat == CoreGame.GetImpl().GetPortalMaterial()
-                    || mat == Material.BARRIER) return false;
-            if(vec.getBlockX() <= -72) return false;
-            if(vec.getBlockY() <= 0) return false;
-            if(isShield) continue;
-            boolean crossMid;
-            if (team == PlayerTeam.Red) {
-                crossMid = vec.getBlockZ() >= 0;
-            } else {
-                crossMid = vec.getBlockZ() <= 0;
-            }
+            bound.stretch(vec);
+        }
+        for(int i = bound.getMinX(); i <= bound.getMaxX(); i++){
+            for(int j = bound.getMinY(); j <= bound.getMaxY(); j++){
+                for(int k = bound.getMinZ(); k <= bound.getMaxZ(); k++){
+                    Vector vec = new Vector(i, j, k);
+                    Block block = world.getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+                    Material mat = block.getType();
+                    if(mat == Material.OBSIDIAN || mat == Material.BEDROCK
+                            || mat == CoreGame.GetImpl().GetPortalMaterial()
+                            || mat == Material.BARRIER) return false;
+                    if(IsInProtectedRegion(vec)) return false;
+                    if(isShield) continue;
+                    boolean crossMid;
+                    if (team == PlayerTeam.Red) {
+                        crossMid = vec.getBlockZ() >= 0;
+                    } else {
+                        crossMid = vec.getBlockZ() <= 0;
+                    }
 
-            boolean isSameTeamBlock = CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(team, block);
-            if(!isSameTeamBlock && crossMid){
-                threshold--;
-            }
-            if(isSameTeamBlock){
-                threshold++;
-            }
-            if(CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(PlayerTeam.None, block) && !crossMid){
-                threshold++;
+                    boolean isSameTeamBlock = CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(team, block);
+                    if(!isSameTeamBlock && crossMid){
+                        threshold--;
+                    }
+                    if(isSameTeamBlock){
+                        threshold++;
+                    }
+                    if(CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(PlayerTeam.None, block) && !crossMid){
+                        threshold++;
+                    }
+                }
             }
         }
         return threshold < 5;
+    }
+
+    public boolean IsInProtectedRegion(Vector vec){
+        if(vec.getBlockX() <= -72) return true;
+        if(vec.getBlockY() <= 0) return true;
+        if(vec.getBlockZ() >= 120) return true;
+        if(vec.getBlockZ() <= -120) return true;
+        if(vec.getBlockY() >= 150) return true;
+        return false;
     }
 
     public void GreenPad(Player p){
@@ -535,12 +553,26 @@ public class MissileWarsMatch {
                 CountTaskId = -1;
             }
             File worldFolder = Map.MswWorld.getWorldFolder();
+            for(Entity e : Map.MswWorld.getEntities()){
+                try{
+                    e.remove();
+                }catch (Exception ex){
+
+                }
+            }
+            for(Player p : Map.MswWorld.getPlayers()){
+                p.kickPlayer("Resetting Map");
+            }
             boolean firstTry = Bukkit.unloadWorld(Map.MswWorld.getName(), false);
+            boolean success = firstTry;
             if(!firstTry){
                 for(Player p : Map.MswWorld.getPlayers()){
                     p.kickPlayer("Resetting Map");
                 }
-                Bukkit.unloadWorld(Map.MswWorld.getName(), false);
+                success = Bukkit.unloadWorld(Map.MswWorld.getName(), false);
+            }
+            if(!success){
+                System.out.println("Unable to unload world " + Map.MswWorld.getName() + " deleting anyways...");
             }
             try {
                 FileUtils.deleteDirectory(worldFolder);

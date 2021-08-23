@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
@@ -82,12 +83,15 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
                 }
             } else if(event.getDamager() instanceof TNTPrimed){
                 TNTPrimed tnt = (TNTPrimed)event.getDamager();
-                if(CoreGame.GetMatch().Tracer.IsRedstoneActivated(tnt)) return;
-                UUID id = CoreGame.GetMatch().Tracer.FindRootCause(tnt);
-                if(id != null){
-                    Player p2 = Bukkit.getPlayer(id);
+                Optional<UUID> id = CoreGame.GetMatch().Tracer.GetSources(tnt).Sources.stream().findAny();
+                if(id.isPresent()){
+                    Player p2 = Bukkit.getPlayer(id.get());
                     if(p2 != null){
-                        if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
+                        if(CoreGame.GetMatch().Tracer.IsRedstoneActivated(tnt)){
+                            if(event.getFinalDamage() >= p.getHealth()){
+                                p.setKiller(p2);
+                            }
+                        }else if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
                             event.setCancelled(true);
                         }
                     }
@@ -103,8 +107,10 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
         }
 
     }
+
     @EventHandler
     public void ExplodeEvent(EntityExplodeEvent e){
+        e.blockList().removeIf(block -> CoreGame.GetMatch().IsInProtectedRegion(block.getLocation().toVector()));
         if(e.getEntity() instanceof Fireball){
             e.blockList().removeIf(block ->
                     block.getType() != Material.TNT

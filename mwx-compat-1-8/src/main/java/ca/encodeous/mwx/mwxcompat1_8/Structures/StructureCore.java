@@ -235,6 +235,15 @@ public class StructureCore implements StructureInterface {
             block.setType(mat, true);
             block.setData(data, true);
         }
+        for(Map.Entry<Vector, Integer> e : shield.entrySet()){
+            Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();
+            if(block.getType() == Material.STAINED_GLASS_PANE) continue;
+            byte data = block.getData();
+            Material mat = block.getType();
+            block.setType(Material.STONE, true);
+            block.setType(mat, true);
+            block.setData(data, true);
+        }
         return true;
     }
     @Override

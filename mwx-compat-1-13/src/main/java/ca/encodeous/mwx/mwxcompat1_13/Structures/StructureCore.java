@@ -144,7 +144,9 @@ public class StructureCore extends ca.encodeous.mwx.mwxcompat1_8.Structures.Stru
         }
         for(Map.Entry<Vector, Integer> e : shield.entrySet()){
             Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();
+            if(block.getType() == Material.BLACK_STAINED_GLASS_PANE) continue;
             Material mat = block.getType();
+            block.setType(Material.STONE, true);
             block.setType(mat, true);
         }
         return true;

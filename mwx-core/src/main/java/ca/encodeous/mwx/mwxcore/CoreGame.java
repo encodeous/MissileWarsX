@@ -6,9 +6,7 @@ import ca.encodeous.mwx.configuration.MissileWarsConfiguration;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
-import ca.encodeous.mwx.mwxcore.utils.Bounds;
-import ca.encodeous.mwx.mwxcore.utils.Formatter;
-import ca.encodeous.mwx.mwxcore.utils.ResourceLoader;
+import ca.encodeous.mwx.mwxcore.utils.*;
 import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
 import ca.encodeous.mwx.mwxcore.world.PistonData;
@@ -23,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +46,6 @@ public class CoreGame {
         mwImpl = implementation;
         mwPlugin = plugin;
     }
-
     public static MissileWarsImplementation GetImpl(){
         return Instance.mwImpl;
     }
@@ -69,6 +67,7 @@ public class CoreGame {
     public HashMap<String, Missile> mwMissiles = null;
     public World mwAuto = null, mwManual = null;
     public int mwWorldCount = 0;
+    public RealTPS TpsChecker = new RealTPS();
 
     // Configuration
     public MissileWarsConfiguration mwConfig;
@@ -143,6 +142,10 @@ public class CoreGame {
 
         mwMatch = CreateMatch();
         mwMatch.Initialize();
+
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        scheduler.runTaskTimerAsynchronously(mwPlugin, new TPSMon(), 0, 20);
+        scheduler.runTaskTimer(mwPlugin, TpsChecker, 0, 20);
     }
 
     int endGameTask = -1;

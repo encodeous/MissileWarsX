@@ -1,4 +1,4 @@
-package tabtps.spigot.util;
+package util;
 
 /*
  * This file is part of TabTPS, licensed under the MIT License.
@@ -29,8 +29,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import xyz.jpenilla.jmplib.Crafty;
 
 import static xyz.jpenilla.jmplib.Crafty.findField;
@@ -42,7 +40,7 @@ public final class SpigotReflection {
         static final SpigotReflection INSTANCE = new SpigotReflection();
     }
 
-    public static @NonNull SpigotReflection get() {
+    public static SpigotReflection get() {
         return Holder.INSTANCE;
     }
 
@@ -60,10 +58,10 @@ public final class SpigotReflection {
     private static final MethodHandle CraftPlayer_getHandle_method = needMethod(CraftPlayer_class, "getHandle", EntityPlayer_class);
     private static final MethodHandle MinecraftServer_getServer_method = needStaticMethod(MinecraftServer_class, "getServer", MinecraftServer_class);
 
-    private static final @Nullable Field EntityPlayer_ping_field = findField(EntityPlayer_class, "ping");
+    private static final Field EntityPlayer_ping_field = findField(EntityPlayer_class, "ping");
     private static final Field MinecraftServer_recentTps_field = needField(MinecraftServer_class, "recentTps"); // Spigot added field
 
-    public int ping(final @NonNull Player player) {
+    public int ping(final Player player) {
         if (EntityPlayer_ping_field == null) {
             throw new IllegalStateException("The ping Field is null!");
         }
@@ -75,7 +73,7 @@ public final class SpigotReflection {
         }
     }
 
-    public double @NonNull [] recentTps() {
+    public double [] recentTps() {
         final Object server = invokeOrThrow(MinecraftServer_getServer_method);
         try {
             return (double[]) MinecraftServer_recentTps_field.get(server);
@@ -84,7 +82,7 @@ public final class SpigotReflection {
         }
     }
 
-    private static @NonNull MethodHandle needMethod(final @NonNull Class<?> holderClass, final @NonNull String methodName, final @NonNull Class<?> returnClass, final @NonNull Class<?> @NonNull ... parameterClasses) {
+    private static MethodHandle needMethod(final Class<?> holderClass, final String methodName, final Class<?> returnClass, final Class<?> ... parameterClasses) {
         return Objects.requireNonNull(
                 Crafty.findMethod(holderClass, methodName, returnClass, parameterClasses),
                 String.format(
@@ -95,7 +93,7 @@ public final class SpigotReflection {
         );
     }
 
-    private static @NonNull MethodHandle needStaticMethod(final @NonNull Class<?> holderClass, final @NonNull String methodName, final @NonNull Class<?> returnClass, final @NonNull Class<?> @NonNull ... parameterClasses) {
+    private static MethodHandle needStaticMethod(final Class<?> holderClass, final String methodName, final Class<?> returnClass, final Class<?> ... parameterClasses) {
         return Objects.requireNonNull(
                 Crafty.findStaticMethod(holderClass, methodName, returnClass, parameterClasses),
                 String.format(
@@ -106,7 +104,7 @@ public final class SpigotReflection {
         );
     }
 
-    public static @NonNull Field needField(final @NonNull Class<?> holderClass, final @NonNull String fieldName) {
+    public static Field needField(final Class<?> holderClass, final String fieldName) {
         final Field field;
         try {
             field = holderClass.getDeclaredField(fieldName);
@@ -117,7 +115,7 @@ public final class SpigotReflection {
         }
     }
 
-    private static @Nullable Object invokeOrThrow(final @NonNull MethodHandle methodHandle, final @Nullable Object @NonNull ... params) {
+    private static Object invokeOrThrow(final MethodHandle methodHandle, final Object ... params) {
         try {
             if (params.length == 0) {
                 return methodHandle.invoke();

@@ -67,7 +67,12 @@ public class MissileWarsEventHandler implements Listener {
         event.setQuitMessage(Formatter.FCL(event.getPlayer().getDisplayName() + " has left the game."));
         mwEvents.PlayerLeaveEvent(event.getPlayer());
         if(Bukkit.getOnlinePlayers().size() == 1 && CoreGame.GetMatch().hasStarted || CoreGame.GetMatch().isStarting){
-            CoreGame.Instance.EndMatch();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, new Runnable() {
+                @Override
+                public void run() {
+                    CoreGame.Instance.EndMatch();
+                }
+            }, 10);
         }
     }
     @EventHandler
@@ -86,6 +91,7 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void ExplodeEvent(EntityExplodeEvent e){
+        e.blockList().removeIf(block -> CoreGame.GetMatch().IsInProtectedRegion(block.getLocation().toVector()));
         if(e.getEntity() instanceof Fireball){
             e.blockList().removeIf(block ->
                     block.getType() != Material.TNT

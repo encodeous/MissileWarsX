@@ -1,33 +1,27 @@
 package ca.encodeous.mwx.commands;
 
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
+import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.utils.Formatter;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import tabtps.spigot.util.SpigotReflection;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import util.SpigotReflection;
 
 public class pingCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        try{
-            if(sender instanceof Player){
-                Player p = (Player) sender;
+        if(sender instanceof Player){
+            Player p = (Player) sender;
+            if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_17.getValue()){
+                sender.sendMessage(Formatter.FCL("&6Your ping is &2"+ p.getPing() +" &6ms."));
+            }else{
                 sender.sendMessage(Formatter.FCL("&6Your ping is &2"+ SpigotReflection.get().ping(p) +" &6ms."));
             }
-            else{
-                sender.sendMessage("You are not a player...");
-            }
-            return true;
-        }catch (Exception e){
-
         }
-        return false;
+        else{
+            sender.sendMessage("You are not a player...");
+        }
+        return true;
     }
 }

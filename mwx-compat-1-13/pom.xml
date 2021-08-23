@@ -14,17 +14,8 @@
             <id>papermc</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
     </repositories>
     <dependencies>
-        <dependency>
-            <groupId>com.github.encodeous</groupId>
-            <artifactId>SimpleNMS</artifactId>
-            <version>f96af9aca1</version>
-        </dependency>
         <dependency>
             <groupId>ca.encodeous.mwx</groupId>
             <artifactId>mwx-core</artifactId>

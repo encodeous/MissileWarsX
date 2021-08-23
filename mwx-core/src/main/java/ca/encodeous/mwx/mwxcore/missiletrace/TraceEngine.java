@@ -104,19 +104,19 @@ public class TraceEngine {
     /**
      * Find the root cause of the explosion
      */
-    public UUID FindRootCause(TNTPrimed result){
-        if(result.getSource() instanceof TNTPrimed){
-            return FindRootCause((TNTPrimed) result.getSource());
-        }else if(result.getSource() instanceof Projectile){
-            ProjectileSource shooter = ResolveShooter((Projectile)result.getSource());
-            if(shooter instanceof Player){
-                return ((Player) shooter).getUniqueId();
-            }
-        }else if(result.getSource() instanceof Player){
-            return result.getSource().getUniqueId();
-        }
-        return null;
-    }
+//    public UUID FindRootCause(TNTPrimed result){
+//        if(result.getSource() instanceof TNTPrimed){
+//            return FindRootCause((TNTPrimed) result.getSource());
+//        }else if(result.getSource() instanceof Projectile){
+//            ProjectileSource shooter = ResolveShooter((Projectile)result.getSource());
+//            if(shooter instanceof Player){
+//                return ((Player) shooter).getUniqueId();
+//            }
+//        }else if(result.getSource() instanceof Player){
+//            return result.getSource().getUniqueId();
+//        }
+//        return null;
+//    }
     /**
      * Resolve the (root) shooter of a projectile
      */
