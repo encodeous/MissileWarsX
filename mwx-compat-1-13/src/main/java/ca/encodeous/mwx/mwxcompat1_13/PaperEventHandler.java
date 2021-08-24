@@ -1,10 +1,5 @@
 package ca.encodeous.mwx.mwxcompat1_13;
 
-import ca.encodeous.mwx.mwxcompat1_13.nms.NMSCraftPlayer;
-import ca.encodeous.mwx.mwxcompat1_13.nms.NMSCraftTNTPrimed;
-import ca.encodeous.mwx.mwxcompat1_13.nms.NMSEntityLiving;
-import ca.encodeous.mwx.mwxcompat1_13.nms.NMSEntityTNTPrimed;
-import ca.encodeous.mwx.mwxcompat1_13.nms.nms_1_17.*;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
@@ -31,8 +26,6 @@ import java.util.Random;
 import java.util.UUID;
 
 public class PaperEventHandler implements Listener {
-    private Random rand = new Random();
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityAddToWorldEvent(EntityAddToWorldEvent event){
         if(!(event.getEntity() instanceof TNTPrimed)) return;
@@ -61,7 +54,6 @@ public class PaperEventHandler implements Listener {
                 boolean isRedstoneActivated = false;
                 if(tnt.getSource() instanceof TNTPrimed){
                     sources.addAll(CoreGame.GetMatch().Tracer.FindCause((TNTPrimed)tnt.getSource()));
-//                    latestSource = CoreGame.GetMatch().Tracer.FindRootCause((TNTPrimed)tnt.getSource());
                     isRedstoneActivated = CoreGame.GetMatch().Tracer.IsRedstoneActivated((TNTPrimed)tnt.getSource());
                 }
                 InterceptTntIgnition(sources, b, tnt, isRedstoneActivated);
@@ -77,20 +69,6 @@ public class PaperEventHandler implements Listener {
         if(trace == null) return;
         sources.addAll(trace.Sources);
         CoreGame.GetMatch().Tracer.RemoveBlock(trace.Position);
-//        if(latestSource != null) SetTntSource(tnt, Bukkit.getPlayer(latestSource));
         CoreGame.GetMatch().Tracer.AddEntity(tnt, sources, redstoneActivated);
-    }
-
-    public void SetTntSource(TNTPrimed tnt, Player p) {
-        if(p == null) return;
-        if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_17.getValue()){
-            NMSCraftTNTPrimed_1_17 craftTnt = NMSCore.getNMSObject(NMSCraftTNTPrimed_1_17.class, tnt);
-            craftTnt.setSource(p);
-        }
-        else{
-            NMSEntityLiving player = NMSCore.getNMSObject(NMSEntityLiving.class, ((NMSCore.getNMSObject(NMSCraftPlayer.class, p)).getHandle()).getProxyHandle());
-            NMSEntityTNTPrimed tntPrimed = NMSCore.getNMSObject(NMSEntityTNTPrimed.class, NMSCore.getNMSObject(NMSCraftTNTPrimed.class,tnt).getHandle().getProxyHandle());
-            tntPrimed.source(player);
-        }
     }
 }
