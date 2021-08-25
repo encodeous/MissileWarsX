@@ -48,6 +48,7 @@ public class MissileWarsMatch {
     public HashMap<Player, PlayerTeam> Teams;
     public boolean isStarting;
     public boolean hasStarted;
+    public boolean isEnding;
     public boolean isActivated;
     public int mwCnt;
     public int CountTaskId = -1;
@@ -119,6 +120,7 @@ public class MissileWarsMatch {
     public void EndGame(){
         if(hasStarted){
             this.hasStarted = false;
+            this.isEnding = true;
             Bukkit.getScheduler().cancelTask(ItemTaskId);
             for(Player p : Teams.keySet()){
                 CoreGame.GetImpl().PlaySound(p, SoundType.GAME_END);

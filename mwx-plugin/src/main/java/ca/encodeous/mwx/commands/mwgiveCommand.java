@@ -34,20 +34,35 @@ public class mwgiveCommand implements CommandExecutor {
                 successMsg = true;
                 aidx = 1;
             }
-            MissileWarsItem item = CoreGame.Instance.GetItemById(args[aidx]);
-            if(item == null){
-                sender.sendMessage("Item id not found! See items by running /mwitems");
-                return true;
-            }
-            if(CoreGame.GetMatch().IsPlayerInTeam(p, PlayerTeam.Red) || CoreGame.GetMatch().IsPlayerInTeam(p, PlayerTeam.Green)){
-                ItemStack ritem = CoreGame.GetImpl().CreateItem(item);
-                p.getInventory().addItem(ritem);
-                p.sendMessage(Formatter.FCL("&6You have been given &c" + item.MissileWarsItemId + "&6!"));
-                if(successMsg){
-                    sender.sendMessage("Success!");
+            if(args[aidx].equals("*")){
+                if(CoreGame.GetMatch().IsPlayerInTeam(p, PlayerTeam.Red) || CoreGame.GetMatch().IsPlayerInTeam(p, PlayerTeam.Green)){
+                    for(MissileWarsItem item : CoreGame.GetImpl().CreateDefaultItems()){
+                        ItemStack ritem = CoreGame.GetImpl().CreateItem(item);
+                        p.getInventory().addItem(ritem);
+                    }
+                    p.sendMessage(Formatter.FCL("&6You have been given all the items"));
+                    if(successMsg){
+                        sender.sendMessage("Success!");
+                    }
+                }else{
+                    sender.sendMessage("Player must be on a team!");
                 }
             }else{
-                sender.sendMessage("Player must be on a team!");
+                MissileWarsItem item = CoreGame.Instance.GetItemById(args[aidx]);
+                if(item == null){
+                    sender.sendMessage("Item id not found! See items by running /mwitems");
+                    return true;
+                }
+                if(CoreGame.GetMatch().IsPlayerInTeam(p, PlayerTeam.Red) || CoreGame.GetMatch().IsPlayerInTeam(p, PlayerTeam.Green)){
+                    ItemStack ritem = CoreGame.GetImpl().CreateItem(item);
+                    p.getInventory().addItem(ritem);
+                    p.sendMessage(Formatter.FCL("&6You have been given &c" + item.MissileWarsItemId + "&6!"));
+                    if(successMsg){
+                        sender.sendMessage("Success!");
+                    }
+                }else{
+                    sender.sendMessage("Player must be on a team!");
+                }
             }
             return true;
         }catch (Exception e){

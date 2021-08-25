@@ -67,7 +67,6 @@ public class CoreGame {
     public HashMap<String, Missile> mwMissiles = null;
     public World mwAuto = null, mwManual = null;
     public int mwWorldCount = 0;
-    public RealTPS TpsChecker = new RealTPS();
 
     // Configuration
     public MissileWarsConfiguration mwConfig;
@@ -144,8 +143,8 @@ public class CoreGame {
         mwMatch.Initialize();
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.runTaskTimerAsynchronously(mwPlugin, new TPSMon(), 0, 20);
-        scheduler.runTaskTimer(mwPlugin, TpsChecker, 0, 20);
+        scheduler.runTaskTimerAsynchronously(mwPlugin, TPSMon.Instance, 0, 20);
+        scheduler.runTaskTimer(mwPlugin, RealTPS.Instance, 0, 20);
     }
 
     int endGameTask = -1;

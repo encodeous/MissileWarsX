@@ -15,4 +15,13 @@ public enum MCVersion{
         String[] s = Bukkit.getBukkitVersion().split("\\.");
         return MCVersion.valueOf("v"+s[0]+"_"+s[1]);
     }
+    public static boolean IsPaper(){
+        boolean isPaper = false;
+        try {
+            Class.forName("com.destroystokyo.paper.ParticleBuilder");
+            isPaper = true;
+        } catch (ClassNotFoundException ignored) {
+        }
+        return isPaper;
+    }
 }

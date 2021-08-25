@@ -29,7 +29,7 @@ commands:
     permission: mwx.admin
     aliases:
       - mwi
-    usage: /<command> [player-name] <missile-wars-item-id>
+    usage: /<command> [player-name] <missile-wars-item-id/*>
   start:
     description: Forcefully starts the game
     usage: /<command>

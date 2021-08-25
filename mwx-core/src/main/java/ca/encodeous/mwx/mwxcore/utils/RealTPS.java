@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 
 public class RealTPS implements Runnable{
+    public static RealTPS Instance = new RealTPS();
     public double getTps(){
         synchronized (tickDurations){
             double avgDurationNano = 0;

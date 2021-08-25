@@ -10,8 +10,8 @@ public class mwstartCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
-            if(CoreGame.GetMatch().isStarting){
-                sender.sendMessage("The game is already starting!");
+            if(CoreGame.GetMatch().isStarting || CoreGame.GetMatch().isEnding){
+                sender.sendMessage("The game cannot be started at this time!");
             }else if(!CoreGame.GetMatch().hasStarted){
                 CoreGame.GetMatch().isStarting = true;
                 CoreGame.GetMatch().CountdownGame();

@@ -4,9 +4,12 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
+import ca.encodeous.mwx.mwxcore.utils.Formatter;
+import ca.encodeous.mwx.mwxcore.utils.TPSMon;
 import ca.encodeous.simplenms.proxy.NMSCore;
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
+import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -61,6 +64,15 @@ public class PaperEventHandler implements Listener {
                 sources.add(tnt.getSource().getUniqueId());
                 InterceptTntIgnition(sources, b, tnt, false);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void TickStartEvent(ServerTickStartEvent tick){
+        if(TPSMon.Instance.signalPaperCritical){
+            TPSMon.Instance.signalPaperCritical = false;
+            CoreGame.Instance.EndMatch();
+            Bukkit.broadcastMessage(Formatter.FCL("&cAttention, the server is experiencing critically low tps. The current game will be reset immediately."));
         }
     }
 
