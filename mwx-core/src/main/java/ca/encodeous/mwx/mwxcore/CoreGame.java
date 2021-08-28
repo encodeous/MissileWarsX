@@ -189,7 +189,11 @@ public class CoreGame {
         for(Player p : mwMatch.Spectators) allPlayers.add(p);
         newMatch.Initialize();
         for(Player p : allPlayers){
-            newMatch.AddPlayerToTeam(p, PlayerTeam.None);
+            try{
+                newMatch.AddPlayerToTeam(p, PlayerTeam.None);
+            }catch(Exception e){
+                // ignored
+            }
         }
         mwMatch.Dispose();
         mwMatch = newMatch;
