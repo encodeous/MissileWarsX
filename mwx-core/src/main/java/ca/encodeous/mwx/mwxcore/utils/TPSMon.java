@@ -2,12 +2,13 @@ package ca.encodeous.mwx.mwxcore.utils;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
+import lobbyengine.Lobby;
+import lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 
 public class TPSMon implements Runnable {
     private boolean isInWarningZone;
     private boolean isInCriticalZone;
-    public boolean signalPaperCritical;
     private long lastCritical;
     public static TPSMon Instance = new TPSMon();
     @Override
@@ -28,18 +29,14 @@ public class TPSMon implements Runnable {
                 lastCritical = System.currentTimeMillis();
                 isInWarningZone = true;
                 isInCriticalZone = true;
-                if(MCVersion.IsPaper() && MCVersion.QueryVersion().getValue() >= MCVersion.v1_13.getValue()){
-                    // use faster execution
-                    signalPaperCritical = true;
-                }else{
-                    Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            CoreGame.Instance.EndMatch();
-                            Bukkit.broadcastMessage(Formatter.FCL("&cAttention, the server is experiencing critically low tps. The current game will be reset immediately."));
-                        }
+                for(Lobby lobby : LobbyEngine.Lobbies.values()){
+                    lobby.SendMessage("&cPlease wait while the server wipes your lobby...");
+                    lobby.Match.CleanMap(()->{
+                        lobby.SendMessage("&cYour lobby has been cleaned");
                     });
                 }
+                Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, () ->
+                        Bukkit.broadcastMessage(Chat.FCL("&cAttention, the server is experiencing critically low tps. All lobbies will be cleaned.")));
             }
         }
         if(tps <= CoreGame.Instance.mwConfig.TpsWarningThreshold){
@@ -48,7 +45,7 @@ public class TPSMon implements Runnable {
                 Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, new Runnable() {
                     @Override
                     public void run() {
-                        Bukkit.broadcastMessage(Formatter.FCL("&cCaution, the server is currently lagging. Gameplay may be affected."));
+                        Bukkit.broadcastMessage(Chat.FCL("&cCaution, the server is currently lagging. Gameplay may be affected."));
                     }
                 });
             }

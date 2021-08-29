@@ -3,10 +3,7 @@ package ca.encodeous.mwx.commands;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.utils.Bounds;
-import ca.encodeous.mwx.mwxcore.utils.Formatter;
-import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
-import ca.encodeous.mwx.mwxplugin.MissileWarsX;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -27,7 +24,7 @@ public class mwpasteCommand implements CommandExecutor {
                         MissileWarsMatch.SendCannotPlaceMessage(p);
                     }
                 }else{
-                    p.sendMessage(Formatter.FCL("&cMissile Not Found!"));
+                    p.sendMessage(Chat.FCL("&cMissile Not Found!"));
                 }
                 return true;
             }

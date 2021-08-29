@@ -1,7 +1,7 @@
 package ca.encodeous.mwx.commands;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.utils.Formatter;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +16,7 @@ public class mwmissilesCommand implements CommandExecutor {
             List<String> results = CoreGame.Instance.mwMissiles.values().stream().map(x->{
                 return "&cId: "+x.MissileItemId;
             }).collect(Collectors.toList());
-            String result = Formatter.FCL(String.join("\n", results));
+            String result = Chat.FCL(String.join("\n", results));
             sender.sendMessage(result);
             return true;
         }catch (Exception e){

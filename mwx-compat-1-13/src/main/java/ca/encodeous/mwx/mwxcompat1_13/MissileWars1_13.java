@@ -7,7 +7,7 @@ import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.StructureInterface;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.utils.Formatter;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.soundengine.SoundType;
 import net.md_5.bungee.api.ChatMessageType;
@@ -39,7 +39,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
 
     @Override
     public void SendTitle(Player p, String title, String subtitle) {
-        p.sendTitle(Formatter.FCL(title), Formatter.FCL(subtitle), 10, 20 * 5, 10);
+        p.sendTitle(Chat.FCL(title), Chat.FCL(subtitle), 10, 20 * 5, 10);
     }
 
     @Override
@@ -128,11 +128,11 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
 
     @Override
     public void SendActionBar(Player p, String message) {
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Formatter.FCL(message)));
+        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(Chat.FCL(message)));
     }
     @Override
-    public void RegisterEvents(MissileWarsEvents events, JavaPlugin plugin) {
-        Bukkit.getServer().getPluginManager().registerEvents(new ca.encodeous.mwx.mwxcompat1_13.MissileWarsEventHandler(events), plugin);
+    public void RegisterEvents(JavaPlugin plugin) {
+        Bukkit.getServer().getPluginManager().registerEvents(new ca.encodeous.mwx.mwxcompat1_13.MissileWarsEventHandler(), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new ca.encodeous.mwx.mwxcompat1_13.PaperEventHandler(), plugin);
     }
     @Override

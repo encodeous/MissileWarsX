@@ -28,8 +28,9 @@ public interface MissileWarsImplementation {
     public void SendActionBar(Player p, String message);
     public void EquipPlayer(Player p, boolean isRedTeam);
     public void ConfigureScoreboards(MissileWarsMatch match);
-    public void RegisterEvents(MissileWarsEvents events, JavaPlugin plugin);
+    public void RegisterEvents(JavaPlugin plugin);
     public void FastCloneWorld(String targetName, String sourceName);
+    public void ConfigureWorld(World world);
     public MissileWarsMap CreateManualJoinMap(String name);
     public MissileWarsMap CreateAutoJoinMap(String name);
     public String GetItemId(ItemStack item);

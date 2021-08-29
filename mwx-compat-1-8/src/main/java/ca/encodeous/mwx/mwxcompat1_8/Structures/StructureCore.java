@@ -4,14 +4,17 @@ import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.mwxcompat1_8.MwConstants;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.StructureInterface;
+import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
+import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileMaterial;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
 import ca.encodeous.mwx.mwxcore.world.PistonData;
+import lobbyengine.LobbyEngine;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -117,7 +120,7 @@ public class StructureCore implements StructureInterface {
         for(MissileBlock block : blocks){
             placedBlocks.add(location.clone().add(block.Location));
         }
-        if(!CoreGame.GetMatch().CheckCanSpawn(isRed ? PlayerTeam.Red : PlayerTeam.Green, placedBlocks, world, false))
+        if(!StructureUtils.CheckCanSpawn(isRed ? PlayerTeam.Red : PlayerTeam.Green, placedBlocks, world, false))
             return null;
         for(MissileBlock block : blocks){
             PlaceBlock(block, location, world, isRed, p);
@@ -174,10 +177,16 @@ public class StructureCore implements StructureInterface {
             }
         }else if(block.Material == MissileMaterial.TNT){
             realBlock.setType(Material.TNT, false);
-            CoreGame.GetMatch().Tracer.AddBlock(p.getUniqueId(), TraceType.TNT, location);
+            MissileWarsMatch match = LobbyEngine.FromWorld(world);
+            if(match != null){
+                match.Tracer.AddBlock(p.getUniqueId(), TraceType.TNT, location);
+            }
         }else if(block.Material == MissileMaterial.REDSTONE){
             realBlock.setType(Material.REDSTONE_BLOCK, false);
-            CoreGame.GetMatch().Tracer.AddBlock(p.getUniqueId(), TraceType.REDSTONE, location);
+            MissileWarsMatch match = LobbyEngine.FromWorld(world);
+            if(match != null){
+                match.Tracer.AddBlock(p.getUniqueId(), TraceType.REDSTONE, location);
+            }
         }
     }
     @Override
@@ -187,7 +196,7 @@ public class StructureCore implements StructureInterface {
         for(Vector key : shield.keySet()){
             realLocation.add(location.clone().add(key));
         }
-        if(!CoreGame.GetMatch().CheckCanSpawn(isRed ?
+        if(!StructureUtils.CheckCanSpawn(isRed ?
                 PlayerTeam.Red : PlayerTeam.Green, realLocation, world, true)) return false;
         for(Map.Entry<Vector, Integer> e : shield.entrySet()){
             Block block = Utils.LocationFromVec(location.clone().add(e.getKey()), world).getBlock();

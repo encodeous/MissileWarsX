@@ -2,8 +2,11 @@ package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
+import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
+import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
+import lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,18 +25,13 @@ import java.util.UUID;
 import static ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine.PropagatePortalBreak;
 
 public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.MissileWarsEventHandler {
-    private final MissileWarsEvents mwEvents;
-
-    public MissileWarsEventHandler(MissileWarsEvents events) {
-        super(events);
-        mwEvents = events;
-    }
-
     @EventHandler
     public void PlayerInteractEvent(PlayerInteractEvent e){
         Ref<Boolean> cancel = new Ref<>(false);
         Ref<Boolean> use = new Ref<>(false);
-        mwEvents.PlayerInteractEvent(e.getPlayer(), e.getAction(), e.getBlockFace(), e.getClickedBlock(), e.getItem(), cancel, use);
+        MissileWarsMatch match = LobbyEngine.FromPlayer(e.getPlayer());
+        if(match == null) return;
+        match.EventHandler.PlayerInteractEvent(e.getPlayer(), e.getAction(), e.getClickedBlock(), e.getItem(), cancel, use);
         if(use.val){
             if(e.getHand() == EquipmentSlot.HAND){
                 ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
@@ -63,12 +61,14 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
     @EventHandler
     public void PlayerCombatEvent(EntityDamageByEntityEvent event){
         if(event.getEntity() instanceof Player){
+            MissileWarsMatch match = LobbyEngine.FromPlayer((Player) event.getEntity());
+            if(match == null) return;
             Player p = ((Player) event.getEntity()).getPlayer();
             if(event.getDamager() instanceof Arrow){
                 Arrow arrow = (Arrow)event.getDamager();
                 if(arrow.getShooter() instanceof Player){
                     Player p2 = (Player) arrow.getShooter();
-                    if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
+                    if(match.Teams.get(p) == match.Teams.get(p2)){
                         event.setCancelled(true);
                     }
                 }
@@ -77,21 +77,21 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
                 ProjectileSource source = TraceEngine.ResolveShooter(fb);
                 if(source instanceof Player){
                     Player p2 = (Player) source;
-                    if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
+                    if(match.Teams.get(p) == match.Teams.get(p2)){
                         event.setCancelled(true);
                     }
                 }
             } else if(event.getDamager() instanceof TNTPrimed){
                 TNTPrimed tnt = (TNTPrimed)event.getDamager();
-                Optional<UUID> id = CoreGame.GetMatch().Tracer.GetSources(tnt).Sources.stream().findAny();
+                Optional<UUID> id = match.Tracer.GetSources(tnt).Sources.stream().findAny();
                 if(id.isPresent()){
                     Player p2 = Bukkit.getPlayer(id.get());
                     if(p2 != null){
-                        if(CoreGame.GetMatch().Tracer.IsRedstoneActivated(tnt)){
+                        if(match.Tracer.IsRedstoneActivated(tnt)){
                             if(event.getFinalDamage() >= p.getHealth()){
                                 p.setKiller(p2);
                             }
-                        }else if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
+                        }else if(match.Teams.get(p) == match.Teams.get(p2)){
                             event.setCancelled(true);
                         }
                     }
@@ -99,7 +99,7 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
             } else if(event.getDamager() instanceof Player){
                 Player p2 = (Player) event.getDamager();
                 if(p2 != null){
-                    if(CoreGame.GetMatch().Teams.get(p) == CoreGame.GetMatch().Teams.get(p2)){
+                    if(match.Teams.get(p) == match.Teams.get(p2)){
                         event.setCancelled(true);
                     }
                 }
@@ -110,7 +110,9 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
 
     @EventHandler
     public void ExplodeEvent(EntityExplodeEvent e){
-        e.blockList().removeIf(block -> CoreGame.GetMatch().IsInProtectedRegion(block.getLocation().toVector()));
+        MissileWarsMatch match = LobbyEngine.FromWorld(e.getLocation().getWorld());
+        if(match == null) return;
+        e.blockList().removeIf(block -> StructureUtils.IsInProtectedRegion(block.getLocation().toVector()));
         if(e.getEntity() instanceof Fireball){
             e.blockList().removeIf(block ->
                     block.getType() != Material.TNT
@@ -123,7 +125,7 @@ public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.Missi
         if(e.getEntity() instanceof TNTPrimed){
             Optional<Block> block = e.blockList().stream().filter(x->x.getType() == CoreGame.GetImpl().GetPortalMaterial()).findAny();
             block.ifPresent(value -> {
-                mwEvents.PortalChangedEvent(value, (TNTPrimed) e.getEntity());
+                match.EventHandler.PortalChangedEvent(value, (TNTPrimed) e.getEntity());
                 PropagatePortalBreak(value);
             });
         }

@@ -1,7 +1,7 @@
 package ca.encodeous.mwx.mwxcompat1_8;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
-import ca.encodeous.mwx.mwxcore.utils.Formatter;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
@@ -43,10 +43,10 @@ public class MwUtils {
         }
         ItemStack itemstack = item.BaseItemStack.clone();
         ItemMeta meta = itemstack.getItemMeta();
-        meta.setDisplayName(Formatter.FCL("&6"+item.MissileWarsItemId+"&r"));
+        meta.setDisplayName(Chat.FCL("&6"+item.MissileWarsItemId+"&r"));
         ArrayList<String> lst = new ArrayList<>();
-        if(meta.hasLore()) meta.getLore().stream().map(Formatter::FCL).forEach(lst::add);
-        lst.add(Formatter.FCL("&0msw-internal:") + item.MissileWarsItemId);
+        if(meta.hasLore()) meta.getLore().stream().map(Chat::FCL).forEach(lst::add);
+        lst.add(Chat.FCL("&0msw-internal:") + item.MissileWarsItemId);
         meta.setLore(lst);
         itemstack.setItemMeta(meta);
         return itemstack;

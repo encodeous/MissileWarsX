@@ -7,7 +7,7 @@ import ca.encodeous.mwx.mwxcore.*;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
-import ca.encodeous.mwx.mwxcore.utils.Formatter;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.mwxcore.utils.WorldCopy;
 import ca.encodeous.mwx.mwxcore.world.*;
@@ -28,8 +28,6 @@ import java.io.File;
 import java.util.*;
 
 public class MissileWars1_8 implements MissileWarsImplementation {
-    // https://github.com/Bimmr/BimmCore
-
     private static final StructureCore Structures = new StructureCore();
 
     @Override
@@ -44,11 +42,11 @@ public class MissileWars1_8 implements MissileWarsImplementation {
 
     @Override
     public void SendTitle(Player p, String title, String subtitle) {
-        TitleAPI.sendTitle(p, Formatter.FCL(title), Formatter.FCL(subtitle), 10, 20 * 5, 10);
+        TitleAPI.sendTitle(p, Chat.FCL(title), Chat.FCL(subtitle), 10, 20 * 5, 10);
     }
     @Override
     public void SendActionBar(Player p, String message) {
-        ActionBarAPI.sendActionBar(p, Formatter.FCL(message));
+        ActionBarAPI.sendActionBar(p, Chat.FCL(message));
     }
 
     public ItemStack MakeArmour(Material mat, Color color){
@@ -71,7 +69,6 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         p.getInventory().addItem(CreateItem(CoreGame.Instance.GetItemById(MissileWarsCoreItem.GUNBLADE.getValue())));
     }
 
-    @Override
     public void ConfigureScoreboards(MissileWarsMatch mtch) {
         mtch.mwScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         ResetScoreboard(mtch.mwScoreboard);
@@ -108,8 +105,8 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     @Override
-    public void RegisterEvents(MissileWarsEvents events, JavaPlugin plugin) {
-        Bukkit.getServer().getPluginManager().registerEvents(new MissileWarsEventHandler(events), plugin);
+    public void RegisterEvents(JavaPlugin plugin) {
+        Bukkit.getServer().getPluginManager().registerEvents(new MissileWarsEventHandler(), plugin);
     }
 
     @Override
@@ -125,6 +122,11 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         wc.seed(0);
         wc.createWorld();
         World world = Bukkit.createWorld(wc);
+        ConfigureWorld(world);
+    }
+
+    @Override
+    public void ConfigureWorld(World world) {
         world.setAutoSave(false);
         world.setTicksPerAnimalSpawns(1000000000);
         world.setTicksPerMonsterSpawns(1000000000);
@@ -137,8 +139,12 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_14.getValue()){
             world.setGameRuleValue("disableRaids", "true");
         }
+        if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_15.getValue()){
+            world.setGameRuleValue("doImmediateRespawn", "true");
+        }
         world.setGameRuleValue("announceAdvancements", "false");
     }
+
 
     @Override
     public MissileWarsMap CreateManualJoinMap(String name) {
@@ -147,6 +153,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         map.SeparateJoin = true;
         map.RedJoin = new HashSet<>(Arrays.asList(new Vector(-118,65,-6), new Vector(-118,65,-7), new Vector(-118,65,-8), new Vector(-118,65,-9)));
         map.GreenJoin = new HashSet<>(Arrays.asList(new Vector(-118,65,9), new Vector(-118,65,9), new Vector(-118,65,7), new Vector(-118,65,6)));
+        map.TemplateWorld = CoreGame.Instance.mwManual;
         return getMissileWarsMap(name, map);
     }
 
@@ -156,6 +163,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         FastCloneWorld(name, "mwx_template_auto");
         map.SeparateJoin = false;
         map.AutoJoin = new HashSet<>(Arrays.asList(new Vector(-115,66,2), new Vector(-115,66,1), new Vector(-115,66,0), new Vector(-115,66,-1), new Vector(-115,66,-2)));
+        map.TemplateWorld = CoreGame.Instance.mwAuto;
         return getMissileWarsMap(name, map);
     }
 
@@ -170,6 +178,8 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         map.MswWorld = Bukkit.getWorld(name);
         map.RedPortal = Bounds.of(new Vector(-48, 72, -72), new Vector(-6, 52, -72));
         map.GreenPortal = Bounds.of(new Vector(-48, 72, 72), new Vector(-6, 52, 72));
+        map.WorldBoundingBox = Bounds.of(new Vector(1, 0, -95), new Vector(-140, 255, 95));
+        map.WorldMaxBoundingBox = Bounds.of(new Vector(250, 0, 250), new Vector(-350, 255, -250));
         map.SpawnYaw = 90;
         map.GreenYaw = -180;
         map.RedYaw = 0;
@@ -185,7 +195,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
             List<String> s = item.getItemMeta().getLore();
             if(s != null && !s.isEmpty()){
                 String lore = s.get(s.size()-1);
-                if(lore.startsWith(Formatter.FCL("&0msw-internal:"))){
+                if(lore.startsWith(Chat.FCL("&0msw-internal:"))){
                     return lore.substring(15);
                 }
             }

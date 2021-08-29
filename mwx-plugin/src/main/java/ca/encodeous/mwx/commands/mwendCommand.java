@@ -1,7 +1,10 @@
 package ca.encodeous.mwx.commands;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.utils.Formatter;
+import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
+import lobbyengine.Lobby;
+import lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,18 +15,30 @@ public class mwendCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
-            if(CoreGame.GetMatch().isStarting || CoreGame.GetMatch().isEnding){
+            // DEBUGGING
+//            CoreGame.GetMatch().ResetWorld();
+            Lobby lobby = null;
+            if(sender instanceof Player){
+                if(LobbyEngine.FromPlayer((Player) sender) != null){
+                    lobby = LobbyEngine.FromPlayer((Player) sender).lobby;
+                }
+            }
+            if(lobby == null){
+                lobby = LobbyEngine.GetLobby("default");
+            }
+            MissileWarsMatch match = lobby.Match;
+            if(match.isStarting || match.isCleaning){
                 sender.sendMessage("The game cannot be ended at this time!");
                 return true;
             }
-            if(CoreGame.GetMatch().hasStarted){
+            if(match.hasStarted){
                 for(Player p : Bukkit.getOnlinePlayers()){
                     CoreGame.GetImpl().SendTitle(p, "&9The game has been ended.", "&9Stopped by an Admin.");
                 }
-                CoreGame.GetMatch().EndGame();
+                //match.EndGame();
             }else{
-                Bukkit.broadcastMessage(Formatter.FCL("&9Resetting game...!"));
-                CoreGame.Instance.EndMatch();
+                Bukkit.broadcastMessage(Chat.FCL("&9Resetting game...!"));
+                //CoreGame.Instance.EndMatch();
             }
 
             return true;

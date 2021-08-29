@@ -1,5 +1,10 @@
 package ca.encodeous.mwx.mwxcore.utils;
 
+import ca.encodeous.mwx.mwxcore.CoreGame;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.util.Vector;
@@ -27,6 +32,13 @@ public class Bounds implements ConfigurationSerializable {
         x.stretch(a);
         x.stretch(b);
         return x;
+    }
+
+    public CuboidRegion toWorldeditRegion(World world){
+        return new CuboidRegion(
+                BukkitAdapter.asBlockVector(Utils.LocationFromVec(Min, world)),
+                BukkitAdapter.asBlockVector(Utils.LocationFromVec(Max, world))
+        );
     }
 
     public boolean IsInBounds(Vector x){

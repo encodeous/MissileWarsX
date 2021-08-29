@@ -2,6 +2,8 @@ name: MissileWarsX
 version: ${project.version}
 main: ca.encodeous.mwx.mwxplugin.MissileWarsX
 authors: [ Encodeous ]
+depend:
+  - ProtocolLib
 description: Missile Wars Plugin
 api-version: 1.13
 commands:

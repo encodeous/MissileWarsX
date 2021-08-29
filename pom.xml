@@ -31,12 +31,31 @@
             <id>papermc</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>IntellectualSites</id>
+            <url>https://mvn.intellectualsites.com/content/groups/public/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
             <groupId>com.github.encodeous</groupId>
             <artifactId>SimpleNMS</artifactId>
             <version>f96af9aca1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jpenilla</groupId>
+            <artifactId>jmplib</artifactId>
+            <version>78a60af1bc</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.encodeous</groupId>
+            <artifactId>ProtocolTab</artifactId>
+            <version>042502e117</version>
         </dependency>
     </dependencies>
     <modules>

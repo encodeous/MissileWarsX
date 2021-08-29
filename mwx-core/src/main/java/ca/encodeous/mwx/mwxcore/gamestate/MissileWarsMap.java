@@ -52,5 +52,9 @@ public class MissileWarsMap {
     public Bounds GreenPortal;
     public Bounds RedPortal;
 
+    public Bounds WorldBoundingBox;
+    public Bounds WorldMaxBoundingBox;
+
     public World MswWorld;
+    public World TemplateWorld;
 }

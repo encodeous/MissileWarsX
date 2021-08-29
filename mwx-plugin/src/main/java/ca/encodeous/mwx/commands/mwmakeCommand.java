@@ -3,7 +3,7 @@ package ca.encodeous.mwx.commands;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
-import ca.encodeous.mwx.mwxcore.utils.Formatter;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
 import ca.encodeous.mwx.mwxplugin.MissileWarsX;
 import org.bukkit.command.Command;
@@ -11,8 +11,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-
-import java.util.HashMap;
 
 public class mwmakeCommand implements CommandExecutor {
     @Override
@@ -38,14 +36,14 @@ public class mwmakeCommand implements CommandExecutor {
                 String name = args[9];
                 MissileSchematic schem = MissileWarsX.Instance.mwImpl.GetStructureManager().GetSchematic(pivot, Bounds.of(a,b), p.getWorld());
                 if(schem == null){
-                    p.sendMessage(Formatter.FCL("&cFailed creating missile! Valid blocks are: [PISTON, GLASS, STAINED_GLASS, SLIME_BLOCK, TNT, REDSTONE_BLOCK, STAINED_CLAY]. Schematics must also not be empty!"));
+                    p.sendMessage(Chat.FCL("&cFailed creating missile! Valid blocks are: [PISTON, GLASS, STAINED_GLASS, SLIME_BLOCK, TNT, REDSTONE_BLOCK, STAINED_CLAY]. Schematics must also not be empty!"));
                     return true;
                 }
                 Missile missile = new Missile();
                 missile.Schematic = schem;
                 missile.MissileItemId = name;
                 CoreGame.Instance.mwMissiles.put(missile.MissileItemId, missile);
-                p.sendMessage(Formatter.FCL("&aSuccessfully created missile!"));
+                p.sendMessage(Chat.FCL("&aSuccessfully created missile!"));
                 return true;
             }
         }catch (Exception e){
