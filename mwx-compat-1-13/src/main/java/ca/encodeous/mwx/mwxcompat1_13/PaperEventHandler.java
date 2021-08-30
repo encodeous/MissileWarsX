@@ -14,9 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,6 +26,16 @@ import java.util.UUID;
 public class PaperEventHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityAddToWorldEvent(EntityAddToWorldEvent event){
+        if(
+                !(event.getEntity() instanceof TNTPrimed) &&
+                !(event.getEntity() instanceof Projectile) &&
+                !(event.getEntity() instanceof Player) &&
+                !(event.getEntity() instanceof ArmorStand) &&
+                !(event.getEntity() instanceof Fireball) &&
+                !(event.getEntity() instanceof Item)
+        ){
+            event.getEntity().remove();
+        }
         if(!(event.getEntity() instanceof TNTPrimed)) return;
         MissileWarsMatch match = LobbyEngine.FromWorld(event.getEntity().getWorld());
         if(match == null) return;

@@ -10,19 +10,8 @@ import ca.encodeous.mwx.mwxcore.utils.Ref;
 import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.soundengine.SoundType;
-import com.fastasyncworldedit.core.extent.clipboard.ReadOnlyClipboard;
-import com.fastasyncworldedit.core.util.EditSessionBuilder;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.session.ClipboardHolder;
 import lobbyengine.Lobby;
-import org.apache.commons.io.FileUtils;
+import lobbyengine.LobbyEngine;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -32,34 +21,29 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MissileWarsMatch {
     // Map info
     public MissileWarsMap Map;
     // Teams
-    public Team mwGreen, mwRed, mwSpectate, mwLobby;
+    public static Team mwGreen, mwRed, mwSpectate, mwLobby;
     // Map State
     public HashSet<Player> None;
     public HashSet<Player> Spectators;
     public HashSet<Player> Green;
     public HashSet<Player> Red;
-    public HashMap<Player, PlayerTeam> Teams;
+    public ConcurrentHashMap<Player, PlayerTeam> Teams;
     public boolean hasStarted;
-    public boolean isCleaning;
-    public boolean isStarting;
     public boolean isActivated;
     public Counter startCounter,
             endCounter,
             itemCounter;
     public MissileWarsEvents EventHandler;
-    public Scoreboard mwScoreboard;
     public TraceEngine Tracer;
     public Lobby lobby;
     Random mwRand = new Random();
-    Clipboard clipboard = null;
 
     public MissileWarsMatch(Lobby lobby) {
         this.lobby = lobby;
@@ -69,10 +53,9 @@ public class MissileWarsMatch {
         None = new HashSet<>();
         Red = new HashSet<>();
         Spectators = new HashSet<>();
-        Teams = new HashMap<>();
+        Teams = new ConcurrentHashMap<>();
         Tracer = new TraceEngine();
         EventHandler = new MissileWarsEvents(this);
-        CoreGame.GetImpl().ConfigureScoreboards(this);
         startCounter = new Counter(CreateStartGameCountdown(), 20, 15);
         itemCounter = new Counter(new ItemCountdown(this), 20, -1);
         endCounter = new Counter(CreateEndGameCountdown(), 20, 5);
@@ -107,10 +90,6 @@ public class MissileWarsMatch {
             @Override
             public void Count(Counter counter, int count) {
                 int remTime = 15 - count;
-                if(!isStarting || hasStarted){
-                    counter.StopCounting();
-                    return;
-                }
                 if (remTime == 15 || remTime == 10 || remTime == 3 || remTime == 2) {
                     lobby.SendMessage("&aStarting game in &6" + remTime + "&a seconds!");
                 } else if (remTime == 1) {
@@ -127,7 +106,6 @@ public class MissileWarsMatch {
             public void FinishedCount(Counter counter) {
                 lobby.SendMessage("&cStarting now!");
                 hasStarted = true;
-                isStarting = false;
                 for(Player p : Teams.keySet()){
                     p.setLevel(0);
                 }
@@ -181,12 +159,11 @@ public class MissileWarsMatch {
     public void CheckGameReadyState(){
         if(hasStarted) return;
         if(Red.size() != 0 && Green.size() != 0){
-            isStarting = true;
             startCounter.Start();
         }else{
+            startCounter.StopCounting();
             if(Red.size() + Green.size() == 1)
-                Bukkit.broadcastMessage(Chat.FCL("&9The game needs at least 1 player in each team to start. To forcefully start a game, run &6/start&9."));
-            isStarting = false;
+                lobby.SendMessage("&9The game needs at least 1 player in each team to start. To forcefully start a game, run &6/start&9.");
             for(Player p : Teams.keySet()){
                 p.setLevel(0);
             }
@@ -263,7 +240,9 @@ public class MissileWarsMatch {
     }
 
     public void RemovePlayer(Player p){
+        lobby.SendMessage(Chat.FormatPlayerAction(p, "has left the game."));
         CleanPlayer(p);
+        p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         boolean affectGame = false;
         if(Green.contains(p) || Red.contains(p)) affectGame = true;
         Teams.remove(p);
@@ -271,11 +250,15 @@ public class MissileWarsMatch {
         Spectators.remove(p);
         Green.remove(p);
         Red.remove(p);
-        mwRed.removeEntry(p.getName());
-        mwGreen.removeEntry(p.getName());
-        mwSpectate.removeEntry(p.getName());
-        mwLobby.removeEntry(p.getName());
-        if(affectGame) CheckGameReadyState();
+        try{
+            mwRed.removeEntry(p.getName());
+            mwGreen.removeEntry(p.getName());
+            mwSpectate.removeEntry(p.getName());
+            mwLobby.removeEntry(p.getName());
+        }catch(IllegalStateException e){
+
+        }
+        if(affectGame && !hasStarted) CheckGameReadyState();
     }
 
     public static void SendCannotPlaceMessage(Player p){
@@ -322,111 +305,35 @@ public class MissileWarsMatch {
     }
 
     public void Reset(){
-        hasStarted = false;
-        Tracer = new TraceEngine();
+        itemCounter.StopCounting();
+        startCounter.StopCounting();
         EventHandler = new MissileWarsEvents(this);
-        CoreGame.GetImpl().ConfigureScoreboards(this);
-        CleanMap(() -> {
-            lobby.SendMessage("&9The map has been reset!");
-            for(Player p : Teams.keySet()){
+        Wipe(()->{
+            lobby.SendMessage("&9The map has been wiped!");
+            ArrayList<Player> players = new ArrayList<>(Teams.keySet());
+            for(Player p : players){
+                RemovePlayer(p);
                 AddPlayerToTeam(p, PlayerTeam.None);
             }
+            hasStarted = false;
         });
     }
 
-    public void CleanMap(Runnable finished){
-        isCleaning = true;
-        Bukkit.getScheduler().runTaskAsynchronously(CoreGame.Instance.mwPlugin, new Runnable() {
-            @Override
-            public void run() {
-                CuboidRegion destRegion = Map.WorldBoundingBox.toWorldeditRegion(Map.MswWorld);
-                CuboidRegion destFullRegion = Map.WorldMaxBoundingBox.toWorldeditRegion(Map.MswWorld);
-                if(clipboard == null){
-                    CuboidRegion srcRegion = Map.WorldBoundingBox.toWorldeditRegion(CoreGame.Instance.mwAuto);
-                    clipboard = new BlockArrayClipboard(srcRegion);
-                    try (EditSession session = new EditSessionBuilder(BukkitAdapter.adapt(CoreGame.Instance.mwAuto)).build()){
-                        session.setFastMode(true);
-                        clipboard = ReadOnlyClipboard.of(
-                                session, srcRegion, false, false
-                        );
-                        clipboard.setOrigin(srcRegion.getMinimumPoint());
-                    }
-                    clipboard.disableHistory();
-                }
-
-                try (EditSession session = new EditSessionBuilder(BukkitAdapter.adapt(Map.MswWorld)).build()) {
-                    session.setFastMode(true);
-                    session.setBlocks((Region) destFullRegion, BukkitAdapter.asBlockType(Material.AIR));
-                    Operation operation = new ClipboardHolder(clipboard)
-                            .createPaste(session)
-                            .to(destRegion.getMinimumPoint())
-                            .ignoreAirBlocks(true)
-                            .copyEntities(false)
-                            .build();
-                    Operations.complete(operation);
-                }
-                Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        finished.run();
-                        for(Entity e : Map.MswWorld.getEntities()){
-                            if(e.getType() != EntityType.PLAYER){
-                                e.remove();
-                            }
-                        }
-                        CoreGame.GetImpl().ConfigureWorld(Map.MswWorld);
-                    }
-                });
-                isCleaning = false;
-            }
-        });
+    public void Wipe(Runnable finished){
+        Tracer = new TraceEngine();
+        Map.CleanMap(finished);
     }
 
     /**
      * Cleanup the world, and delete the map
      */
-    public void Dispose(boolean makeRecyclable){
+    public void Dispose(){
         if(isActivated){
             isActivated = false;
             itemCounter.StopCounting();
             startCounter.StopCounting();
             endCounter.StopCounting();
-            File worldFolder = Map.MswWorld.getWorldFolder();
-            for(Entity e : Map.MswWorld.getEntities()){
-                try{
-                    e.remove();
-                }catch (Exception ex){
-
-                }
-            }
-            if(makeRecyclable){
-                CleanMap(() -> {});
-            }else{
-                for(Player p : Map.MswWorld.getPlayers()){
-                    p.kickPlayer("Resetting Map");
-                }
-                boolean firstTry = Bukkit.unloadWorld(Map.MswWorld.getName(), false);
-                boolean success = firstTry;
-                if(!firstTry){
-                    for(Player p : Map.MswWorld.getPlayers()){
-                        p.kickPlayer("Resetting Map");
-                    }
-                    success = Bukkit.unloadWorld(Map.MswWorld.getName(), false);
-                }
-                if(!success){
-                    System.out.println("Unable to unload world " + Map.MswWorld.getName() + " deleting anyways...");
-                }
-                try {
-                    FileUtils.deleteDirectory(worldFolder);
-                } catch (IOException e) {
-                    try {
-                        FileUtils.forceDeleteOnExit(worldFolder);
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
-                }
-                Map = null;
-            }
+            Map.Delete();
         }
     }
 }

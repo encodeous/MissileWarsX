@@ -2,6 +2,7 @@ package ca.encodeous.mwx.mwxcore.utils;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
+import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
@@ -10,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import util.SpigotReflection;
 
 public class Utils {
     public static Location LocationFromVec(Vector vec, World w){
@@ -40,6 +42,13 @@ public class Utils {
             }
         }
         return curCnt;
+    }
+    public static int GetPlayerPing(Player p){
+        if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_17.getValue()){
+            return p.getPing();
+        }else{
+            return SpigotReflection.get().ping(p);
+        }
     }
     public static Location GetTeamSpawn(PlayerTeam team, MissileWarsMatch match){
         boolean hasStarted = match.hasStarted;

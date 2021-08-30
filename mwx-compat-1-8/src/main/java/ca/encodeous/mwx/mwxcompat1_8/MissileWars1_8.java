@@ -69,24 +69,25 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         p.getInventory().addItem(CreateItem(CoreGame.Instance.GetItemById(MissileWarsCoreItem.GUNBLADE.getValue())));
     }
 
-    public void ConfigureScoreboards(MissileWarsMatch mtch) {
-        mtch.mwScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        ResetScoreboard(mtch.mwScoreboard);
-        mtch.mwGreen = mtch.mwScoreboard.registerNewTeam("green");
+    public void ConfigureScoreboards() {
+        Scoreboard board = Bukkit.getScoreboardManager().getMainScoreboard();
+        ResetScoreboard(board);
+        MissileWarsMatch mtch = null;
+        mtch.mwGreen = board.registerNewTeam("green");
         mtch.mwGreen.setPrefix("§a");
         mtch.mwGreen.setNameTagVisibility(NameTagVisibility.ALWAYS);
 
-        mtch.mwRed = mtch.mwScoreboard.registerNewTeam("red");
+        mtch.mwRed = board.registerNewTeam("red");
         mtch.mwRed.setPrefix("§c");
         mtch.mwRed.setNameTagVisibility(NameTagVisibility.ALWAYS);
 
-        mtch.mwSpectate = mtch.mwScoreboard.registerNewTeam("spectator");
+        mtch.mwSpectate = board.registerNewTeam("spectator");
         mtch.mwSpectate.setPrefix("§9");
         mtch.mwSpectate.setAllowFriendlyFire(false);
         mtch.mwSpectate.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
         mtch.mwSpectate.setCanSeeFriendlyInvisibles(true);
 
-        mtch.mwLobby = mtch.mwScoreboard.registerNewTeam("lobby");
+        mtch.mwLobby = board.registerNewTeam("lobby");
         mtch.mwLobby.setPrefix("§7");
         mtch.mwLobby.setAllowFriendlyFire(false);
         mtch.mwLobby.setNameTagVisibility(NameTagVisibility.ALWAYS);
@@ -110,19 +111,16 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     @Override
-    public void FastCloneWorld(String targetName, String source) {
-        Bukkit.unloadWorld(targetName, false);
-        File worldFile = new File(Bukkit.getWorldContainer() + "/" + targetName);
-        File srcWorldFile = new File(Bukkit.getWorldContainer() + "/" + source);
-        WorldCopy.copyWorld(srcWorldFile, worldFile);
+    public World FastVoidWorld(String targetName) {
         WorldCreator wc = new WorldCreator(targetName);
         wc.type(WorldType.FLAT);
         wc.environment(World.Environment.NORMAL);
         wc.generator(new VoidWorldGen());
         wc.seed(0);
-        wc.createWorld();
-        World world = Bukkit.createWorld(wc);
+        wc.generateStructures(false);
+        World world = wc.createWorld();
         ConfigureWorld(world);
+        return world;
     }
 
     @Override
@@ -130,12 +128,19 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         world.setAutoSave(false);
         world.setTicksPerAnimalSpawns(1000000000);
         world.setTicksPerMonsterSpawns(1000000000);
+        world.setAmbientSpawnLimit(0);
         world.setWaterAnimalSpawnLimit(0);
         world.setAnimalSpawnLimit(0);
         world.setTime(6000);
         world.setStorm(false);
         world.setWeatherDuration(1000000000);
         world.setDifficulty(Difficulty.EASY);
+        world.getWorldBorder().setCenter(0, 0);
+        world.getWorldBorder().setSize(500);
+        world.setGameRuleValue("doDaylightCycle", "false");
+        world.setGameRuleValue("keepInventory", "true");
+        world.setGameRuleValue("doTileDrops", "false");
+        world.setGameRuleValue("doWeatherCycle", "false");
         if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_14.getValue()){
             world.setGameRuleValue("disableRaids", "true");
         }
@@ -149,7 +154,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     @Override
     public MissileWarsMap CreateManualJoinMap(String name) {
         MissileWarsMap map = new MissileWarsMap();
-        FastCloneWorld(name, "mwx_template_manual");
+        map.WorldName = name;
         map.SeparateJoin = true;
         map.RedJoin = new HashSet<>(Arrays.asList(new Vector(-118,65,-6), new Vector(-118,65,-7), new Vector(-118,65,-8), new Vector(-118,65,-9)));
         map.GreenJoin = new HashSet<>(Arrays.asList(new Vector(-118,65,9), new Vector(-118,65,9), new Vector(-118,65,7), new Vector(-118,65,6)));
@@ -160,7 +165,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     @Override
     public MissileWarsMap CreateAutoJoinMap(String name) {
         MissileWarsMap map = new MissileWarsMap();
-        FastCloneWorld(name, "mwx_template_auto");
+        map.WorldName = name;
         map.SeparateJoin = false;
         map.AutoJoin = new HashSet<>(Arrays.asList(new Vector(-115,66,2), new Vector(-115,66,1), new Vector(-115,66,0), new Vector(-115,66,-1), new Vector(-115,66,-2)));
         map.TemplateWorld = CoreGame.Instance.mwAuto;

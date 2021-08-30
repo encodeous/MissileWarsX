@@ -1,10 +1,7 @@
 package ca.encodeous.mwx.mwxcore;
 
-import ca.encodeous.mwx.configuration.Missile;
-import ca.encodeous.mwx.configuration.MissileWarsConfiguration;
-import ca.encodeous.mwx.configuration.MissileWarsItem;
+import ca.encodeous.mwx.configuration.*;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.utils.*;
 import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
@@ -25,7 +22,6 @@ import pl.kacperduras.protocoltab.manager.TabManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class CoreGame {
     static{
@@ -36,6 +32,8 @@ public class CoreGame {
         ConfigurationSerialization.registerClass(MissileSchematic.class, "mschem");
         ConfigurationSerialization.registerClass(PistonData.class, "pdata");
         ConfigurationSerialization.registerClass(Bounds.class, "bounds");
+        ConfigurationSerialization.registerClass(LobbyConfiguration.class, "lobbies");
+        ConfigurationSerialization.registerClass(LobbyInfo.class, "lobby");
     }
     public static CoreGame Instance = null;
 
@@ -61,8 +59,11 @@ public class CoreGame {
 
     // Configuration
     public MissileWarsConfiguration mwConfig;
+    public LobbyConfiguration mwLobbies;
     FileConfiguration config = new YamlConfiguration();
+    FileConfiguration lobbyConfig = new YamlConfiguration();
     File configFile = null;
+    File lobbyFile = null;
 
     public void LoadConfig(){
         // load configuration
@@ -78,6 +79,21 @@ public class CoreGame {
             config.set("data", mwConfig);
             try {
                 config.save(configFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        // load lobby config
+        lobbyFile = new File(configDir, "lobbies.yml");
+        if(lobbyFile.exists()){
+            lobbyConfig = YamlConfiguration.loadConfiguration(lobbyFile);
+            mwLobbies = (LobbyConfiguration) lobbyConfig.get("data");
+        }else{
+            lobbyFile.getParentFile().mkdirs();
+            mwLobbies = new LobbyConfiguration();
+            lobbyConfig.set("data", mwLobbies);
+            try {
+                lobbyConfig.save(lobbyFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -126,16 +142,16 @@ public class CoreGame {
             }
         }
 
+        mwPlugin.getLogger().info("Configuring scoreboards...");
+        mwImpl.ConfigureScoreboards();
         mwPlugin.getLogger().info("Loading missiles...");
         mwMissiles = ResourceLoader.LoadMissiles(mwPlugin);
         mwPlugin.getLogger().info("MissileWarsX fully loaded!");
 
-        mwPlugin.getLogger().info("Caching temporary lobbies...");
-        LobbyEngine.EnsureCache(false, CoreGame.Instance.mwConfig.TempCache);
-        mwPlugin.getLogger().info("Finished loading lobby cache!");
-
-        mwPlugin.getLogger().info("Creating default lobby...");
-        LobbyEngine.CreateLobby("default", 6, false, true);
+        mwPlugin.getLogger().info("Creating lobbies...");
+        for(LobbyInfo info : mwLobbies.Lobbies){
+            LobbyEngine.CreateLobby(info.MaxTeamSize, info.AutoJoin);
+        }
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.runTaskTimerAsynchronously(mwPlugin, TPSMon.Instance, 0, 20);
@@ -158,12 +174,17 @@ public class CoreGame {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            try {
+                lobbyConfig.save(lobbyFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             ResourceLoader.SaveMissiles(mwPlugin, mwMissiles);
         }
     }
 
     public void PlayerJoined(Player p){
-        LobbyEngine.GetLobby("default").AddPlayer(p);
+        LobbyEngine.GetLobby(0).AddPlayer(p);
     }
     public void PlayerLeft(Player p){
         MissileWarsMatch match = LobbyEngine.FromPlayer(p);

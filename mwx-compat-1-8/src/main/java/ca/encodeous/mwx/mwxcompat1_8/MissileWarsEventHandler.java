@@ -46,7 +46,7 @@ public class MissileWarsEventHandler implements Listener {
             if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
         }
         if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
-            event.setCancelled(true);
+            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
         }
         if(event.getBlock().getType() == CoreGame.GetImpl().GetPortalMaterial()){
             PropagatePortalBreak(event.getBlock());
@@ -59,7 +59,7 @@ public class MissileWarsEventHandler implements Listener {
     @EventHandler
     public void BlockPlaceEvent(BlockPlaceEvent event){
         if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
-            event.setCancelled(true);
+            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
         }
         MissileWarsMatch match = LobbyEngine.FromWorld(event.getBlock().getWorld());
         if(match != null){
@@ -81,7 +81,7 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void PlayerMoveEvent(PlayerMoveEvent event){
-        MissileWarsMatch match = LobbyEngine.FromWorld(event.getTo().getWorld());
+        MissileWarsMatch match = LobbyEngine.FromPlayer(event.getPlayer());
         if(match == null) return;
         Ref<Location> to = new Ref<>(event.getTo());
         match.EventHandler.PlayerMoveEvent(event.getPlayer(), to);
@@ -197,7 +197,7 @@ public class MissileWarsEventHandler implements Listener {
         }
         MissileWarsMatch match = LobbyEngine.FromWorld(e.getBlock().getWorld());
         if(match != null){
-            if(match.isCleaning){
+            if(match.Map.isBusy){
                 e.setCancelled(true);
             }
         }

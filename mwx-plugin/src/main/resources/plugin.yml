@@ -4,6 +4,7 @@ main: ca.encodeous.mwx.mwxplugin.MissileWarsX
 authors: [ Encodeous ]
 depend:
   - ProtocolLib
+  - FastAsyncWorldEdit
 description: Missile Wars Plugin
 api-version: 1.13
 commands:
@@ -35,11 +36,15 @@ commands:
   start:
     description: Forcefully starts the game
     usage: /<command>
-  end:
-    description: Forcefully resets the game
+  reset:
+    description: Forcefully restarts the game
     permission: mwx.admin
     aliases:
-      - reset
+      - end
+    usage: /<command>
+  wipe:
+    description: Forcefully wipes the current lobby map
+    permission: mwx.admin
     usage: /<command>
   mwreload:
     description: Reloads the configuration file
@@ -49,19 +54,32 @@ commands:
     description: Edit the missile wars template map, choose between the auto join or manual join map
     permission: mwx.admin
     usage: /<command> <auto/manual>
-# Info commands
+# Player commands
+  lobby:
+    description: Return to the current lobby, or switch between lobbies
+    usage: /<command> [lobby-id]
+    aliases:
+      - l
+      - mw
+  spectate:
+    description: Spectate the game
+    usage: /<command>
+  # Info commands
   mwitems:
     description: Lists all registered items
     usage: /<command>
   mwmissiles:
     description: Lists all registered missiles
     usage: /<command>
-  spectate:
-    description: Spectate the game
-    usage: /<command>
-  lobby:
-    description: Return to the lobby
-    usage: /<command>
   ping:
     description: Gets your ping to the server
     usage: /<command>
+  players:
+    description: Gets a list of all online players
+    usage: /<command>
+    aliases:
+      - online
+      - p
+      - glist
+      - globallist
+      - mwlist

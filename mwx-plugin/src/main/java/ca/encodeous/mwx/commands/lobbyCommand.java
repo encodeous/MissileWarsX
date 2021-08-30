@@ -1,7 +1,9 @@
 package ca.encodeous.mwx.commands;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
+import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
 import lobbyengine.LobbyEngine;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,7 +15,25 @@ public class lobbyCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
             if(sender instanceof Player){
-                LobbyEngine.FromPlayer((Player) sender).AddPlayerToTeam((Player) sender, PlayerTeam.None);
+                if(args.length == 0){
+                    MissileWarsMatch match = LobbyEngine.FromPlayer((Player) sender);
+                    match.RemovePlayer((Player) sender);
+                    match.AddPlayerToTeam((Player) sender, PlayerTeam.None);
+                }else if(args.length == 1){
+                    try{
+                        int val = Integer.parseInt(args[0]);
+                        if(val < 0 || val >= LobbyEngine.Lobbies.size()){
+                            sender.sendMessage("The lobby you specified does not exist.");
+                        }else{
+                            LobbyEngine.FromPlayer((Player) sender).RemovePlayer((Player) sender);
+                            LobbyEngine.GetLobby(val).AddPlayer((Player) sender);
+                            sender.sendMessage(Chat.FCL("&9You have been teleported to lobby " + val + "."));
+                        }
+                    }catch (NumberFormatException e){
+                        return false;
+                    }
+                }else return false;
+
             }
             else{
                 sender.sendMessage("You are not a player...");

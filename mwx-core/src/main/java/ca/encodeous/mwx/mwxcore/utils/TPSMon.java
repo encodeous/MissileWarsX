@@ -31,7 +31,7 @@ public class TPSMon implements Runnable {
                 isInCriticalZone = true;
                 for(Lobby lobby : LobbyEngine.Lobbies.values()){
                     lobby.SendMessage("&cPlease wait while the server wipes your lobby...");
-                    lobby.Match.CleanMap(()->{
+                    lobby.Match.Map.CleanMap(()->{
                         lobby.SendMessage("&cYour lobby has been cleaned");
                     });
                 }

@@ -11,12 +11,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class mwendCommand implements CommandExecutor {
+public class mwwipeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
-            // DEBUGGING
-//            CoreGame.GetMatch().ResetWorld();
             Lobby lobby = null;
             if(sender instanceof Player){
                 if(LobbyEngine.FromPlayer((Player) sender) != null){
@@ -24,23 +22,20 @@ public class mwendCommand implements CommandExecutor {
                 }
             }
             if(lobby == null){
-                lobby = LobbyEngine.GetLobby("default");
+                lobby = LobbyEngine.GetLobby(0);
             }
             MissileWarsMatch match = lobby.Match;
-            if(match.isStarting || match.isCleaning){
-                sender.sendMessage("The game cannot be ended at this time!");
+            if(match.Map.isBusy || match.endCounter.isRunning() || match.startCounter.isRunning()){
+                sender.sendMessage("The map cannot be wiped at this time!");
                 return true;
             }
-            if(match.hasStarted){
-                for(Player p : Bukkit.getOnlinePlayers()){
-                    CoreGame.GetImpl().SendTitle(p, "&9The game has been ended.", "&9Stopped by an Admin.");
-                }
-                //match.EndGame();
-            }else{
-                Bukkit.broadcastMessage(Chat.FCL("&9Resetting game...!"));
-                //CoreGame.Instance.EndMatch();
+            for(Player p : match.lobby.GetPlayers()){
+                CoreGame.GetImpl().SendTitle(p, "&9The map is being wiped", "&9by an Admin.");
             }
-
+            Lobby finalLobby = lobby;
+            match.Wipe(()->{
+                finalLobby.SendMessage("&9The lobby has been wiped");
+            });
             return true;
         }catch (Exception e){
             return false;

@@ -3,15 +3,17 @@ package ca.encodeous.mwx.mwxplugin;
 import ca.encodeous.mwx.commands.*;
 import ca.encodeous.mwx.mwxcompat1_13.MissileWars1_13;
 import ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8;
-import ca.encodeous.mwx.mwxcompat1_8.MissileWarsEventHandler;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.MissileWarsImplementation;
+import com.keenant.tabbed.skin.SkinFetcher;
+import lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public final class MissileWarsX extends JavaPlugin {
@@ -22,6 +24,7 @@ public final class MissileWarsX extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        LogManager.getLogManager().getLogger("").setFilter(new ConsoleFilter());
         Bukkit.getServer().getPluginManager().registerEvents(new MiscEventHandler(), this);
 
         Map<MCVersion, Class<?>> implementations = new HashMap<MCVersion, Class<?>>();
@@ -75,7 +78,9 @@ public final class MissileWarsX extends JavaPlugin {
         getCommand("mwedit").setExecutor(new mweditCommand());
         getCommand("mwreload").setExecutor(new mwreloadCommand());
         getCommand("mwgive").setExecutor(new mwgiveCommand());
-        getCommand("end").setExecutor(new mwendCommand());
+        getCommand("reset").setExecutor(new mwresetCommand());
+        getCommand("players").setExecutor(new playersCommand());
+        getCommand("wipe").setExecutor(new mwwipeCommand());
         getCommand("mwitems").setExecutor(new mwitemsCommand());
         getCommand("mwmissiles").setExecutor(new mwmissilesCommand());
         getCommand("start").setExecutor(new mwstartCommand());
@@ -87,6 +92,8 @@ public final class MissileWarsX extends JavaPlugin {
         MissileWars.InitializeGame();
 
         Bukkit.unloadWorld("world", true);
+
+        LobbyEngine.Fetcher = new SkinFetcher(this);
     }
 
     @Override

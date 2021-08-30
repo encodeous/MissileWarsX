@@ -22,7 +22,7 @@ public class mwteamCommand implements CommandExecutor {
                 }
             }
             if(lobby == null){
-                lobby = LobbyEngine.GetLobby("default");
+                lobby = LobbyEngine.GetLobby(0);
             }
             MissileWarsMatch match = lobby.Match;
             Player p = Bukkit.getPlayer(args[0]);

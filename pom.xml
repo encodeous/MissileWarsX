@@ -55,7 +55,7 @@
         <dependency>
             <groupId>com.github.encodeous</groupId>
             <artifactId>ProtocolTab</artifactId>
-            <version>042502e117</version>
+            <version>159faf43aa</version>
         </dependency>
     </dependencies>
     <modules>

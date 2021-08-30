@@ -21,12 +21,6 @@ public class MissileWarsEvents {
     public MissileWarsEvents(MissileWarsMatch match){
         this.match = match;
     }
-    public void PlayerJoinEvent(Player p){
-        match.AddPlayerToTeam(p, PlayerTeam.None);
-    }
-    public void PlayerLeaveEvent(Player p){
-        match.RemovePlayer(p);
-    }
     public void PlayerMoveEvent(Player p, Ref<Location> to){
         if(to.val.getWorld() == match.Map.MswWorld){
             if(match.Map.SeparateJoin){

@@ -30,6 +30,9 @@ public class Counter {
             }, 0, interval);
         }
     }
+    public boolean isRunning(){
+        return taskId != -1;
+    }
     public void StopCounting(){
         if(taskId != -1){
             Bukkit.getScheduler().cancelTask(taskId);

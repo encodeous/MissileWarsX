@@ -1,11 +1,9 @@
 package ca.encodeous.mwx.mwxcore.utils;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.soundengine.SoundType;
 import lobbyengine.Lobby;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -32,7 +30,7 @@ public class Chat {
     }
     public static void TeamWin(ArrayList<Player> credits, Lobby lobby, PlayerTeam winningTeam, PlayerTeam losingTeam){
         if(!credits.isEmpty()){
-            lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up by " + FormatCredits(credits) + "&r!");
+            lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up by " + FormatPlayerlist(credits) + "&r!");
         }else{
             lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up!");
         }
@@ -44,7 +42,7 @@ public class Chat {
             CoreGame.GetImpl().SendTitle(p, "&6The " + ResolveTeamColor(winningTeam) + winningTeam.name() + " &6team has won!", "&6Congratulations!");
         }
     }
-    public static String FormatCredits(ArrayList<Player> credits){
+    public static String FormatPlayerlist(ArrayList<Player> credits){
         StringBuilder winString = new StringBuilder();
         if(credits.size() >= 2){
             for(int i = 0; i < credits.size() - 1; i++){
