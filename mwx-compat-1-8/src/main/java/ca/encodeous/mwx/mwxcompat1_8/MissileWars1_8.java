@@ -327,6 +327,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     }
 
     public void PlayWorldSound(Location loc, Sound sound){
+
         loc.getWorld().playSound(loc, sound, 1, 0);
     }
 

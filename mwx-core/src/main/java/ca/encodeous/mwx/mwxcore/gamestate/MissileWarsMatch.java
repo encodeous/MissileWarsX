@@ -63,16 +63,28 @@ public class MissileWarsMatch {
 
     public void GreenPad(Player p){
         if(!Map.SeparateJoin) return;
+        if(Green.size() >= lobby.teamSize){
+            CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis team is full!"));
+            return;
+        }
         RemovePlayer(p);
         AddPlayerToTeam(p, PlayerTeam.Green);
     }
     public void RedPad(Player p){
         if(!Map.SeparateJoin) return;
+        if(Red.size() >= lobby.teamSize){
+            CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis team is full!"));
+            return;
+        }
         RemovePlayer(p);
         AddPlayerToTeam(p, PlayerTeam.Red);
     }
     public void AutoPad(Player p){
         if(Map.SeparateJoin) return;
+        if(Red.size() == lobby.teamSize && Green.size() == lobby.teamSize){
+            CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis game is full!"));
+            return;
+        }
         RemovePlayer(p);
         PlayerTeam team;
         if(Red.size() == Green.size()){
@@ -152,6 +164,11 @@ public class MissileWarsMatch {
         PlayerTeam win = isRed? PlayerTeam.Green : PlayerTeam.Red;
         PlayerTeam lose = isRed? PlayerTeam.Red : PlayerTeam.Green;
         Chat.TeamWin(credits, lobby, win, lose);
+        for(java.util.Map.Entry<Player, PlayerTeam> player : Teams.entrySet()){
+            if(player.getValue() == win)
+                CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.WIN);
+            CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.GAME_END);
+        }
         StartResetting();
         endCounter.Start();
     }
@@ -240,7 +257,6 @@ public class MissileWarsMatch {
     }
 
     public void RemovePlayer(Player p){
-        lobby.SendMessage(Chat.FormatPlayerAction(p, "has left the game."));
         CleanPlayer(p);
         p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         boolean affectGame = false;

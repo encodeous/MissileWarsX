@@ -7,7 +7,6 @@ import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import com.keenant.tabbed.skin.SkinFetcher;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -28,6 +27,8 @@ public class LobbyEngine {
         tabs.clear();
 
         MissileWarsMatch match = FromPlayer(p);
+
+        if(match == null) return;
 
         tabs.put(1, CreateText("&7&lYOUR INFO"));
         tabs.put(21, CreateText("&7&lLOBBIES"));
@@ -152,5 +153,8 @@ public class LobbyEngine {
         for(Lobby lobby : Lobbies.values()){
             DeleteLobby(lobby.lobbyId);
         }
+        Lobbies = new ConcurrentHashMap<>();
+        lobbyCount = 0;
+        worldCount = 0;
     }
 }

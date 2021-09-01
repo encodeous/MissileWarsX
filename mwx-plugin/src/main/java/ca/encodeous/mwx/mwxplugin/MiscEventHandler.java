@@ -1,6 +1,7 @@
 package ca.encodeous.mwx.mwxplugin;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
+import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
 import lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
@@ -57,11 +58,15 @@ public class MiscEventHandler implements Listener {
         }
     }
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerCHat(AsyncPlayerChatEvent event){
-        LobbyEngine.FromPlayer(event.getPlayer()).lobby.SendMessage(event.getPlayer(), event.getMessage());
-        if(LobbyEngine.FromPlayer(event.getPlayer()).lobby.lobbyId != LobbyEngine.FromWorld(event.getPlayer().getWorld()).lobby.lobbyId){
-            event.getPlayer().sendMessage(Chat.FCL("&cYour message was sent to the lobby you were previously on. Please use /lobby to switch to your current lobby before chatting!"));
+    public void onPlayerChat(AsyncPlayerChatEvent event){
+        MissileWarsMatch match = LobbyEngine.FromPlayer(event.getPlayer());
+        if(match != null){
+            event.getRecipients().clear();
+            event.getRecipients().addAll(match.Teams.keySet());
+            if(LobbyEngine.FromWorld(event.getPlayer().getWorld()) != null &&
+                    match.lobby.lobbyId != LobbyEngine.FromWorld(event.getPlayer().getWorld()).lobby.lobbyId){
+                event.getPlayer().sendMessage(Chat.FCL("&cYour message was sent to the lobby you were previously on. Please use /lobby to switch to your current lobby before chatting!"));
+            }
         }
-        event.setCancelled(true);
     }
 }

@@ -22,10 +22,7 @@ public class LobbyConfiguration implements ConfigurationSerializable {
         LobbyInfo oneOnOne2 = new LobbyInfo();
         oneOnOne2.AutoJoin = true;
         oneOnOne2.MaxTeamSize = 1;
-        LobbyInfo oneOnOne3 = new LobbyInfo();
-        oneOnOne3.AutoJoin = true;
-        oneOnOne3.MaxTeamSize = 1;
-        return Arrays.asList(mainLobby, secondaryLobby, oneOnOne1, oneOnOne2, oneOnOne3);
+        return Arrays.asList(mainLobby, secondaryLobby, oneOnOne1, oneOnOne2);
     }
     public static LobbyConfiguration deserialize(Map<String, Object> args) {
         LobbyConfiguration conf = new LobbyConfiguration();

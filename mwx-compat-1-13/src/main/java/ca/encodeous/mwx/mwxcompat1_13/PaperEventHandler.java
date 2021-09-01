@@ -8,11 +8,13 @@ import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
 import ca.encodeous.mwx.mwxcore.utils.TPSMon;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
+import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -22,19 +24,21 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PaperEventHandler implements Listener {
+    private static ConcurrentHashMap<World, Integer> entityCount = new ConcurrentHashMap<>();
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void EntityRemoveFromWorldEvent(EntityRemoveFromWorldEvent event){
+        entityCount.put(event.getEntity().getWorld(), entityCount.getOrDefault(event.getEntity().getWorld(), 1) - 1);
+    }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityAddToWorldEvent(EntityAddToWorldEvent event){
-        if(
-                !(event.getEntity() instanceof TNTPrimed) &&
-                !(event.getEntity() instanceof Projectile) &&
-                !(event.getEntity() instanceof Player) &&
-                !(event.getEntity() instanceof ArmorStand) &&
-                !(event.getEntity() instanceof Fireball) &&
-                !(event.getEntity() instanceof Item)
-        ){
-            event.getEntity().remove();
+        entityCount.put(event.getEntity().getWorld(), entityCount.getOrDefault(event.getEntity().getWorld(), 0) + 1);
+        if(entityCount.getOrDefault(event.getEntity().getWorld(), 0) > CoreGame.Instance.mwConfig.HardEntityLimit){
+            if(!(event.getEntity() instanceof Player)){
+                event.getEntity().remove();
+            }
         }
         if(!(event.getEntity() instanceof TNTPrimed)) return;
         MissileWarsMatch match = LobbyEngine.FromWorld(event.getEntity().getWorld());

@@ -42,6 +42,7 @@ public class Lobby {
         Match.AddPlayerToTeam(p, PlayerTeam.None);
     }
     public void RemovePlayer(Player p){
+        SendMessage(Chat.FormatPlayerAction(p, "has left the game."));
         Match.RemovePlayer(p);
     }
     public void SendMessage(Player sourcePlayer, String message){

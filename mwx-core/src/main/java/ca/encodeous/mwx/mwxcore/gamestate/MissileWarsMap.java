@@ -156,6 +156,11 @@ public class MissileWarsMap {
                 Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, new Runnable() {
                     @Override
                     public void run() {
+                        for(Entity e : MswWorld.getEntities()){
+                            if(!(e instanceof Player)){
+                                e.remove();
+                            }
+                        }
                         finished.run();
                     }
                 });

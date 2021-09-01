@@ -6,6 +6,12 @@ import ca.encodeous.mwx.mwxcore.utils.*;
 import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
 import ca.encodeous.mwx.mwxcore.world.PistonData;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import lobbyengine.Lobby;
 import lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
@@ -17,11 +23,16 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import pl.kacperduras.protocoltab.manager.TabManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class CoreGame {
     static{
@@ -48,7 +59,7 @@ public class CoreGame {
     public static StructureInterface GetStructureManager(){
         return Instance.mwImpl.GetStructureManager();
     }
-
+    private ProtocolManager protocolManager;
     public JavaPlugin mwPlugin;
 
     // Missile Wars
@@ -112,6 +123,9 @@ public class CoreGame {
             Instance = this;
             mwImpl.RegisterEvents(mwPlugin);
         }
+        if(protocolManager == null){
+            protocolManager = ProtocolLibrary.getProtocolManager();
+        }
         LoadConfig();
         // load worlds
         mwPlugin.getLogger().info("Loading template worlds...");
@@ -157,7 +171,46 @@ public class CoreGame {
         scheduler.runTaskTimerAsynchronously(mwPlugin, TPSMon.Instance, 0, 20);
         scheduler.runTaskTimer(mwPlugin, RealTPS.Instance, 0, 20);
         tabManager = new TabManager(mwPlugin);
-    }
+
+        protocolManager.addPacketListener(
+                new PacketAdapter(mwPlugin, ListenerPriority.NORMAL,
+                        PacketType.Play.Server.CHAT) {
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
+                        if (event.getPacketType() ==
+                                PacketType.Play.Server.CHAT) {
+                            try{
+                                if(event.getPacket().getChatComponents().getValues().size() == 0 ||
+                                        event.getPacket().getChatComponents().getValues().get(0) == null
+                                ) return;
+                                JSONObject obj = new JSONObject(
+                                        event.getPacket().getChatComponents().getValues().get(0).getJson());
+                                if(obj.has("translate") && obj.has("with") && obj.getString("translate").startsWith("death")){
+                                    // dealing with death event
+                                    JSONArray withArr = obj.getJSONArray("with");
+                                    ArrayList<Player> players = new ArrayList<>();
+                                    for(int i = 0; i < withArr.length(); i++){
+                                        players.add(Bukkit.getPlayer(withArr.getJSONObject(i).getString("insertion")));
+                                    }
+                                    HashSet<Player> allPlayers = new HashSet<>();
+                                    for(Player p : players){
+                                        MissileWarsMatch match = LobbyEngine.FromWorld(p.getWorld());
+                                        if(match != null){
+                                            allPlayers.addAll(match.Teams.keySet());
+                                        }
+                                    }
+                                    if(!allPlayers.contains(event.getPlayer())){
+                                        event.setCancelled(true);
+                                    }
+                                }
+                            }catch(JSONException e){
+                                // ignored
+                            }
+                        }
+                    }
+                }
+        );
+}
 
     public MissileWarsItem GetItemById(String id){
         for(MissileWarsItem i : mwConfig.Items){

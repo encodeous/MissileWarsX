@@ -12,6 +12,10 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
      */
     public int ResupplySeconds = 15;
     /**
+     * Number of entities allowed in a lobby
+     */
+    public int HardEntityLimit = 1000;
+    /**
      * Tps threshold to warn players of potential lag
      */
     public int TpsWarningThreshold = 17;
@@ -35,6 +39,7 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         conf.ResupplySeconds = (Integer)args.get("resupply-seconds");
         conf.TpsWarningThreshold = (Integer)args.get("tps-warning-threshold");
         conf.TpsCriticalThreshold = (Integer)args.get("tps-critical-threshold");
+        conf.HardEntityLimit = (Integer)args.get("lobby-entity-limit");
         conf.UseHelmets = (Boolean)args.get("use-helmets");
         return conf;
     }
@@ -44,6 +49,7 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         HashMap<String, Object> map = new HashMap<>();
         map.put("resupply-seconds", ResupplySeconds);
         map.put("tps-warning-threshold", TpsWarningThreshold);
+        map.put("lobby-entity-limit", HardEntityLimit);
         map.put("tps-critical-threshold", TpsCriticalThreshold);
         map.put("use-helmets", UseHelmets);
         map.put("items", Items);

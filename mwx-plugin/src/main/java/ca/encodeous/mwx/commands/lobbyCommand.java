@@ -25,7 +25,7 @@ public class lobbyCommand implements CommandExecutor {
                         if(val < 0 || val >= LobbyEngine.Lobbies.size()){
                             sender.sendMessage("The lobby you specified does not exist.");
                         }else{
-                            LobbyEngine.FromPlayer((Player) sender).RemovePlayer((Player) sender);
+                            LobbyEngine.FromPlayer((Player) sender).lobby.RemovePlayer((Player) sender);
                             LobbyEngine.GetLobby(val).AddPlayer((Player) sender);
                             sender.sendMessage(Chat.FCL("&9You have been teleported to lobby " + val + "."));
                         }

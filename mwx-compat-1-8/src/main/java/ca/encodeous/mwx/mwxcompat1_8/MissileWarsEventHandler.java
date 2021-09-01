@@ -21,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
@@ -146,6 +147,7 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void PlayerRespawnEvent(PlayerRespawnEvent e) {
+        CoreGame.GetImpl().PlaySound(e.getPlayer(), SoundType.RESPAWN);
         MissileWarsMatch match = LobbyEngine.FromPlayer(e.getPlayer());
         if(match != null){
             if(match.Teams.containsKey(e.getPlayer()))
@@ -166,7 +168,7 @@ public class MissileWarsEventHandler implements Listener {
             match.Tracer.TransformBlocks(e.getBlocks(), e.getDirection().getOppositeFace());
         }
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void PlayerDeath(PlayerDeathEvent e) {
         Player p = e.getEntity();
         MissileWarsMatch match = LobbyEngine.FromPlayer(p);
@@ -178,6 +180,8 @@ public class MissileWarsEventHandler implements Listener {
                     CoreGame.GetImpl().PlaySound(p.getKiller(), SoundType.KILL_TEAM);
                 }
             }
+            //match.lobby.SendMessage(e.getDeathMessage());
+            //e.setDeathMessage(null);
         }
         if(MCVersion.QueryVersion().getValue() < MCVersion.v1_15.getValue()){
             getServer().getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, () -> {

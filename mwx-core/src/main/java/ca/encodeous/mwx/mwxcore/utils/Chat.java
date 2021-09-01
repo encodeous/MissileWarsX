@@ -43,6 +43,7 @@ public class Chat {
         }
     }
     public static String FormatPlayerlist(ArrayList<Player> credits){
+        if(credits.size() == 0) return "";
         StringBuilder winString = new StringBuilder();
         if(credits.size() >= 2){
             for(int i = 0; i < credits.size() - 1; i++){
