@@ -39,7 +39,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
 
     @Override
     public void SendTitle(Player p, String title, String subtitle) {
-        p.sendTitle(Chat.FCL(title), Chat.FCL(subtitle), 10, 20 * 5, 10);
+        p.sendTitle(Chat.FCL(title), Chat.FCL(subtitle), 10, 20 * 3, 10);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package ca.encodeous.mwx.mwxcompat1_13.Structures;
 
 import ca.encodeous.mwx.configuration.Missile;
-import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
@@ -12,7 +11,7 @@ import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileMaterial;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
 import ca.encodeous.mwx.mwxcore.world.PistonData;
-import lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;

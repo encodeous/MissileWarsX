@@ -1,18 +1,14 @@
-package lobbyengine;
+package ca.encodeous.mwx.lobbyengine;
 
-import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Lobby {
-    // match settings
+    // match
     public MissileWarsMatch Match;
 
 
@@ -21,14 +17,11 @@ public class Lobby {
     public int teamSize;
     public int lobbyId;
     public boolean isClosed = false;
-    public Lobby(boolean isAutoJoin, int teamSize, int lobbyNumber) {
+    public Lobby(boolean isAutoJoin, int teamSize, int lobbyNumber, boolean isRanked) {
         this.isAutoJoin = isAutoJoin;
         this.teamSize = teamSize;
         this.lobbyId = lobbyNumber;
-        Match = new MissileWarsMatch(this);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(CoreGame.Instance.mwPlugin, ()->{
-
-        }, 0, 1);
+        Match = new MissileWarsMatch(this, isRanked);
     }
     public HashSet<Player> GetPlayers(){
         HashSet<Player> allPlayers = new HashSet<>();

@@ -3,7 +3,7 @@ package ca.encodeous.mwx.mwxcore.utils;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.soundengine.SoundType;
-import lobbyengine.Lobby;
+import ca.encodeous.mwx.lobbyengine.Lobby;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -35,11 +35,22 @@ public class Chat {
             lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up!");
         }
         lobby.SendMessage("&6Congratulations " + ResolveTeamColor(winningTeam) + winningTeam.name() + " &6team!");
-        for(Player p : lobby.Match.Green){
+        for(Player p : lobby.Match.Teams.keySet()){
+            CoreGame.GetImpl().SendTitle(p, "&6The " + ResolveTeamColor(winningTeam) + winningTeam.name() + " &6team has won!", "&6Congratulations!");
+        }
+    }
+    public static void TeamDraw(ArrayList<Player> credits, Lobby lobby, PlayerTeam losingTeam){
+        if(!credits.isEmpty()){
+            lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up by " + FormatPlayerlist(credits) + "&r!");
+        }else{
+            lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up!");
+        }
+        lobby.SendMessage("&6The game has ended in a draw!");
+        for(Player p : lobby.Match.Teams.keySet()){
             CoreGame.GetImpl().PlaySound(p, SoundType.WIN);
         }
         for(Player p : lobby.Match.Teams.keySet()){
-            CoreGame.GetImpl().SendTitle(p, "&6The " + ResolveTeamColor(winningTeam) + winningTeam.name() + " &6team has won!", "&6Congratulations!");
+            CoreGame.GetImpl().SendTitle(p, "&6The game has ended in a draw!", "");
         }
     }
     public static String FormatPlayerlist(ArrayList<Player> credits){

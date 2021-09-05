@@ -7,7 +7,7 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.MissileWarsImplementation;
 import com.keenant.tabbed.skin.SkinFetcher;
-import lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

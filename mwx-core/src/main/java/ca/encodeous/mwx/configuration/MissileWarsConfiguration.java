@@ -12,6 +12,10 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
      */
     public int ResupplySeconds = 15;
     /**
+     * Number of seconds to check for draws for
+     */
+    public int DrawSeconds = 5;
+    /**
      * Number of entities allowed in a lobby
      */
     public int HardEntityLimit = 1000;
@@ -37,6 +41,7 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         conf.Items = new ArrayList<>();
         ((List<Object>) args.get("items")).stream().map(x->(MissileWarsItem)x).forEach(x->conf.Items.add(x));
         conf.ResupplySeconds = (Integer)args.get("resupply-seconds");
+        conf.DrawSeconds = (Integer)args.get("draw-seconds");
         conf.TpsWarningThreshold = (Integer)args.get("tps-warning-threshold");
         conf.TpsCriticalThreshold = (Integer)args.get("tps-critical-threshold");
         conf.HardEntityLimit = (Integer)args.get("lobby-entity-limit");
@@ -48,6 +53,7 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
     public Map<String, Object> serialize() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("resupply-seconds", ResupplySeconds);
+        map.put("draw-seconds", DrawSeconds);
         map.put("tps-warning-threshold", TpsWarningThreshold);
         map.put("lobby-entity-limit", HardEntityLimit);
         map.put("tps-critical-threshold", TpsCriticalThreshold);

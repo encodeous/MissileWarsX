@@ -1,19 +1,16 @@
-package lobbyengine;
+package ca.encodeous.mwx.lobbyengine;
 
 import ca.encodeous.mwx.configuration.LobbyInfo;
-import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import com.keenant.tabbed.skin.SkinFetcher;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import pl.kacperduras.protocoltab.manager.PacketTablist;
 import pl.kacperduras.protocoltab.manager.TabItem;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -115,9 +112,9 @@ public class LobbyEngine {
         }
         return null;
     }
-    public static Lobby CreateLobby(int teamSize, boolean isAutoJoin){
+    public static Lobby CreateLobby(int teamSize, boolean isAutoJoin, boolean isRanked){
         int id = lobbyCount++;
-        Lobby lobby = new Lobby(isAutoJoin, teamSize, id);
+        Lobby lobby = new Lobby(isAutoJoin, teamSize, id, isRanked);
         lobby.Match.Map = CreateMap(isAutoJoin);;
         lobby.Match.Map.CreateMap(()->{});
         Lobbies.put(id, lobby);

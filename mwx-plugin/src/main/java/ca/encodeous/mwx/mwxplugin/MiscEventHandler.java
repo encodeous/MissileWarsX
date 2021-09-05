@@ -3,7 +3,7 @@ package ca.encodeous.mwx.mwxplugin;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
-import lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,11 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.world.WorldInitEvent;
 import pl.kacperduras.protocoltab.manager.PacketTablist;
-import pl.kacperduras.protocoltab.manager.TabItem;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MiscEventHandler implements Listener {

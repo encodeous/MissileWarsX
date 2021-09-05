@@ -2,7 +2,6 @@ package ca.encodeous.mwx.mwxcompat1_8.Structures;
 
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.mwxcompat1_8.MwConstants;
-import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.StructureInterface;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
@@ -14,7 +13,7 @@ import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileMaterial;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
 import ca.encodeous.mwx.mwxcore.world.PistonData;
-import lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.World;

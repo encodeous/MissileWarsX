@@ -1,18 +1,14 @@
 package ca.encodeous.mwx.commands;
 
 import ca.encodeous.mwx.mwxcore.utils.Chat;
-import ca.encodeous.mwx.mwxcore.utils.Utils;
-import lobbyengine.Lobby;
-import lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.lobbyengine.Lobby;
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class playersCommand  implements CommandExecutor {
     @Override

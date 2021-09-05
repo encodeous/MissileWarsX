@@ -10,14 +10,12 @@ import ca.encodeous.mwx.mwxcore.utils.Ref;
 import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.soundengine.SoundType;
-import lobbyengine.Lobby;
-import lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.lobbyengine.Lobby;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
@@ -44,8 +42,18 @@ public class MissileWarsMatch {
     public TraceEngine Tracer;
     public Lobby lobby;
     Random mwRand = new Random();
+    public boolean isDraw;
+    // ranked
+    public boolean isRanked;
+    public HashSet<Player> RankedGreen;
+    public HashSet<Player> RankedRed;
+    public boolean isRedReady;
+    public boolean isGreenReady;
+    // stats
+    public ConcurrentHashMap<UUID, Integer> Deaths;
+    public ConcurrentHashMap<UUID, Integer> Kills;
 
-    public MissileWarsMatch(Lobby lobby) {
+    public MissileWarsMatch(Lobby lobby, boolean ranked) {
         this.lobby = lobby;
         isActivated = true;
         hasStarted = false;
@@ -58,7 +66,12 @@ public class MissileWarsMatch {
         EventHandler = new MissileWarsEvents(this);
         startCounter = new Counter(CreateStartGameCountdown(), 20, 15);
         itemCounter = new Counter(new ItemCountdown(this), 20, -1);
-        endCounter = new Counter(CreateEndGameCountdown(), 20, 5);
+        endCounter = new Counter(CreateEndGameCountdown(), 20, CoreGame.Instance.mwConfig.DrawSeconds);
+        isRanked = ranked;
+        RankedGreen = new HashSet<>();
+        RankedRed = new HashSet<>();
+        Deaths = new ConcurrentHashMap<>();
+        Kills = new ConcurrentHashMap<>();
     }
 
     public void GreenPad(Player p){
@@ -129,6 +142,8 @@ public class MissileWarsMatch {
                     TeleportPlayer(p, PlayerTeam.Red);
                     p.setGameMode(GameMode.SURVIVAL);
                 }
+                RankedGreen.addAll(Green);
+                RankedRed.addAll(Red);
                 itemCounter.Start();
             }
         };
@@ -138,7 +153,7 @@ public class MissileWarsMatch {
         return new Countable() {
             @Override
             public void Count(Counter counter, int count) {
-                int remTime = 5 - count;
+                int remTime = CoreGame.Instance.mwConfig.DrawSeconds - count;
                 if (remTime == 1) {
                     lobby.SendMessage("&9Resetting game in &6" + remTime + "&a second!");
                 }else{
@@ -147,7 +162,7 @@ public class MissileWarsMatch {
                 for(Player p : Teams.keySet()){
                     CoreGame.GetImpl().PlaySound(p, SoundType.COUNTDOWN);
                     p.setLevel(remTime);
-                    p.setExp(remTime / 15.0f);
+                    p.setExp(remTime / (float)CoreGame.Instance.mwConfig.DrawSeconds);
                 }
             }
 
@@ -155,6 +170,7 @@ public class MissileWarsMatch {
             public void FinishedCount(Counter counter) {
                 lobby.SendMessage("&9Clearing map!");
                 counter.StopCounting();
+                ResetMatchInfo();
                 Reset();
             }
         };
@@ -163,26 +179,68 @@ public class MissileWarsMatch {
     public void PortalBroken(boolean isRed, ArrayList<Player> credits){
         PlayerTeam win = isRed? PlayerTeam.Green : PlayerTeam.Red;
         PlayerTeam lose = isRed? PlayerTeam.Red : PlayerTeam.Green;
-        Chat.TeamWin(credits, lobby, win, lose);
+        if(endCounter.isRunning()){
+            Chat.TeamDraw(credits, lobby, lose);
+            isDraw = true;
+        }else{
+            Chat.TeamWin(credits, lobby, win, lose);
+            for(Player p : Teams.keySet()){
+                p.setGameMode(GameMode.SPECTATOR);
+                DisplayStatistics(p);
+            }
+        }
         for(java.util.Map.Entry<Player, PlayerTeam> player : Teams.entrySet()){
             if(player.getValue() == win)
                 CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.WIN);
             CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.GAME_END);
         }
-        StartResetting();
+        for(Player p : Teams.keySet()){
+            CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&f&lChecking for draw..."));
+        }
+        endCounter.Start();
+    }
+
+    public void EndGame(){
+        for(Player p : Teams.keySet()){
+            p.setGameMode(GameMode.SPECTATOR);
+            DisplayStatistics(p);
+        }
+        for(Player p : lobby.GetPlayers()){
+            CoreGame.GetImpl().SendTitle(p, "&9The game has been reset", "&9by an Admin.");
+        }
+        isDraw = true;
+        ResetMatchInfo();
         endCounter.Start();
     }
 
     public void CheckGameReadyState(){
         if(hasStarted) return;
-        if(Red.size() != 0 && Green.size() != 0){
-            startCounter.Start();
+        if(isRanked){
+            if(Red.size() != 0 && Green.size() != 0){
+                if(isGreenReady && isRedReady){
+                    lobby.SendMessage("&aBoth teams are now ready. Once the timer reaches 0, the teams will be locked-in and no changes will be allowed.");
+                    startCounter.Start();
+                }else{
+                    lobby.SendMessage("&9Both teams need to run &6/ready &9to start the game.");
+                }
+            }else{
+                startCounter.StopCounting();
+                if(Red.size() + Green.size() == 1)
+                    lobby.SendMessage("&9The game needs at least 1 player in each team to start.");
+                for(Player p : Teams.keySet()){
+                    p.setLevel(0);
+                }
+            }
         }else{
-            startCounter.StopCounting();
-            if(Red.size() + Green.size() == 1)
-                lobby.SendMessage("&9The game needs at least 1 player in each team to start. To forcefully start a game, run &6/start&9.");
-            for(Player p : Teams.keySet()){
-                p.setLevel(0);
+            if(Red.size() != 0 && Green.size() != 0){
+                startCounter.Start();
+            }else{
+                startCounter.StopCounting();
+                if(Red.size() + Green.size() == 1)
+                    lobby.SendMessage("&9The game needs at least 1 player in each team to start. To forcefully start a game, run &6/start&9.");
+                for(Player p : Teams.keySet()){
+                    p.setLevel(0);
+                }
             }
         }
     }
@@ -208,10 +266,22 @@ public class MissileWarsMatch {
             mwRed.addEntry(p.getName());
             Red.add(p);
             lobby.SendMessage(Chat.FormatPlayerAction(p, "has joined the &cRed &rteam!"));
+            if(isRanked){
+                isRedReady = false;
+                for(Player pl : Red){
+                    pl.sendMessage(Chat.FCL("&cA player has joined your team, please run &6/ready &cagain when everyone is ready."));
+                }
+            }
         }else if(team == PlayerTeam.Green){
             mwGreen.addEntry(p.getName());
             Green.add(p);
             lobby.SendMessage(Chat.FormatPlayerAction(p, "has joined the &aGreen &rteam!"));
+            if(isRanked){
+                isGreenReady = false;
+                for(Player pl : Green){
+                    pl.sendMessage(Chat.FCL("&cA player has joined your team, please run &6/ready &cagain when everyone is ready."));
+                }
+            }
         }else if(team == PlayerTeam.None){
             mwLobby.addEntry(p.getName());
             None.add(p);
@@ -261,6 +331,19 @@ public class MissileWarsMatch {
         p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         boolean affectGame = false;
         if(Green.contains(p) || Red.contains(p)) affectGame = true;
+        if(isRanked && affectGame){
+            if(Green.contains(p)){
+                isGreenReady = false;
+                for(Player pl : Green){
+                    pl.sendMessage(Chat.FCL("&cA player has left your team, please run &6/ready &cagain when everyone is ready."));
+                }
+            }else{
+                isRedReady = false;
+                for(Player pl : Red){
+                    pl.sendMessage(Chat.FCL("&cA player has left your team, please run &6/ready &cagain when everyone is ready."));
+                }
+            }
+        }
         Teams.remove(p);
         None.remove(p);
         Spectators.remove(p);
@@ -312,12 +395,24 @@ public class MissileWarsMatch {
         use.val = true;
     }
 
-    public void StartResetting(){
+    public void ResetMatchInfo(){
+        if(isRanked){
+            FinalizeRankings(isDraw);
+            RankedGreen = new HashSet<>();
+            RankedRed = new HashSet<>();
+        }
+        isDraw = false;
         itemCounter.StopCounting();
         startCounter.StopCounting();
-        for(Player p : Teams.keySet()){
-            p.setGameMode(GameMode.SPECTATOR);
-        }
+        Deaths = new ConcurrentHashMap<>();
+        Kills = new ConcurrentHashMap<>();
+    }
+
+    public void FinalizeRankings(boolean isDraw){
+
+    }
+    public void DisplayStatistics(Player p){
+
     }
 
     public void Reset(){

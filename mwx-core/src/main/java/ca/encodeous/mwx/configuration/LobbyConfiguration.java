@@ -8,6 +8,8 @@ public class LobbyConfiguration implements ConfigurationSerializable {
     public String Header = "&f&lWelcome to &c&lMissile&f&lWars&6&lX&f&l.";
     public String Footer = "&fUse &6/lobby &fto navigate between lobbies, and &6/players &fto see all players.\n" +
             "&e&oHelp contribute to MissileWarsX at &6https://github.com/encodeous/MissileWarsX&e!";
+    public String JoinMessage = "&f&lWelcome to the &c&lMissile&f&lWars&6&lX &f&ldevelopment and test server!\n" +
+            "&eCheck out MissileWars on GitHub at &6https://git.io/missilewars";
     public List<LobbyInfo> Lobbies = GetDefaultLobbyInfo();
     public static List<LobbyInfo> GetDefaultLobbyInfo(){
         LobbyInfo mainLobby = new LobbyInfo();
@@ -19,8 +21,10 @@ public class LobbyConfiguration implements ConfigurationSerializable {
         LobbyInfo oneOnOne1 = new LobbyInfo();
         oneOnOne1.AutoJoin = true;
         oneOnOne1.MaxTeamSize = 1;
+        oneOnOne1.IsRanked = true;
         LobbyInfo oneOnOne2 = new LobbyInfo();
         oneOnOne2.AutoJoin = true;
+        oneOnOne2.IsRanked = true;
         oneOnOne2.MaxTeamSize = 1;
         return Arrays.asList(mainLobby, secondaryLobby, oneOnOne1, oneOnOne2);
     }

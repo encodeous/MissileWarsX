@@ -1,18 +1,16 @@
 package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
 import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
-import lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
