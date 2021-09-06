@@ -80,6 +80,7 @@ public final class MissileWarsX extends JavaPlugin {
         getCommand("mwgive").setExecutor(new mwgiveCommand());
         getCommand("reset").setExecutor(new mwresetCommand());
         getCommand("players").setExecutor(new playersCommand());
+        getCommand("ready").setExecutor(new readyCommand());
         getCommand("wipe").setExecutor(new mwwipeCommand());
         getCommand("mwitems").setExecutor(new mwitemsCommand());
         getCommand("mwmissiles").setExecutor(new mwmissilesCommand());

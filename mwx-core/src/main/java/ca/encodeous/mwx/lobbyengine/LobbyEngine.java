@@ -4,8 +4,11 @@ import ca.encodeous.mwx.configuration.LobbyInfo;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.utils.Chat;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
+import ca.encodeous.mwx.mwxstats.PlayerStats;
 import com.keenant.tabbed.skin.SkinFetcher;
+import de.gesundkrank.jskills.Rating;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import pl.kacperduras.protocoltab.manager.PacketTablist;
@@ -34,14 +37,23 @@ public class LobbyEngine {
 
         // player info
         tabs.put(2, CreateText("&6Current Lobby: &a" + match.lobby.lobbyId));
-        tabs.put(3, CreateText("&6Wins: &aN/A"));
-        tabs.put(4, CreateText("&6Games: &aN/A"));
-        tabs.put(5, CreateText("&6Streak: &aN/A"));
-        tabs.put(6, CreateText("&6All-time Streak: &aN/A"));
-        tabs.put(7, CreateText("&6Trueskill: &aN/A"));
-        tabs.put(8, CreateText("&6K/D Ratio: &aN/A"));
-        tabs.put(9, CreateText("&6Time Played: &aN/A"));
-        tabs.put(10, CreateText("&6Latency: &a" + Utils.GetPlayerPing(p)+" &ams"));
+        try {
+            PlayerStats stat = CoreGame.Stats.statsDao.queryForId(p.getUniqueId());
+            tabs.put(3, CreateText("&6Wins: &a" + stat.Wins));
+            tabs.put(4, CreateText("&6Draws: &a" + stat.Draws));
+            tabs.put(5, CreateText("&6Losses: &a" + stat.Losses));
+            tabs.put(6, CreateText("&6Streak: &a" + stat.Streak));
+            tabs.put(7, CreateText("&6All-time Streak: &a" + stat.MaxStreak));
+            Rating rating = new Rating(stat.TrueSkill, stat.TrueSkillDev);
+            tabs.put(8, CreateText("&6Trueskill: &a" + Chat.F(rating.getConservativeRating()) + ", " + Chat.F(rating.getStandardDeviation())));
+            tabs.put(9, CreateText("&6Kills: &a" + stat.Kills));
+            tabs.put(10, CreateText("&6Deaths: &a" + stat.Deaths));
+            tabs.put(11, CreateText("&6Portals Broken: &a" + stat.PortalsBroken));
+        } catch (Exception e) {
+            tabs.put(3, CreateText("&cFailed fetching stats"));
+            e.printStackTrace();
+        }
+        tabs.put(12, CreateText("&6Latency: &a" + Utils.GetPlayerPing(p)+" &ams"));
 
         // lobbies
         int lobbyCount = CoreGame.Instance.mwLobbies.Lobbies.size();
@@ -52,7 +64,8 @@ public class LobbyEngine {
                 tabs.put(22 + lIdx, CreateText("&c&lMissile&f&lWars &6" + lIdx));
                 Lobby realLobby = GetLobby(lIdx);
                 tabs.put(42 + lIdx, CreateText("&7" + lobby.MaxTeamSize + "v" + lobby.MaxTeamSize
-                        + " &f - &6" + realLobby.GetPlayers().size() + "&f/&7" + (2 * lobby.MaxTeamSize)));
+                        + " (" + (lobby.AutoJoin ? "Auto": "Manual") + (lobby.IsRanked ? "Ranked": "Unranked") +") &f - &6" + realLobby.GetPlayers().size() + "&f/&7"
+                        + (2 * lobby.MaxTeamSize)));
                 if(lIdx == 16) break;
                 lIdx++;
             }
@@ -62,7 +75,7 @@ public class LobbyEngine {
                 tabs.put(22 + lIdx, CreateText("&c&lMissile&f&lWars &6" + lIdx));
                 Lobby realLobby = GetLobby(lIdx);
                 tabs.put(42 + lIdx, CreateText("&7" + lobby.MaxTeamSize + "v" + lobby.MaxTeamSize
-                        + " (" + (lobby.AutoJoin ? "A": "M") + ") &f - &6" + realLobby.GetPlayers().size() + "&f/&7"
+                        + " (" + (lobby.AutoJoin ? "A": "M") + "/" + (lobby.IsRanked ? "R": "U") +") &f - &6" + realLobby.GetPlayers().size() + "&f/&7"
                         + (2 * lobby.MaxTeamSize)));
                 lIdx++;
             }

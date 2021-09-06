@@ -64,6 +64,9 @@ commands:
   spectate:
     description: Spectate the game
     usage: /<command>
+  ready:
+    description: Signal that your team is ready in a ranked game
+    usage: /<command>
   # Info commands
   mwitems:
     description: Lists all registered items

@@ -10,23 +10,23 @@ public class PlayerStats {
     @DatabaseField(id = true)
     public UUID PlayerId;
     @DatabaseField
-    public float TrueSkill = 1200;
+    public double TrueSkill = 1475;
     @DatabaseField
-    public float TrueSkillCertainty = 100;
+    public double TrueSkillDev = 100;
     @DatabaseField
     public int Kills;
     @DatabaseField
     public int Deaths;
     @DatabaseField
+    public int Streak;
+    @DatabaseField
+    public int MaxStreak;
+    @DatabaseField
     public int Wins;
+    @DatabaseField
+    public int Draws;
     @DatabaseField
     public int Losses;
     @DatabaseField
-    public int Wins1v1;
-    @DatabaseField
-    public int Losses1v1;
-    @DatabaseField
     public int PortalsBroken;
-    @DatabaseField
-    public int MissilesPlaced;
 }

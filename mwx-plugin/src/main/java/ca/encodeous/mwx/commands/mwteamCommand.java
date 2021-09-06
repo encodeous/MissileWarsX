@@ -24,6 +24,10 @@ public class mwteamCommand implements CommandExecutor {
                 lobby = LobbyEngine.GetLobby(0);
             }
             MissileWarsMatch match = lobby.Match;
+            if(match.isRanked){
+                sender.sendMessage("Cannot switch teams in a ranked game.");
+                return true;
+            }
             Player p = Bukkit.getPlayer(args[0]);
             if(p == null){
                 sender.sendMessage("Player not found!");

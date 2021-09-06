@@ -135,10 +135,10 @@ public class MissileWarsMap {
     }
     public void CleanMap(Runnable finished){
         if(isBusy) return;
+        isBusy = true;
         Bukkit.getScheduler().runTaskAsynchronously(CoreGame.Instance.mwPlugin, new Runnable() {
             @Override
             public void run() {
-                isBusy = true;
                 CuboidRegion destFullRegion = WorldMaxBoundingBox.toWorldeditRegion(MswWorld);
                 CuboidRegion destRegion = WorldBoundingBox.toWorldeditRegion(MswWorld);
                 Clipboard board = getClipboard();

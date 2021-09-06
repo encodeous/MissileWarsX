@@ -37,6 +37,9 @@ public class Lobby {
     public void RemovePlayer(Player p){
         SendMessage(Chat.FormatPlayerAction(p, "has left the game."));
         Match.RemovePlayer(p);
+        if(GetPlayers().isEmpty() && (Match.hasStarted || Match.startCounter.isRunning()) && !Match.endCounter.isRunning()){
+            Match.EndGame();
+        }
     }
     public void SendMessage(Player sourcePlayer, String message){
         for(Player p : GetPlayers()){

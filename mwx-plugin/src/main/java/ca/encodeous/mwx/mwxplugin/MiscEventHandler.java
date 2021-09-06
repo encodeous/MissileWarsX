@@ -33,7 +33,7 @@ public class MiscEventHandler implements Listener {
                 int tId = PlayerUpdateTasks.get(player);
                 Bukkit.getScheduler().cancelTask(tId);
             }
-        }, 20L, 20L).getTaskId();
+        }, 20L, 3 * 20L).getTaskId();
         PlayerUpdateTasks.put(player, taskId);
     }
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

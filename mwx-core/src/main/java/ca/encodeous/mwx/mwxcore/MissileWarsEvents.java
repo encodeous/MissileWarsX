@@ -57,7 +57,7 @@ public class MissileWarsEvents {
         if(!match.Map.RedPortal.IsInBounds(block.getLocation().toVector()) &&
                 !match.Map.GreenPortal.IsInBounds(block.getLocation().toVector())) return false;
         if(block.getType() == CoreGame.GetImpl().GetPortalMaterial()){
-            if(match.hasStarted){
+            if(match.hasStarted && !match.Map.isBusy){
                 HashSet<UUID> credits = match.Tracer.FindCause(entity);
                 ArrayList<Player> players = new ArrayList<>();
                 for(UUID id : credits){

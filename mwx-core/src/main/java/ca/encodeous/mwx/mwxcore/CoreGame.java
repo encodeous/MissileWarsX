@@ -124,7 +124,6 @@ public class CoreGame {
     }
 
     public void InitializeGame() {
-        Stats = new StatisticManager("mwxstats", mwPlugin);
         if (Instance == null) {
             Instance = this;
             mwImpl.RegisterEvents(mwPlugin);
@@ -133,6 +132,7 @@ public class CoreGame {
             protocolManager = ProtocolLibrary.getProtocolManager();
         }
         LoadConfig();
+        Stats = new StatisticManager("mwxstats", mwPlugin);
         // load worlds
         mwPlugin.getLogger().info("Loading template worlds...");
         try {
@@ -168,12 +168,13 @@ public class CoreGame {
         mwMissiles = ResourceLoader.LoadMissiles(mwPlugin);
         mwPlugin.getLogger().info("MissileWarsX fully loaded!");
 
-        mwPlugin.getLogger().info("Creating lobbies...");
-        for (LobbyInfo info : mwLobbies.Lobbies) {
-            LobbyEngine.CreateLobby(info.MaxTeamSize, info.AutoJoin, info.IsRanked);
-        }
-
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        scheduler.runTask(mwPlugin, ()->{
+            mwPlugin.getLogger().info("Creating lobbies...");
+            for (LobbyInfo info : mwLobbies.Lobbies) {
+                LobbyEngine.CreateLobby(info.MaxTeamSize, info.AutoJoin, info.IsRanked);
+            }
+        });
         scheduler.runTaskTimerAsynchronously(mwPlugin, TPSMon.Instance, 0, 20);
         scheduler.runTaskTimer(mwPlugin, RealTPS.Instance, 0, 20);
         tabManager = new TabManager(mwPlugin);

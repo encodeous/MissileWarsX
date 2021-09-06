@@ -22,6 +22,10 @@ public class mwstartCommand implements CommandExecutor {
                 lobby = LobbyEngine.GetLobby(0);
             }
             MissileWarsMatch match = lobby.Match;
+            if(match.isRanked){
+                sender.sendMessage("Ranked games cannot be forcibly started.");
+                return true;
+            }
             if(match.Map.isBusy || match.endCounter.isRunning() || match.startCounter.isRunning()){
                 sender.sendMessage("The game cannot be started at this time!");
             }else if(!match.hasStarted){

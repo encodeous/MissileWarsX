@@ -7,6 +7,7 @@ import ca.encodeous.mwx.lobbyengine.Lobby;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Chat {
@@ -38,6 +39,10 @@ public class Chat {
         for(Player p : lobby.Match.Teams.keySet()){
             CoreGame.GetImpl().SendTitle(p, "&6The " + ResolveTeamColor(winningTeam) + winningTeam.name() + " &6team has won!", "&6Congratulations!");
         }
+    }
+    private static DecimalFormat df = new DecimalFormat("###.##");
+    public static String F(double d){
+        return df.format(d);
     }
     public static void TeamDraw(ArrayList<Player> credits, Lobby lobby, PlayerTeam losingTeam){
         if(!credits.isEmpty()){

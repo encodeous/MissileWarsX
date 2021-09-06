@@ -12,9 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class StatisticManager {
     private String dbString;
@@ -43,32 +41,16 @@ public class StatisticManager {
             throwables.printStackTrace();
         }
     }
-//    public void AddPlayerDeath(Player p, UUID match){
-//        KillInfo ki = new KillInfo();
-//        ki.Killed = p.getUniqueId();
-//        ki.MatchId = match;
-//        UUID killer = new UUID(0,0);
-//        if(p.getKiller() != null){
-//            killer = p.getKiller().getUniqueId();
-//            Modify(statsDao, p.getKiller().getUniqueId(), x->{
-//                x.Kills++;
-//            });
-//        }
-//        Modify(statsDao, p.getUniqueId(), x->{
-//            x.Deaths++;
-//        });
-//        ki.Killer = killer;
-//        try {
-//            killDao.create(ki);
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-//    }
-//    public void MissilePlaced(Player p){
-//        Modify(statsDao, p.getUniqueId(), x->{
-//            x.MissilesPlaced++;
-//        });
-//    }
+
+    public PlayerStats GetPlayerStats(Player p){
+        try {
+            return statsDao.queryForId(p.getUniqueId());
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
     public void CreatePlayer(Player p){
         try {
             if(!statsDao.idExists(p.getUniqueId())){
@@ -92,6 +74,8 @@ public class StatisticManager {
     }
     public void close(){
         try {
+            DaoManager.unregisterDao(source, statsDao);
+            DaoManager.unregisterDao(source, matchDao);
             source.close();
         } catch (IOException e) {
             e.printStackTrace();

@@ -176,7 +176,9 @@ public class MissileWarsEventHandler implements Listener {
                 }else{
                     CoreGame.GetImpl().PlaySound(p.getKiller(), SoundType.KILL_TEAM);
                 }
+                match.Kills.put(p.getKiller().getUniqueId(), match.Deaths.getOrDefault(p.getKiller().getUniqueId(), 0) + 1);
             }
+            match.Deaths.put(p.getUniqueId(), match.Deaths.getOrDefault(p.getUniqueId(), 0) + 1);
             //match.lobby.SendMessage(e.getDeathMessage());
             //e.setDeathMessage(null);
         }

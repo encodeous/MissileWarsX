@@ -5,22 +5,25 @@ import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
-import ca.encodeous.mwx.mwxcore.utils.Chat;
-import ca.encodeous.mwx.mwxcore.utils.Ref;
-import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
-import ca.encodeous.mwx.mwxcore.utils.Utils;
+import ca.encodeous.mwx.mwxcore.utils.*;
+import ca.encodeous.mwx.mwxstats.MatchParticipation;
+import ca.encodeous.mwx.mwxstats.PlayerStats;
 import ca.encodeous.mwx.soundengine.SoundType;
 import ca.encodeous.mwx.lobbyengine.Lobby;
+import de.gesundkrank.jskills.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
+import java.sql.SQLException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class MissileWarsMatch {
     // Map info
@@ -43,6 +46,7 @@ public class MissileWarsMatch {
     public Lobby lobby;
     Random mwRand = new Random();
     public boolean isDraw;
+    public PlayerTeam winningTeam;
     // ranked
     public boolean isRanked;
     public HashSet<Player> RankedGreen;
@@ -80,6 +84,12 @@ public class MissileWarsMatch {
             CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis team is full!"));
             return;
         }
+        if(isRanked && hasStarted){
+            if(!RankedGreen.contains(p)){
+                CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cYou cannot join this game because the teams are locked"));
+                return;
+            }
+        }
         RemovePlayer(p);
         AddPlayerToTeam(p, PlayerTeam.Green);
     }
@@ -89,6 +99,12 @@ public class MissileWarsMatch {
             CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis team is full!"));
             return;
         }
+        if(isRanked && hasStarted){
+            if(!RankedRed.contains(p)){
+                CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cYou cannot join this game because the teams are locked"));
+                return;
+            }
+        }
         RemovePlayer(p);
         AddPlayerToTeam(p, PlayerTeam.Red);
     }
@@ -97,6 +113,16 @@ public class MissileWarsMatch {
         if(Red.size() == lobby.teamSize && Green.size() == lobby.teamSize){
             CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis game is full!"));
             return;
+        }
+        if(isRanked && hasStarted){
+            if(!RankedRed.contains(p) && !RankedGreen.contains(p)){
+                CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cYou cannot join this game because the teams are locked"));
+                return;
+            }else if(RankedRed.contains(p)){
+                AddPlayerToTeam(p, PlayerTeam.Red);
+            }else{
+                AddPlayerToTeam(p, PlayerTeam.Green);
+            }
         }
         RemovePlayer(p);
         PlayerTeam team;
@@ -177,20 +203,24 @@ public class MissileWarsMatch {
     }
 
     public void PortalBroken(boolean isRed, ArrayList<Player> credits){
-        PlayerTeam win = isRed? PlayerTeam.Green : PlayerTeam.Red;
+        winningTeam = isRed? PlayerTeam.Green : PlayerTeam.Red;
         PlayerTeam lose = isRed? PlayerTeam.Red : PlayerTeam.Green;
         if(endCounter.isRunning()){
             Chat.TeamDraw(credits, lobby, lose);
             isDraw = true;
         }else{
-            Chat.TeamWin(credits, lobby, win, lose);
+            Chat.TeamWin(credits, lobby, winningTeam, lose);
             for(Player p : Teams.keySet()){
                 p.setGameMode(GameMode.SPECTATOR);
-                DisplayStatistics(p);
             }
         }
+        for(Player p : credits){
+            CoreGame.Stats.Modify(CoreGame.Stats.statsDao, p.getUniqueId(), x->{
+                x.PortalsBroken++;
+            });
+        }
         for(java.util.Map.Entry<Player, PlayerTeam> player : Teams.entrySet()){
-            if(player.getValue() == win)
+            if(player.getValue() == winningTeam)
                 CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.WIN);
             CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.GAME_END);
         }
@@ -203,13 +233,11 @@ public class MissileWarsMatch {
     public void EndGame(){
         for(Player p : Teams.keySet()){
             p.setGameMode(GameMode.SPECTATOR);
-            DisplayStatistics(p);
         }
         for(Player p : lobby.GetPlayers()){
-            CoreGame.GetImpl().SendTitle(p, "&9The game has been reset", "&9by an Admin.");
+            CoreGame.GetImpl().SendTitle(p, "&9The game has been reset.", "");
         }
         isDraw = true;
-        ResetMatchInfo();
         endCounter.Start();
     }
 
@@ -254,6 +282,8 @@ public class MissileWarsMatch {
 
     public void AddPlayerToTeam(Player p, PlayerTeam team){
         if(IsPlayerInTeam(p, team)) return;
+        Kills.putIfAbsent(p.getUniqueId(), 0);
+        Deaths.putIfAbsent(p.getUniqueId(), 0);
         RemovePlayer(p);
         if(team == PlayerTeam.Green || team == PlayerTeam.Red){
             CoreGame.GetImpl().EquipPlayer(p, team == PlayerTeam.Red);
@@ -269,7 +299,7 @@ public class MissileWarsMatch {
             if(isRanked){
                 isRedReady = false;
                 for(Player pl : Red){
-                    pl.sendMessage(Chat.FCL("&cA player has joined your team, please run &6/ready &cagain when everyone is ready."));
+                    pl.sendMessage(Chat.FCL("&cA player has joined the team, please run &6/ready &cwhen everyone is ready."));
                 }
             }
         }else if(team == PlayerTeam.Green){
@@ -279,7 +309,7 @@ public class MissileWarsMatch {
             if(isRanked){
                 isGreenReady = false;
                 for(Player pl : Green){
-                    pl.sendMessage(Chat.FCL("&cA player has joined your team, please run &6/ready &cagain when everyone is ready."));
+                    pl.sendMessage(Chat.FCL("&cA player has joined the team, please run &6/ready &cwhen everyone is ready."));
                 }
             }
         }else if(team == PlayerTeam.None){
@@ -296,6 +326,22 @@ public class MissileWarsMatch {
         }
         CheckGameReadyState();
         if(team != PlayerTeam.Spectator) TeleportPlayer(p, team);
+    }
+
+    public void TeamReady(PlayerTeam team){
+        lobby.SendMessage("&fThe " + Chat.ResolveTeamColor(team) + team.name() + "&f is now ready.");
+        if(team == PlayerTeam.Red){
+            isRedReady = true;
+            for(Player p : Red){
+                p.sendMessage(Chat.FCL("&cYour team is now ready. &6Once the game is started, the teams will be locked and rankings will be calculated when the game ends."));
+            }
+        }else{
+            isGreenReady = true;
+            for(Player p : Green){
+                p.sendMessage(Chat.FCL("&cYour team is now ready. &6Once the game is started, the teams will be locked and rankings will be calculated when the game ends."));
+            }
+        }
+        CheckGameReadyState();
     }
 
     public void TeleportPlayer(Player p, PlayerTeam team){
@@ -396,8 +442,8 @@ public class MissileWarsMatch {
     }
 
     public void ResetMatchInfo(){
+        FinalizeMatch(isDraw);
         if(isRanked){
-            FinalizeRankings(isDraw);
             RankedGreen = new HashSet<>();
             RankedRed = new HashSet<>();
         }
@@ -408,11 +454,128 @@ public class MissileWarsMatch {
         Kills = new ConcurrentHashMap<>();
     }
 
-    public void FinalizeRankings(boolean isDraw){
-
+    public static HashMap<UUID, Rating> CalculateTrueSkill(List<PlayerStats> winners, List<PlayerStats> losers){
+        GameInfo gi = new GameInfo(1475, 100, 50, 5, 0.05);
+        TrueSkillTeam winnersRatings = new TrueSkillTeam();
+        TrueSkillTeam losersRatings = new TrueSkillTeam();
+        for(PlayerStats stat : winners){
+            winnersRatings.put(new TrueSkillPlayer(stat.PlayerId), new Rating(stat.TrueSkill, stat.TrueSkillDev));
+        }
+        for(PlayerStats stat : losers){
+            losersRatings.put(new TrueSkillPlayer(stat.PlayerId), new Rating(stat.TrueSkill, stat.TrueSkillDev));
+        }
+        Map<IPlayer, Rating> res = TrueSkillCalculator.calculateNewRatings(gi, Arrays.asList(winnersRatings, losersRatings), 1, 2);
+        HashMap<UUID, Rating> newStats = new HashMap<>();
+        for(Map.Entry<IPlayer, Rating> stat : res.entrySet()){
+            newStats.put(((TrueSkillPlayer)stat.getKey()).id, stat.getValue());
+        }
+        return newStats;
     }
-    public void DisplayStatistics(Player p){
 
+    public void FinalizeMatch(boolean isDraw){
+        UUID matchId = UUID.randomUUID();
+        ArrayList<Player> winTeam = new ArrayList<>();
+        ArrayList<Player> loseTeam = new ArrayList<>();
+        ArrayList<Player> allTeamPlayers = new ArrayList<>();
+        if(isRanked){
+            allTeamPlayers.addAll(RankedRed);
+            allTeamPlayers.addAll(RankedGreen);
+            if(winningTeam == PlayerTeam.Red){
+                winTeam.addAll(RankedRed);
+                loseTeam.addAll(RankedGreen);
+            }else{
+                winTeam.addAll(RankedGreen);
+                loseTeam.addAll(RankedRed);
+            }
+            HashMap<UUID, Rating> newRankings = CalculateTrueSkill(
+                    winTeam.stream().map(x->CoreGame.Stats.GetPlayerStats(x)).collect(Collectors.toList()),
+                    loseTeam.stream().map(x->CoreGame.Stats.GetPlayerStats(x)).collect(Collectors.toList()));
+            for(Player p : allTeamPlayers){
+                CoreGame.Stats.Modify(CoreGame.Stats.statsDao, p.getUniqueId(), w->{
+                    MatchParticipation x = ConfigureMatchDefaults(matchId, winTeam, p);
+                    x.IsRanked = true;
+                    x.TrueSkillBefore = w.TrueSkill;
+                    x.TrueSkillDevBefore = w.TrueSkillDev;
+                    if(isDraw){
+                        x.TrueSkillAfter = w.TrueSkill;
+                        x.TrueSkillDevAfter = w.TrueSkillDev;
+                    }else{
+                        x.TrueSkillAfter = newRankings.get(p.getUniqueId()).getMean();
+                        x.TrueSkillDevAfter = newRankings.get(p.getUniqueId()).getStandardDeviation();
+                        w.TrueSkill = newRankings.get(p.getUniqueId()).getMean();
+                        w.TrueSkillDev = newRankings.get(p.getUniqueId()).getStandardDeviation();
+                    }
+                    try {
+                        CoreGame.Stats.matchDao.create(x);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    UpdateStatistics(isDraw, winTeam, p, w);
+                    DisplayStatistics(p, x);
+                });
+            }
+            return;
+        }
+        allTeamPlayers.addAll(Red);
+        allTeamPlayers.addAll(Green);
+        if(winningTeam == PlayerTeam.Red){
+            winTeam.addAll(Red);
+        }else{
+            winTeam.addAll(Green);
+        }
+        // update stats
+        for(Player p : allTeamPlayers){
+            try {
+                MatchParticipation info = ConfigureMatchDefaults(matchId, winTeam, p);
+                DisplayStatistics(p, info);
+                CoreGame.Stats.matchDao.create(info);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            CoreGame.Stats.Modify(CoreGame.Stats.statsDao, p.getUniqueId(), w->{
+                UpdateStatistics(isDraw, winTeam, p, w);
+            });
+        }
+    }
+
+    private void UpdateStatistics(boolean isDraw, ArrayList<Player> winTeam, Player p, PlayerStats w) {
+        if(isDraw){
+            w.Draws++;
+        }else if(winTeam.contains(p)){
+            w.Wins++;
+            w.Streak++;
+            w.MaxStreak = Math.max(w.MaxStreak, w.Streak);
+        }else{
+            w.Streak = 0;
+            w.Losses++;
+        }
+        w.Kills += Kills.get(p.getUniqueId());
+        w.Deaths += Deaths.get(p.getUniqueId());
+    }
+
+    private MatchParticipation ConfigureMatchDefaults(UUID matchId, ArrayList<Player> winTeam, Player p) {
+        MatchParticipation x = new MatchParticipation();
+        x.MatchId = matchId;
+        x.HasWon = winTeam.contains(p);
+        x.Deaths = Deaths.get(p.getUniqueId());
+        x.PlayerId = p.getUniqueId();
+        x.IsRanked = false;
+        x.Kills = Kills.get(p.getUniqueId());
+        x.EndTime = Date.from(Instant.now());
+        return x;
+    }
+
+    public void DisplayStatistics(Player p, MatchParticipation match){
+        if(match.IsRanked){
+            Rating original = new Rating(match.TrueSkillBefore, match.TrueSkillDevBefore);
+            Rating result = new Rating(match.TrueSkillAfter, match.TrueSkillDevAfter);
+            p.sendMessage(Chat.FCL(
+                    "&f&lRANKED MATCH RESULTS\n" +
+                    "&7Trueskill Change: &6" + Chat.F(original.getConservativeRating()) + "&7, &6" + Chat.F(original.getStandardDeviation())
+                            + " &7-> &6" + Chat.F(result.getConservativeRating()) + "&7, &6" + Chat.F(result.getStandardDeviation())));
+        }
+        p.sendMessage(Chat.FCL("&f&lMATCH STATISTICS\n&7In this match you have died &6"
+                + match.Deaths + " &7times and killed &6" + match.Kills + " &7players."));
     }
 
     public void Reset(){

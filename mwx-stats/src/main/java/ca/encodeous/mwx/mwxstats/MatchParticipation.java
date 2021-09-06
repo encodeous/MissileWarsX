@@ -13,25 +13,23 @@ public class MatchParticipation {
     @DatabaseField
     public UUID MatchId;
     @DatabaseField
+    public UUID PlayerId;
+    @DatabaseField
     public boolean HasWon;
     @DatabaseField
     public boolean IsRanked;
     @DatabaseField
     public Date EndTime;
     @DatabaseField
-    public float DamageDealt;
-    @DatabaseField
-    public float DamageReceived;
-    @DatabaseField
     public int Kills;
     @DatabaseField
     public int Deaths;
     @DatabaseField
-    public float TrueSkillBefore;
+    public double TrueSkillBefore;
     @DatabaseField
-    public float TrueSkillCertaintyBefore;
+    public double TrueSkillDevBefore;
     @DatabaseField
-    public float TrueSkillAfter;
+    public double TrueSkillAfter;
     @DatabaseField
-    public float TrueSkillCertaintyAfter;
+    public double TrueSkillDevAfter;
 }
