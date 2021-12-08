@@ -54,7 +54,7 @@ public class ItemCountdown implements Countable{
             }
         }else{
             CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_NOT_GIVEN);
-            CoreGame.GetImpl().SendActionBar(p, Strings.ITEM_NOT_GIVEN);
+            CoreGame.GetImpl().SendActionBar(p, String.format(Strings.ITEM_NOT_GIVEN, item.MissileWarsItemId));
         }
     }
 

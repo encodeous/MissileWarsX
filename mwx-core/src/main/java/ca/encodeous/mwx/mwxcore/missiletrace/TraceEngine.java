@@ -163,17 +163,29 @@ public class TraceEngine {
         return blocks;
     }
 
-    private static void PropagatePortalBreakInternal(Block block, World world, HashSet<Block> visited, ArrayList<Block> remove){
+    private static void PropagatePortalBreakInternal(Block block, World world, HashSet<Vector> visited, ArrayList<Block> remove){
         // Just a simple bfs :)
-        visited.add(block);
+        Queue<Block> queue = new ArrayDeque<>();
         if(block.getType() == CoreGame.GetImpl().GetPortalMaterial()){
-            for(int i = 0; i < 6; i++){
-                Block newBlock = world.getBlockAt(block.getX() + offsetx[i], block.getY() + offsety[i], block.getZ() + offsetz[i]);
-                if(visited.contains(newBlock)) continue;
-                visited.add(newBlock);
-                PropagatePortalBreakInternal(newBlock, world, visited, remove);
-            }
             remove.add(block);
+            queue.add(block);
+            visited.add(block.getLocation().toVector());
+        }else{
+            queue.add(block);
+            visited.add(block.getLocation().toVector());
+        }
+
+        while(!queue.isEmpty()){
+            Block cur = queue.poll();
+            for(int i = 0; i < 6; i++){
+                Block newBlock = world.getBlockAt(cur.getX() + offsetx[i], cur.getY() + offsety[i], cur.getZ() + offsetz[i]);
+                if(visited.contains(newBlock.getLocation().toVector())) continue;
+                visited.add(newBlock.getLocation().toVector());
+                if(newBlock.getType() == CoreGame.GetImpl().GetPortalMaterial()){
+                    remove.add(newBlock);
+                    queue.add(newBlock);
+                }
+            }
         }
     }
 }

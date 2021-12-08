@@ -192,9 +192,10 @@ public class MissileWarsEventHandler implements Listener {
             }, 2);
         }
     }
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void BlockPhysicsEvent(BlockPhysicsEvent e){
-        if(e.getChangedType() == CoreGame.GetImpl().GetPortalMaterial()){
+        if(e.getChangedType() == CoreGame.GetImpl().GetPortalMaterial()
+                || e.getBlock().getType() == CoreGame.GetImpl().GetPortalMaterial()){
             e.setCancelled(true);
         }
         MissileWarsMatch match = LobbyEngine.FromWorld(e.getBlock().getWorld());
