@@ -2,6 +2,7 @@ package ca.encodeous.mwx.lobbyengine;
 
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
 import org.bukkit.entity.Player;
 
@@ -32,26 +33,15 @@ public class Lobby {
         return allPlayers;
     }
     public void AddPlayer(Player p){
+        SendMessage(String.format(Strings.PLAYER_JOIN_LOBBY, p.getDisplayName()));
         Match.AddPlayerToTeam(p, PlayerTeam.None);
     }
     public void RemovePlayer(Player p){
-        SendMessage(Chat.FormatPlayerAction(p, "has left the game."));
+        SendMessage(String.format(Strings.LEAVE_GAME, p.getDisplayName()));
         Match.RemovePlayer(p);
         if(GetPlayers().isEmpty() && (Match.hasStarted || Match.startCounter.isRunning()) && !Match.endCounter.isRunning()){
             Match.EndGame();
         }
-    }
-    public void SendMessage(Player sourcePlayer, String message){
-        for(Player p : GetPlayers()){
-            if(sourcePlayer.isOp()){
-                p.sendMessage(sourcePlayer.getUniqueId(),
-                        Chat.FCL("<"+sourcePlayer.getDisplayName()+"&r> " + message));
-            }else{
-                p.sendMessage(sourcePlayer.getUniqueId(),
-                        Chat.FCL("<"+sourcePlayer.getDisplayName()+"&r> ") + message);
-            }
-        }
-        System.out.println("[mw-lobby-" + lobbyId + "] CHAT - " + sourcePlayer.getName() + ": " + message);
     }
     public void SendMessage(String message){
         for(Player p : GetPlayers()){
@@ -67,7 +57,7 @@ public class Lobby {
                 }
             }else{
                 for(Player p : GetPlayers()){
-                    p.kickPlayer("Lobby has closed");
+                    p.kickPlayer(Strings.LOBBY_CLOSE);
                 }
             }
             Match.Dispose();

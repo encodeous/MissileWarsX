@@ -2,6 +2,7 @@ package ca.encodeous.mwx.mwxcore.utils;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.soundengine.SoundType;
 import ca.encodeous.mwx.lobbyengine.Lobby;
 import org.bukkit.ChatColor;
@@ -31,13 +32,13 @@ public class Chat {
     }
     public static void TeamWin(ArrayList<Player> credits, Lobby lobby, PlayerTeam winningTeam, PlayerTeam losingTeam){
         if(!credits.isEmpty()){
-            lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up by " + FormatPlayerlist(credits) + "&r!");
+            lobby.SendMessage(String.format(Strings.WIN_GAME_CREDITED, ResolveTeamColor(losingTeam) + losingTeam.name(), FormatPlayerlist(credits)));
         }else{
-            lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up!");
+            lobby.SendMessage(String.format(Strings.WIN_GAME, ResolveTeamColor(losingTeam) + losingTeam.name()));
         }
-        lobby.SendMessage("&6Congratulations " + ResolveTeamColor(winningTeam) + winningTeam.name() + " &6team!");
+        lobby.SendMessage(String.format(Strings.CONGRATULATE_WIN, ResolveTeamColor(winningTeam) + winningTeam.name()));
         for(Player p : lobby.Match.Teams.keySet()){
-            CoreGame.GetImpl().SendTitle(p, "&6The " + ResolveTeamColor(winningTeam) + winningTeam.name() + " &6team has won!", "&6Congratulations!");
+            CoreGame.GetImpl().SendTitle(p, String.format(Strings.CONGRATULATE_WIN_TITLE, ResolveTeamColor(winningTeam) + winningTeam.name()), "&6"+ Strings.CONGRATULATIONS +"!");
         }
     }
     private static DecimalFormat df = new DecimalFormat("###.##");
@@ -46,16 +47,16 @@ public class Chat {
     }
     public static void TeamDraw(ArrayList<Player> credits, Lobby lobby, PlayerTeam losingTeam){
         if(!credits.isEmpty()){
-            lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up by " + FormatPlayerlist(credits) + "&r!");
+            lobby.SendMessage(String.format(Strings.WIN_GAME_CREDITED, ResolveTeamColor(losingTeam) + losingTeam.name(), FormatPlayerlist(credits)));
         }else{
-            lobby.SendMessage("&fThe " + ResolveTeamColor(losingTeam) + losingTeam.name() + " &fteam's portal was blown up!");
+            lobby.SendMessage(String.format(Strings.WIN_GAME, ResolveTeamColor(losingTeam) + losingTeam.name()));
         }
-        lobby.SendMessage("&6The game has ended in a draw!");
+        lobby.SendMessage(Strings.GAME_DRAW);
         for(Player p : lobby.Match.Teams.keySet()){
             CoreGame.GetImpl().PlaySound(p, SoundType.WIN);
         }
         for(Player p : lobby.Match.Teams.keySet()){
-            CoreGame.GetImpl().SendTitle(p, "&6The game has ended in a draw!", "");
+            CoreGame.GetImpl().SendTitle(p, Strings.GAME_DRAW, "");
         }
     }
     public static String FormatPlayerlist(ArrayList<Player> credits){
@@ -66,7 +67,7 @@ public class Chat {
                 if(i != 0) winString.append("&r, ");
                 winString.append(credits.get(i).getDisplayName());
             }
-            winString.append("&r and ");
+            winString.append("&r "+Strings.AND+" ");
             winString.append(credits.get(credits.size() - 1).getDisplayName());
         }else{
             winString.append(credits.get(0).getDisplayName());

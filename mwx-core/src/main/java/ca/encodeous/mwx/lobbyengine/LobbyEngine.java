@@ -4,6 +4,7 @@ import ca.encodeous.mwx.configuration.LobbyInfo;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.mwxstats.PlayerStats;
@@ -61,7 +62,7 @@ public class LobbyEngine {
             tabs.put(39, CreateText("&7" + (lobbyCount - 17) + " more lobbies..."));
             int lIdx = 0;
             for(LobbyInfo lobby : CoreGame.Instance.mwLobbies.Lobbies){
-                tabs.put(22 + lIdx, CreateText("&c&lMissile&f&lWars &6" + lIdx));
+                tabs.put(22 + lIdx, CreateText(Strings.MISSILE_WARS_BRAND + " &6" + lIdx));
                 Lobby realLobby = GetLobby(lIdx);
                 tabs.put(42 + lIdx, CreateText("&7" + lobby.MaxTeamSize + "v" + lobby.MaxTeamSize
                         + " (" + (lobby.AutoJoin ? "Auto": "Manual") + (lobby.IsRanked ? "Ranked": "Unranked") +") &f - &6" + realLobby.GetPlayers().size() + "&f/&7"
@@ -72,7 +73,7 @@ public class LobbyEngine {
         }else{
             int lIdx = 0;
             for(LobbyInfo lobby : CoreGame.Instance.mwLobbies.Lobbies){
-                tabs.put(22 + lIdx, CreateText("&c&lMissile&f&lWars &6" + lIdx));
+                tabs.put(22 + lIdx, CreateText(Strings.MISSILE_WARS_BRAND + " &6" + lIdx));
                 Lobby realLobby = GetLobby(lIdx);
                 tabs.put(42 + lIdx, CreateText("&7" + lobby.MaxTeamSize + "v" + lobby.MaxTeamSize
                         + " (" + (lobby.AutoJoin ? "A": "M") + "/" + (lobby.IsRanked ? "R": "U") +") &f - &6" + realLobby.GetPlayers().size() + "&f/&7"
@@ -90,7 +91,7 @@ public class LobbyEngine {
         int pLim = 17;
         if(players.size() > 17){
             pLim = 16;
-            tabs.put(79, CreateText("&7" + (players.size() - 17) + " more players..."));
+            tabs.put(79, CreateText(String.format(Strings.MORE_PLAYERS, players.size() - 17)));
         }
         for(int i = 0; i < Math.min(pLim, players.size()); i++){
             tabs.put(i + 62, CreatePlayer(players.get(i)));
@@ -100,8 +101,8 @@ public class LobbyEngine {
                 tabs.put(i, new TabItem(10000, " "));
             }
         }
-        list.setHeader(CoreGame.Instance.mwLobbies.Header);
-        list.setFooter(CoreGame.Instance.mwLobbies.Footer);
+        list.setHeader(Strings.TABLIST_HEADER);
+        list.setFooter(Strings.TABLIST_FOOTER);
     }
     private static TabItem CreateText(String text){
         return new TabItem(10000, text);

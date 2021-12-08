@@ -1,5 +1,6 @@
 package ca.encodeous.mwx.commands;
 
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
 import ca.encodeous.mwx.lobbyengine.Lobby;
 import ca.encodeous.mwx.lobbyengine.LobbyEngine;
@@ -14,9 +15,9 @@ public class playersCommand  implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         StringBuilder sb = new StringBuilder();
-        sb.append("&2Currently there are " + Bukkit.getOnlinePlayers().size() + " player(s) online.\n");
+        sb.append(String.format(Strings.PLAYERS_ONLINE, Bukkit.getOnlinePlayers().size()));
         for(Lobby lobby : LobbyEngine.Lobbies.values()){
-            sb.append("&c&lMissile&f&lWars &6" + lobby.lobbyId + ": " + Chat.FormatPlayerlist(new ArrayList<>(lobby.GetPlayers())) + "\n");
+            sb.append(Strings.MISSILE_WARS_BRAND + " &6" + lobby.lobbyId + ": " + Chat.FormatPlayerlist(new ArrayList<>(lobby.GetPlayers())) + "\n");
         }
         sender.sendMessage(Chat.FCL(sb.toString()));
         return true;

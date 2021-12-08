@@ -144,11 +144,11 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void PlayerRespawnEvent(PlayerRespawnEvent e) {
-        CoreGame.GetImpl().PlaySound(e.getPlayer(), SoundType.RESPAWN);
         MissileWarsMatch match = LobbyEngine.FromPlayer(e.getPlayer());
         if(match != null){
             if(match.Teams.containsKey(e.getPlayer()))
                 e.setRespawnLocation(Utils.GetTeamSpawn(match.Teams.get(e.getPlayer()), match));
+            CoreGame.GetImpl().PlaySound(e.getRespawnLocation(), SoundType.RESPAWN);
         }
     }
     @EventHandler
@@ -186,7 +186,6 @@ public class MissileWarsEventHandler implements Listener {
             getServer().getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, () -> {
                 try {
                     p.spigot().respawn();
-                    CoreGame.GetImpl().PlaySound(p, SoundType.RESPAWN);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }

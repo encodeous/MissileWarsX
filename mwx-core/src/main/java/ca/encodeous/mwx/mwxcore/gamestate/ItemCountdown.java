@@ -2,6 +2,7 @@ package ca.encodeous.mwx.mwxcore.gamestate;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import ca.encodeous.mwx.soundengine.SoundType;
 import org.bukkit.entity.Player;
@@ -47,13 +48,13 @@ public class ItemCountdown implements Countable{
             citem.setAmount(Math.min(item.StackSize, item.MaxStackSize - curCnt));
             if(!p.getInventory().addItem(citem).isEmpty()){
                 CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_NOT_GIVEN);
-                CoreGame.GetImpl().SendActionBar(p, "&cYour inventory does not have enough space to receive items.");
+                CoreGame.GetImpl().SendActionBar(p, Strings.INVENTORY_FULL);
             }else{
                 CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_GIVEN);
             }
         }else{
             CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_NOT_GIVEN);
-            CoreGame.GetImpl().SendActionBar(p, "&6You already have a &f"+item.MissileWarsItemId + "&6.");
+            CoreGame.GetImpl().SendActionBar(p, Strings.ITEM_NOT_GIVEN);
         }
     }
 

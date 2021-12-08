@@ -1,6 +1,7 @@
 package ca.encodeous.mwx.commands;
 
 import ca.encodeous.mwx.mwxcore.MCVersion;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
 import org.bukkit.command.Command;
@@ -13,10 +14,10 @@ public class pingCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player){
-            sender.sendMessage(Chat.FCL("&6Your ping is &2"+ Utils.GetPlayerPing((Player) sender) +" &6ms."));
+            sender.sendMessage(String.format(Strings.PING_MESSAGE, Utils.GetPlayerPing((Player) sender)));
         }
         else{
-            sender.sendMessage("You are not a player...");
+            sender.sendMessage(Strings.NOT_PLAYER);
         }
         return true;
     }

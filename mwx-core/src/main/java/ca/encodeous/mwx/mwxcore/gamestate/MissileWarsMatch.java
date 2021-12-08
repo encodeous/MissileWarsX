@@ -4,6 +4,7 @@ import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.utils.*;
 import ca.encodeous.mwx.mwxstats.MatchParticipation;
@@ -81,12 +82,12 @@ public class MissileWarsMatch {
     public void GreenPad(Player p){
         if(!Map.SeparateJoin) return;
         if(Green.size() >= lobby.teamSize){
-            CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis team is full!"));
+            CoreGame.GetImpl().SendActionBar(p, Strings.TEAM_FULL);
             return;
         }
         if(isRanked && hasStarted){
             if(!RankedGreen.contains(p)){
-                CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cYou cannot join this game because the teams are locked"));
+                CoreGame.GetImpl().SendActionBar(p, Strings.RANKED_LOCKED);
                 return;
             }
         }
@@ -96,12 +97,12 @@ public class MissileWarsMatch {
     public void RedPad(Player p){
         if(!Map.SeparateJoin) return;
         if(Red.size() >= lobby.teamSize){
-            CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis team is full!"));
+            CoreGame.GetImpl().SendActionBar(p, Strings.TEAM_FULL);
             return;
         }
         if(isRanked && hasStarted){
             if(!RankedRed.contains(p)){
-                CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cYou cannot join this game because the teams are locked"));
+                CoreGame.GetImpl().SendActionBar(p, Strings.TEAM_FULL);
                 return;
             }
         }
@@ -111,12 +112,12 @@ public class MissileWarsMatch {
     public void AutoPad(Player p){
         if(Map.SeparateJoin) return;
         if(Red.size() == lobby.teamSize && Green.size() == lobby.teamSize){
-            CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cThis game is full!"));
+            CoreGame.GetImpl().SendActionBar(p, Strings.GAME_FULL);
             return;
         }
         if(isRanked && hasStarted){
             if(!RankedRed.contains(p) && !RankedGreen.contains(p)){
-                CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&cYou cannot join this game because the teams are locked"));
+                CoreGame.GetImpl().SendActionBar(p, Strings.TEAM_FULL);
                 return;
             }else if(RankedRed.contains(p)){
                 AddPlayerToTeam(p, PlayerTeam.Red);
@@ -142,9 +143,9 @@ public class MissileWarsMatch {
             public void Count(Counter counter, int count) {
                 int remTime = 15 - count;
                 if (remTime == 15 || remTime == 10 || remTime == 3 || remTime == 2) {
-                    lobby.SendMessage("&aStarting game in &6" + remTime + "&a seconds!");
+                    lobby.SendMessage(String.format(Strings.STARTING_GAME_PLURAL, remTime));
                 } else if (remTime == 1) {
-                    lobby.SendMessage("&aStarting game in &6" + remTime + "&a second!");
+                    lobby.SendMessage(String.format(Strings.STARTING_GAME, remTime));
                 }
                 for(Player p : Teams.keySet()){
                     CoreGame.GetImpl().PlaySound(p, SoundType.COUNTDOWN);
@@ -155,7 +156,7 @@ public class MissileWarsMatch {
 
             @Override
             public void FinishedCount(Counter counter) {
-                lobby.SendMessage("&cStarting now!");
+                lobby.SendMessage(Strings.STARTING_NOW);
                 hasStarted = true;
                 for(Player p : Teams.keySet()){
                     p.setLevel(0);
@@ -181,9 +182,9 @@ public class MissileWarsMatch {
             public void Count(Counter counter, int count) {
                 int remTime = CoreGame.Instance.mwConfig.DrawSeconds - count;
                 if (remTime == 1) {
-                    lobby.SendMessage("&9Resetting game in &6" + remTime + "&a second!");
+                    lobby.SendMessage(String.format(Strings.RESETTING_GAME_PLURAL, remTime));
                 }else{
-                    lobby.SendMessage("&9Resetting game in &6" + remTime + "&a seconds!");
+                    lobby.SendMessage(String.format(Strings.RESETTING_GAME, remTime));
                 }
                 for(Player p : Teams.keySet()){
                     CoreGame.GetImpl().PlaySound(p, SoundType.COUNTDOWN);
@@ -194,7 +195,7 @@ public class MissileWarsMatch {
 
             @Override
             public void FinishedCount(Counter counter) {
-                lobby.SendMessage("&9Clearing map!");
+                lobby.SendMessage(Strings.CLEARING_MAP);
                 counter.StopCounting();
                 ResetMatchInfo();
                 Reset();
@@ -225,7 +226,7 @@ public class MissileWarsMatch {
             CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.GAME_END);
         }
         for(Player p : Teams.keySet()){
-            CoreGame.GetImpl().SendActionBar(p, Chat.FCL("&f&lChecking for draw..."));
+            CoreGame.GetImpl().SendActionBar(p, Strings.DRAW_CHECK);
         }
         endCounter.Start();
     }
@@ -235,7 +236,7 @@ public class MissileWarsMatch {
             p.setGameMode(GameMode.SPECTATOR);
         }
         for(Player p : lobby.GetPlayers()){
-            CoreGame.GetImpl().SendTitle(p, "&9The game has been reset.", "");
+            CoreGame.GetImpl().SendTitle(p, Strings.GAME_RESET, "");
         }
         isDraw = true;
         endCounter.Start();
@@ -246,15 +247,15 @@ public class MissileWarsMatch {
         if(isRanked){
             if(Red.size() != 0 && Green.size() != 0){
                 if(isGreenReady && isRedReady){
-                    lobby.SendMessage("&aBoth teams are now ready. Once the timer reaches 0, the teams will be locked-in and no changes will be allowed.");
+                    lobby.SendMessage(Strings.RANKED_LOBBY_TEAM_WARNING);
                     startCounter.Start();
                 }else{
-                    lobby.SendMessage("&9Both teams need to run &6/ready &9to start the game.");
+                    lobby.SendMessage(Strings.RANKED_LOBBY_READY);
                 }
             }else{
                 startCounter.StopCounting();
                 if(Red.size() + Green.size() == 1)
-                    lobby.SendMessage("&9The game needs at least 1 player in each team to start.");
+                    lobby.SendMessage(Strings.RANKED_LOBBY_NOT_ENOUGH_PLAYERS);
                 for(Player p : Teams.keySet()){
                     p.setLevel(0);
                 }
@@ -265,7 +266,7 @@ public class MissileWarsMatch {
             }else{
                 startCounter.StopCounting();
                 if(Red.size() + Green.size() == 1)
-                    lobby.SendMessage("&9The game needs at least 1 player in each team to start. To forcefully start a game, run &6/start&9.");
+                    lobby.SendMessage(Strings.LOBBY_NOT_ENOUGH_PLAYERS);
                 for(Player p : Teams.keySet()){
                     p.setLevel(0);
                 }
@@ -295,33 +296,32 @@ public class MissileWarsMatch {
         if(team == PlayerTeam.Red){
             mwRed.addEntry(p.getName());
             Red.add(p);
-            lobby.SendMessage(Chat.FormatPlayerAction(p, "has joined the &cRed &rteam!"));
+            lobby.SendMessage(String.format(Strings.PLAYER_JOIN_TEAM, p.getDisplayName(), "&cRed"));
             if(isRanked){
                 isRedReady = false;
                 for(Player pl : Red){
-                    pl.sendMessage(Chat.FCL("&cA player has joined the team, please run &6/ready &cwhen everyone is ready."));
+                    pl.sendMessage(Strings.RANKED_PLAYER_JOIN);
                 }
             }
         }else if(team == PlayerTeam.Green){
             mwGreen.addEntry(p.getName());
             Green.add(p);
-            lobby.SendMessage(Chat.FormatPlayerAction(p, "has joined the &aGreen &rteam!"));
+            lobby.SendMessage(String.format(Strings.PLAYER_JOIN_TEAM, p.getDisplayName(), "&aGreen"));
             if(isRanked){
                 isGreenReady = false;
                 for(Player pl : Green){
-                    pl.sendMessage(Chat.FCL("&cA player has joined the team, please run &6/ready &cwhen everyone is ready."));
+                    pl.sendMessage(Strings.RANKED_PLAYER_JOIN);
                 }
             }
         }else if(team == PlayerTeam.None){
             mwLobby.addEntry(p.getName());
             None.add(p);
-            lobby.SendMessage(Chat.FormatPlayerAction(p, "has joined the lobby!"));
             p.setGameMode(GameMode.ADVENTURE);
         }else{
             mwSpectate.addEntry(p.getName());
             Spectators.add(p);
-            lobby.SendMessage(Chat.FormatPlayerAction(p, "&9is now spectating!"));
-            p.sendMessage(Chat.FCL("&9You are now spectating. Type &6/lobby&9 to return to the lobby."));
+            lobby.SendMessage(String.format(Strings.PLAYER_SPECTATE, p.getDisplayName()));
+            p.sendMessage(Strings.PLAYER_SPECTATE_NOTIF);
             p.setGameMode(GameMode.SPECTATOR);
         }
         CheckGameReadyState();
@@ -329,31 +329,31 @@ public class MissileWarsMatch {
     }
 
     public void TeamReady(PlayerTeam team){
-        lobby.SendMessage("&fThe " + Chat.ResolveTeamColor(team) + team.name() + "&f is now ready.");
+        lobby.SendMessage(Strings.RANKED_TEAM_READY);
         if(team == PlayerTeam.Red){
             isRedReady = true;
             for(Player p : Red){
-                p.sendMessage(Chat.FCL("&cYour team is now ready. &6Once the game is started, the teams will be locked and rankings will be calculated when the game ends."));
+                p.sendMessage(Strings.RANKED_TEAM_READY_NOTIF);
             }
         }else{
             isGreenReady = true;
             for(Player p : Green){
-                p.sendMessage(Chat.FCL("&cYour team is now ready. &6Once the game is started, the teams will be locked and rankings will be calculated when the game ends."));
+                p.sendMessage(Strings.RANKED_TEAM_READY_NOTIF);
             }
         }
         CheckGameReadyState();
     }
 
     public void TeleportPlayer(Player p, PlayerTeam team){
-        if((team == PlayerTeam.Green || team == PlayerTeam.Red) && hasStarted){
-            CoreGame.GetImpl().PlaySound(p, SoundType.START);
-            p.sendMessage(Chat.FCL("&cYou have entered the game, type &6/lobby &cto return to the lobby."));
-        }else{
-            CoreGame.GetImpl().PlaySound(p, SoundType.TELEPORT);
-        }
         Location loc = Utils.GetTeamSpawn(team, this);
         p.setBedSpawnLocation(loc, true);
         p.teleport(loc);
+        if((team == PlayerTeam.Green || team == PlayerTeam.Red) && hasStarted){
+            CoreGame.GetImpl().PlaySound(p, SoundType.START);
+            p.sendMessage(Strings.ENTER_GAME);
+        }else{
+            CoreGame.GetImpl().PlaySound(p, SoundType.TELEPORT);
+        }
     }
 
     public void SetPlayerDisplayName(PlayerTeam team, Player p){
@@ -375,18 +375,26 @@ public class MissileWarsMatch {
     public void RemovePlayer(Player p){
         CleanPlayer(p);
         p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        PlayerTeam team = Teams.get(p);
+        if(team == PlayerTeam.Red){
+            lobby.SendMessage(String.format(Strings.PLAYER_LEAVE_TEAM, p.getDisplayName(), "&cRed"));
+        }else if(team == PlayerTeam.Green){
+            lobby.SendMessage(String.format(Strings.PLAYER_LEAVE_TEAM, p.getDisplayName(), "&aGreen"));
+        }else if(team == PlayerTeam.Spectator){
+            lobby.SendMessage(String.format(Strings.PLAYER_STOP_SPECTATE, p.getDisplayName()));
+        }
         boolean affectGame = false;
         if(Green.contains(p) || Red.contains(p)) affectGame = true;
         if(isRanked && affectGame){
             if(Green.contains(p)){
                 isGreenReady = false;
                 for(Player pl : Green){
-                    pl.sendMessage(Chat.FCL("&cA player has left your team, please run &6/ready &cagain when everyone is ready."));
+                    pl.sendMessage(Chat.FCL(Strings.RANKED_PLAYER_LEAVE));
                 }
             }else{
                 isRedReady = false;
                 for(Player pl : Red){
-                    pl.sendMessage(Chat.FCL("&cA player has left your team, please run &6/ready &cagain when everyone is ready."));
+                    pl.sendMessage(Chat.FCL(Strings.RANKED_PLAYER_LEAVE));
                 }
             }
         }
@@ -407,7 +415,7 @@ public class MissileWarsMatch {
     }
 
     public static void SendCannotPlaceMessage(Player p){
-        p.sendMessage(Chat.FCL("&cYou cannot deploy that there."));
+        p.sendMessage(Strings.CANNOT_DEPLOY);
     }
 
     public void MissileWarsItemInteract(Player p, Block target, String mwItemId, ItemStack item, boolean isInAir, Ref<Boolean> cancel, Ref<Boolean> use){
@@ -583,7 +591,7 @@ public class MissileWarsMatch {
         startCounter.StopCounting();
         EventHandler = new MissileWarsEvents(this);
         Wipe(()->{
-            lobby.SendMessage("&9The map has been wiped!");
+            lobby.SendMessage(Strings.MAP_WIPED);
             ArrayList<Player> players = new ArrayList<>(Teams.keySet());
             for(Player p : players){
                 RemovePlayer(p);

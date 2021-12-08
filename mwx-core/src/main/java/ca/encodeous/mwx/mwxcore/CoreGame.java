@@ -2,6 +2,7 @@ package ca.encodeous.mwx.mwxcore;
 
 import ca.encodeous.mwx.configuration.*;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.*;
 import ca.encodeous.mwx.mwxcore.world.MissileBlock;
 import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
@@ -245,7 +246,7 @@ public class CoreGame {
     }
 
     public void PlayerJoined(Player p) {
-        p.sendMessage(Chat.FCL(mwLobbies.JoinMessage));
+        p.sendMessage(Strings.JOIN_MESSAGE);
         Stats.CreatePlayer(p);
         LobbyEngine.GetLobby(0).AddPlayer(p);
     }

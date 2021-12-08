@@ -1,6 +1,7 @@
 package ca.encodeous.mwx.mwxcore.gamestate;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import com.fastasyncworldedit.core.extent.clipboard.ReadOnlyClipboard;
 import com.fastasyncworldedit.core.util.EditSessionBuilder;
@@ -180,13 +181,13 @@ public class MissileWarsMap {
             }
         }
         for(Player p : MswWorld.getPlayers()){
-            p.kickPlayer("Resetting Map");
+            p.kickPlayer(Strings.KICK_RESET);
         }
         boolean firstTry = Bukkit.unloadWorld(MswWorld.getName(), false);
         boolean success = firstTry;
         if(!firstTry){
             for(Player p : MswWorld.getPlayers()){
-                p.kickPlayer("Resetting Map");
+                p.kickPlayer(Strings.KICK_RESET);
             }
             success = Bukkit.unloadWorld(MswWorld.getName(), false);
         }

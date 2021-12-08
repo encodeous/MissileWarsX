@@ -61,6 +61,7 @@ commands:
     aliases:
       - l
       - mw
+      - leave
   spectate:
     description: Spectate the game
     usage: /<command>
