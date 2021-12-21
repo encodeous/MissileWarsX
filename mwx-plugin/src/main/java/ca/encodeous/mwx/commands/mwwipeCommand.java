@@ -19,6 +19,7 @@ public class mwwipeCommand implements CommandExecutor {
                     lobby = LobbyEngine.FromPlayer((Player) sender).lobby;
                 }
             }
+            Player cur = (Player) sender;
             if(lobby == null){
                 lobby = LobbyEngine.GetLobby(0);
             }
@@ -28,7 +29,7 @@ public class mwwipeCommand implements CommandExecutor {
                 return true;
             }
             for(Player p : match.lobby.GetPlayers()){
-                CoreGame.GetImpl().SendTitle(p, "&9The map is being wiped", "&9by an Admin.");
+                CoreGame.GetImpl().SendTitle(p, "&9The map is being wiped", "&9by " + cur.getDisplayName()+"&r.");
             }
             Lobby finalLobby = lobby;
             match.Wipe(()->{

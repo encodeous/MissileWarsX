@@ -36,6 +36,7 @@ public class mwgiveCommand implements CommandExecutor {
             }
             if(args[aidx].equals("*")){
                 for(MissileWarsItem item : CoreGame.GetImpl().CreateDefaultItems()){
+                    if(item.IsExempt) continue;
                     ItemStack ritem = CoreGame.GetImpl().CreateItem(item);
                     p.getInventory().addItem(ritem);
                 }
@@ -46,7 +47,7 @@ public class mwgiveCommand implements CommandExecutor {
             }else{
                 MissileWarsItem item = CoreGame.Instance.GetItemById(args[aidx]);
                 if(item == null){
-                    sender.sendMessage("Item id not found! See items by running /mwitems");
+                    sender.sendMessage("Item ID not found! See items by running /mwitems");
                     return true;
                 }
                 ItemStack ritem = CoreGame.GetImpl().CreateItem(item);

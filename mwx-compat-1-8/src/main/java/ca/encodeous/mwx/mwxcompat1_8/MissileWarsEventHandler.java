@@ -43,23 +43,23 @@ public class MissileWarsEventHandler implements Listener {
         if(event.getBlock().getType() == Material.BEDROCK || event.getBlock().getType() == Material.OBSIDIAN){
             if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
         }
+        MissileWarsMatch match = LobbyEngine.FromWorld(event.getBlock().getWorld());
         if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
-            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
+            if(match.AllowPlayerInteractProtectedRegion(event.getPlayer())) event.setCancelled(true);
         }
         if(event.getBlock().getType() == CoreGame.GetImpl().GetPortalMaterial()){
             PropagatePortalBreak(event.getBlock());
         }
-        MissileWarsMatch match = LobbyEngine.FromWorld(event.getBlock().getWorld());
         if(match != null){
             match.Tracer.RemoveBlock(event.getBlock().getLocation().toVector());
         }
     }
     @EventHandler
     public void BlockPlaceEvent(BlockPlaceEvent event){
-        if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
-            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
-        }
         MissileWarsMatch match = LobbyEngine.FromWorld(event.getBlock().getWorld());
+        if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
+            if(match.AllowPlayerInteractProtectedRegion(event.getPlayer())) event.setCancelled(true);
+        }
         if(match != null){
             if(event.getBlock().getType() == Material.TNT){
                 match.Tracer.AddBlock(event.getPlayer().getUniqueId(), TraceType.TNT, event.getBlock().getLocation().toVector());

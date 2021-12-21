@@ -43,13 +43,13 @@ public class MiscEventHandler implements Listener {
     }
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommandPreProcess(PlayerCommandPreprocessEvent event){
-        if(event.getMessage().toLowerCase().startsWith("/restart")){
+        if(event.getMessage().toLowerCase().contains("restart")){
             event.setCancelled(true);
             event.getPlayer().sendMessage("The server can only be restarted through console");
-        } else if(event.getMessage().toLowerCase().startsWith("/reload")) {
+        } else if(event.getMessage().toLowerCase().contains("reload")) {
             event.setCancelled(true);
             event.getPlayer().sendMessage("The server can only be reloaded through console");
-        } else if(event.getMessage().toLowerCase().startsWith("/stop")) {
+        } else if(event.getMessage().toLowerCase().contains("stop")) {
             event.setCancelled(true);
             event.getPlayer().sendMessage("The server can only be stopped through console");
         }

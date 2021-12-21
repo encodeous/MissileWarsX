@@ -49,7 +49,6 @@ public class MissileWarsMatch {
     public boolean isDraw;
     public PlayerTeam winningTeam;
     // ranked
-    public boolean isRanked;
     public HashSet<Player> RankedGreen;
     public HashSet<Player> RankedRed;
     public boolean isRedReady;
@@ -58,7 +57,7 @@ public class MissileWarsMatch {
     public ConcurrentHashMap<UUID, Integer> Deaths;
     public ConcurrentHashMap<UUID, Integer> Kills;
 
-    public MissileWarsMatch(Lobby lobby, boolean ranked) {
+    public MissileWarsMatch(Lobby lobby) {
         this.lobby = lobby;
         isActivated = true;
         hasStarted = false;
@@ -72,11 +71,17 @@ public class MissileWarsMatch {
         startCounter = new Counter(CreateStartGameCountdown(), 20, 15);
         itemCounter = new Counter(new ItemCountdown(this), 20, -1);
         endCounter = new Counter(CreateEndGameCountdown(), 20, CoreGame.Instance.mwConfig.DrawSeconds);
-        isRanked = ranked;
-        RankedGreen = new HashSet<>();
-        RankedRed = new HashSet<>();
         Deaths = new ConcurrentHashMap<>();
         Kills = new ConcurrentHashMap<>();
+    }
+
+    protected boolean GreenPadCondition(Player p){ return false; }
+    protected boolean RedPadCondition(Player p){ return false; }
+    protected boolean AutoPadCondition(Player p){ return false; }
+
+    public boolean AllowPlayerInteractProtectedRegion(Player p){
+        if(p.getGameMode() != GameMode.CREATIVE) return false;
+        else return true;
     }
 
     public void GreenPad(Player p){
@@ -85,12 +90,9 @@ public class MissileWarsMatch {
             CoreGame.GetImpl().SendActionBar(p, Strings.TEAM_FULL);
             return;
         }
-        if(isRanked && hasStarted){
-            if(!RankedGreen.contains(p)){
-                CoreGame.GetImpl().SendActionBar(p, Strings.RANKED_LOCKED);
-                return;
-            }
-        }
+
+        if(GreenPadCondition(p)) return;
+
         RemovePlayer(p);
         AddPlayerToTeam(p, PlayerTeam.Green);
     }
@@ -100,12 +102,9 @@ public class MissileWarsMatch {
             CoreGame.GetImpl().SendActionBar(p, Strings.TEAM_FULL);
             return;
         }
-        if(isRanked && hasStarted){
-            if(!RankedRed.contains(p)){
-                CoreGame.GetImpl().SendActionBar(p, Strings.TEAM_FULL);
-                return;
-            }
-        }
+
+        if(RedPadCondition(p)) return;
+
         RemovePlayer(p);
         AddPlayerToTeam(p, PlayerTeam.Red);
     }
@@ -115,16 +114,7 @@ public class MissileWarsMatch {
             CoreGame.GetImpl().SendActionBar(p, Strings.GAME_FULL);
             return;
         }
-        if(isRanked && hasStarted){
-            if(!RankedRed.contains(p) && !RankedGreen.contains(p)){
-                CoreGame.GetImpl().SendActionBar(p, Strings.TEAM_FULL);
-                return;
-            }else if(RankedRed.contains(p)){
-                AddPlayerToTeam(p, PlayerTeam.Red);
-            }else{
-                AddPlayerToTeam(p, PlayerTeam.Green);
-            }
-        }
+        if(AutoPadCondition(p)) return;
         RemovePlayer(p);
         PlayerTeam team;
         if(Red.size() == Green.size()){
@@ -243,33 +233,14 @@ public class MissileWarsMatch {
     }
 
     public void CheckGameReadyState(){
-        if(hasStarted) return;
-        if(isRanked){
-            if(Red.size() != 0 && Green.size() != 0){
-                if(isGreenReady && isRedReady){
-                    lobby.SendMessage(Strings.RANKED_LOBBY_TEAM_WARNING);
-                    startCounter.Start();
-                }else{
-                    lobby.SendMessage(Strings.RANKED_LOBBY_READY);
-                }
-            }else{
-                startCounter.StopCounting();
-                if(Red.size() + Green.size() == 1)
-                    lobby.SendMessage(Strings.RANKED_LOBBY_NOT_ENOUGH_PLAYERS);
-                for(Player p : Teams.keySet()){
-                    p.setLevel(0);
-                }
-            }
+        if(Red.size() != 0 && Green.size() != 0){
+            startCounter.Start();
         }else{
-            if(Red.size() != 0 && Green.size() != 0){
-                startCounter.Start();
-            }else{
-                startCounter.StopCounting();
-                if(Red.size() + Green.size() == 1)
-                    lobby.SendMessage(Strings.LOBBY_NOT_ENOUGH_PLAYERS);
-                for(Player p : Teams.keySet()){
-                    p.setLevel(0);
-                }
+            startCounter.StopCounting();
+            if(Red.size() + Green.size() == 1)
+                lobby.SendMessage(Strings.LOBBY_NOT_ENOUGH_PLAYERS);
+            for(Player p : Teams.keySet()){
+                p.setLevel(0);
             }
         }
     }
@@ -280,6 +251,8 @@ public class MissileWarsMatch {
         }
         return false;
     }
+
+    protected void ProcessPlayerAddTeam(PlayerTeam team){ };
 
     public void AddPlayerToTeam(Player p, PlayerTeam team){
         if(IsPlayerInTeam(p, team)) return;
@@ -297,22 +270,12 @@ public class MissileWarsMatch {
             mwRed.addEntry(p.getName());
             Red.add(p);
             lobby.SendMessage(String.format(Strings.PLAYER_JOIN_TEAM, p.getDisplayName(), "&cRed"));
-            if(isRanked){
-                isRedReady = false;
-                for(Player pl : Red){
-                    pl.sendMessage(Strings.RANKED_PLAYER_JOIN);
-                }
-            }
+            ProcessPlayerAddTeam(team);
         }else if(team == PlayerTeam.Green){
             mwGreen.addEntry(p.getName());
             Green.add(p);
             lobby.SendMessage(String.format(Strings.PLAYER_JOIN_TEAM, p.getDisplayName(), "&aGreen"));
-            if(isRanked){
-                isGreenReady = false;
-                for(Player pl : Green){
-                    pl.sendMessage(Strings.RANKED_PLAYER_JOIN);
-                }
-            }
+            ProcessPlayerAddTeam(team);
         }else if(team == PlayerTeam.None){
             mwLobby.addEntry(p.getName());
             None.add(p);
@@ -372,6 +335,8 @@ public class MissileWarsMatch {
         p.setHealth(20);
     }
 
+    protected void ProcessRemovePlayer(Player p, boolean affectsGame) {};
+
     public void RemovePlayer(Player p){
         CleanPlayer(p);
         p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
@@ -385,19 +350,7 @@ public class MissileWarsMatch {
         }
         boolean affectGame = false;
         if(Green.contains(p) || Red.contains(p)) affectGame = true;
-        if(isRanked && affectGame){
-            if(Green.contains(p)){
-                isGreenReady = false;
-                for(Player pl : Green){
-                    pl.sendMessage(Chat.FCL(Strings.RANKED_PLAYER_LEAVE));
-                }
-            }else{
-                isRedReady = false;
-                for(Player pl : Red){
-                    pl.sendMessage(Chat.FCL(Strings.RANKED_PLAYER_LEAVE));
-                }
-            }
-        }
+        ProcessRemovePlayer(p, affectGame);
         Teams.remove(p);
         None.remove(p);
         Spectators.remove(p);
@@ -449,12 +402,11 @@ public class MissileWarsMatch {
         use.val = true;
     }
 
+    protected void ProcessResetMatchInfo(){};
+
     public void ResetMatchInfo(){
         FinalizeMatch(isDraw);
-        if(isRanked){
-            RankedGreen = new HashSet<>();
-            RankedRed = new HashSet<>();
-        }
+        ProcessResetMatchInfo();
         isDraw = false;
         itemCounter.StopCounting();
         startCounter.StopCounting();
@@ -485,45 +437,6 @@ public class MissileWarsMatch {
         ArrayList<Player> winTeam = new ArrayList<>();
         ArrayList<Player> loseTeam = new ArrayList<>();
         ArrayList<Player> allTeamPlayers = new ArrayList<>();
-        if(isRanked){
-            allTeamPlayers.addAll(RankedRed);
-            allTeamPlayers.addAll(RankedGreen);
-            if(winningTeam == PlayerTeam.Red){
-                winTeam.addAll(RankedRed);
-                loseTeam.addAll(RankedGreen);
-            }else{
-                winTeam.addAll(RankedGreen);
-                loseTeam.addAll(RankedRed);
-            }
-            HashMap<UUID, Rating> newRankings = CalculateTrueSkill(
-                    winTeam.stream().map(x->CoreGame.Stats.GetPlayerStats(x)).collect(Collectors.toList()),
-                    loseTeam.stream().map(x->CoreGame.Stats.GetPlayerStats(x)).collect(Collectors.toList()));
-            for(Player p : allTeamPlayers){
-                CoreGame.Stats.Modify(CoreGame.Stats.statsDao, p.getUniqueId(), w->{
-                    MatchParticipation x = ConfigureMatchDefaults(matchId, winTeam, p);
-                    x.IsRanked = true;
-                    x.TrueSkillBefore = w.TrueSkill;
-                    x.TrueSkillDevBefore = w.TrueSkillDev;
-                    if(isDraw){
-                        x.TrueSkillAfter = w.TrueSkill;
-                        x.TrueSkillDevAfter = w.TrueSkillDev;
-                    }else{
-                        x.TrueSkillAfter = newRankings.get(p.getUniqueId()).getMean();
-                        x.TrueSkillDevAfter = newRankings.get(p.getUniqueId()).getStandardDeviation();
-                        w.TrueSkill = newRankings.get(p.getUniqueId()).getMean();
-                        w.TrueSkillDev = newRankings.get(p.getUniqueId()).getStandardDeviation();
-                    }
-                    try {
-                        CoreGame.Stats.matchDao.create(x);
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    }
-                    UpdateStatistics(isDraw, winTeam, p, w);
-                    DisplayStatistics(p, x);
-                });
-            }
-            return;
-        }
         allTeamPlayers.addAll(Red);
         allTeamPlayers.addAll(Green);
         if(winningTeam == PlayerTeam.Red){
@@ -546,7 +459,7 @@ public class MissileWarsMatch {
         }
     }
 
-    private void UpdateStatistics(boolean isDraw, ArrayList<Player> winTeam, Player p, PlayerStats w) {
+    protected void UpdateStatistics(boolean isDraw, ArrayList<Player> winTeam, Player p, PlayerStats w) {
         if(isDraw){
             w.Draws++;
         }else if(winTeam.contains(p)){
@@ -561,7 +474,7 @@ public class MissileWarsMatch {
         w.Deaths += Deaths.get(p.getUniqueId());
     }
 
-    private MatchParticipation ConfigureMatchDefaults(UUID matchId, ArrayList<Player> winTeam, Player p) {
+    protected MatchParticipation ConfigureMatchDefaults(UUID matchId, ArrayList<Player> winTeam, Player p) {
         MatchParticipation x = new MatchParticipation();
         x.MatchId = matchId;
         x.HasWon = winTeam.contains(p);

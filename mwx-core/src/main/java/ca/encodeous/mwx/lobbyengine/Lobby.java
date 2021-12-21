@@ -1,6 +1,8 @@
 package ca.encodeous.mwx.lobbyengine;
 
+import ca.encodeous.mwx.mwxcore.gamestate.MatchType;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsRankedMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
@@ -18,11 +20,21 @@ public class Lobby {
     public int teamSize;
     public int lobbyId;
     public boolean isClosed = false;
-    public Lobby(boolean isAutoJoin, int teamSize, int lobbyNumber, boolean isRanked) {
+    public Lobby(boolean isAutoJoin, int teamSize, int lobbyNumber, MatchType type) {
         this.isAutoJoin = isAutoJoin;
         this.teamSize = teamSize;
         this.lobbyId = lobbyNumber;
-        Match = new MissileWarsMatch(this, isRanked);
+        switch(type){
+            case NORMAL:
+                Match = new MissileWarsMatch(this);
+                break;
+            case RANKED:
+                Match = new MissileWarsRankedMatch(this);
+                break;
+            case PRACTICE:
+                Match = new MissileWarsMatch(this);
+                break;
+        }
     }
     public HashSet<Player> GetPlayers(){
         HashSet<Player> allPlayers = new HashSet<>();
