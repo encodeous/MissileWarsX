@@ -1,9 +1,6 @@
 package ca.encodeous.mwx.lobbyengine;
 
-import ca.encodeous.mwx.mwxcore.gamestate.MatchType;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsRankedMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
+import ca.encodeous.mwx.mwxcore.gamestate.*;
 import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
 import org.bukkit.entity.Player;
@@ -32,7 +29,7 @@ public class Lobby {
                 Match = new MissileWarsRankedMatch(this);
                 break;
             case PRACTICE:
-                Match = new MissileWarsMatch(this);
+                Match = new MissileWarsPracticeMatch(this);
                 break;
         }
     }

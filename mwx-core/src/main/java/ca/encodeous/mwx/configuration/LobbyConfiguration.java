@@ -1,5 +1,6 @@
 package ca.encodeous.mwx.configuration;
 
+import ca.encodeous.mwx.mwxcore.gamestate.MatchType;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.*;
@@ -16,11 +17,11 @@ public class LobbyConfiguration implements ConfigurationSerializable {
         LobbyInfo oneOnOne1 = new LobbyInfo();
         oneOnOne1.AutoJoin = true;
         oneOnOne1.MaxTeamSize = 1;
-        oneOnOne1.IsRanked = true;
+        oneOnOne1.LobbyType = MatchType.RANKED;
         LobbyInfo oneOnOne2 = new LobbyInfo();
-        oneOnOne2.AutoJoin = true;
-        oneOnOne2.IsRanked = true;
-        oneOnOne2.MaxTeamSize = 1;
+        oneOnOne2.AutoJoin = false;
+        oneOnOne2.LobbyType = MatchType.PRACTICE;
+        oneOnOne2.MaxTeamSize = 10;
         return Arrays.asList(mainLobby, secondaryLobby, oneOnOne1, oneOnOne2);
     }
     public static LobbyConfiguration deserialize(Map<String, Object> args) {

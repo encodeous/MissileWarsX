@@ -48,11 +48,6 @@ public class MissileWarsMatch {
     Random mwRand = new Random();
     public boolean isDraw;
     public PlayerTeam winningTeam;
-    // ranked
-    public HashSet<Player> RankedGreen;
-    public HashSet<Player> RankedRed;
-    public boolean isRedReady;
-    public boolean isGreenReady;
     // stats
     public ConcurrentHashMap<UUID, Integer> Deaths;
     public ConcurrentHashMap<UUID, Integer> Kills;
@@ -78,6 +73,7 @@ public class MissileWarsMatch {
     protected boolean GreenPadCondition(Player p){ return false; }
     protected boolean RedPadCondition(Player p){ return false; }
     protected boolean AutoPadCondition(Player p){ return false; }
+    protected void OnGameStart(){ }
 
     public boolean AllowPlayerInteractProtectedRegion(Player p){
         if(p.getGameMode() != GameMode.CREATIVE) return false;
@@ -159,8 +155,7 @@ public class MissileWarsMatch {
                     TeleportPlayer(p, PlayerTeam.Red);
                     p.setGameMode(GameMode.SURVIVAL);
                 }
-                RankedGreen.addAll(Green);
-                RankedRed.addAll(Red);
+                OnGameStart();
                 itemCounter.Start();
             }
         };
@@ -193,6 +188,14 @@ public class MissileWarsMatch {
         };
     }
 
+    protected void UpdatePortalBrokenStatistics(ArrayList<Player> credits){
+        for(Player p : credits){
+            CoreGame.Stats.Modify(CoreGame.Stats.statsDao, p.getUniqueId(), x->{
+                x.PortalsBroken++;
+            });
+        }
+    }
+
     public void PortalBroken(boolean isRed, ArrayList<Player> credits){
         winningTeam = isRed? PlayerTeam.Green : PlayerTeam.Red;
         PlayerTeam lose = isRed? PlayerTeam.Red : PlayerTeam.Green;
@@ -205,11 +208,7 @@ public class MissileWarsMatch {
                 p.setGameMode(GameMode.SPECTATOR);
             }
         }
-        for(Player p : credits){
-            CoreGame.Stats.Modify(CoreGame.Stats.statsDao, p.getUniqueId(), x->{
-                x.PortalsBroken++;
-            });
-        }
+        UpdatePortalBrokenStatistics(credits);
         for(java.util.Map.Entry<Player, PlayerTeam> player : Teams.entrySet()){
             if(player.getValue() == winningTeam)
                 CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.WIN);
@@ -252,10 +251,11 @@ public class MissileWarsMatch {
         return false;
     }
 
-    protected void ProcessPlayerAddTeam(PlayerTeam team){ };
+    protected void ProcessPlayerAddTeam(Player p, PlayerTeam team){ };
 
     public void AddPlayerToTeam(Player p, PlayerTeam team){
         if(IsPlayerInTeam(p, team)) return;
+        boolean affectGame = false;
         Kills.putIfAbsent(p.getUniqueId(), 0);
         Deaths.putIfAbsent(p.getUniqueId(), 0);
         RemovePlayer(p);
@@ -270,12 +270,14 @@ public class MissileWarsMatch {
             mwRed.addEntry(p.getName());
             Red.add(p);
             lobby.SendMessage(String.format(Strings.PLAYER_JOIN_TEAM, p.getDisplayName(), "&cRed"));
-            ProcessPlayerAddTeam(team);
+            ProcessPlayerAddTeam(p, team);
+            affectGame = true;
         }else if(team == PlayerTeam.Green){
             mwGreen.addEntry(p.getName());
             Green.add(p);
             lobby.SendMessage(String.format(Strings.PLAYER_JOIN_TEAM, p.getDisplayName(), "&aGreen"));
-            ProcessPlayerAddTeam(team);
+            ProcessPlayerAddTeam(p, team);
+            affectGame = true;
         }else if(team == PlayerTeam.None){
             mwLobby.addEntry(p.getName());
             None.add(p);
@@ -287,25 +289,10 @@ public class MissileWarsMatch {
             p.sendMessage(Strings.PLAYER_SPECTATE_NOTIF);
             p.setGameMode(GameMode.SPECTATOR);
         }
-        CheckGameReadyState();
+        if(affectGame && !hasStarted) CheckGameReadyState();
         if(team != PlayerTeam.Spectator) TeleportPlayer(p, team);
     }
 
-    public void TeamReady(PlayerTeam team){
-        lobby.SendMessage(Strings.RANKED_TEAM_READY);
-        if(team == PlayerTeam.Red){
-            isRedReady = true;
-            for(Player p : Red){
-                p.sendMessage(Strings.RANKED_TEAM_READY_NOTIF);
-            }
-        }else{
-            isGreenReady = true;
-            for(Player p : Green){
-                p.sendMessage(Strings.RANKED_TEAM_READY_NOTIF);
-            }
-        }
-        CheckGameReadyState();
-    }
 
     public void TeleportPlayer(Player p, PlayerTeam team){
         Location loc = Utils.GetTeamSpawn(team, this);
@@ -435,7 +422,6 @@ public class MissileWarsMatch {
     public void FinalizeMatch(boolean isDraw){
         UUID matchId = UUID.randomUUID();
         ArrayList<Player> winTeam = new ArrayList<>();
-        ArrayList<Player> loseTeam = new ArrayList<>();
         ArrayList<Player> allTeamPlayers = new ArrayList<>();
         allTeamPlayers.addAll(Red);
         allTeamPlayers.addAll(Green);

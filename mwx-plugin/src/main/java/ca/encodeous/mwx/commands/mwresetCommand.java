@@ -4,6 +4,7 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.lobbyengine.Lobby;
 import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,7 +21,8 @@ public class mwresetCommand implements CommandExecutor {
                 }
             }
             if(lobby == null){
-                lobby = LobbyEngine.GetLobby(0);
+                sender.sendMessage(Strings.LOBBY_COMMAND);
+                return true;
             }
             MissileWarsMatch match = lobby.Match;
             if(match.Map.isBusy || match.endCounter.isRunning() || match.startCounter.isRunning()){

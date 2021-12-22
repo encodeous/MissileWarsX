@@ -17,7 +17,7 @@ public class mweditCommand implements CommandExecutor {
                 if(p.getWorld() == CoreGame.Instance.mwAuto || p.getWorld() == CoreGame.Instance.mwManual){
                     p.sendMessage(Chat.FCL("&aYour changes have been saved!"));
                     p.getWorld().save();
-                    LobbyEngine.GetLobby(0).AddPlayer(p);
+                    LobbyEngine.GetLobby(1).AddPlayer(p);
                 }else{
                     if(args[0].equals("auto")){
                         if(LobbyEngine.FromPlayer(p) != null) LobbyEngine.FromPlayer(p).RemovePlayer(p);

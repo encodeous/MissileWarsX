@@ -1,6 +1,7 @@
 package ca.encodeous.mwx.mwxcore;
 
 import ca.encodeous.mwx.configuration.*;
+import ca.encodeous.mwx.mwxcore.gamestate.MatchType;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.*;
@@ -173,7 +174,7 @@ public class CoreGame {
         scheduler.runTask(mwPlugin, ()->{
             mwPlugin.getLogger().info("Creating lobbies...");
             for (LobbyInfo info : mwLobbies.Lobbies) {
-                LobbyEngine.CreateLobby(info.MaxTeamSize, info.AutoJoin, info.IsRanked);
+                LobbyEngine.CreateLobby(info.MaxTeamSize, info.AutoJoin, info.LobbyType);
             }
         });
         scheduler.runTaskTimerAsynchronously(mwPlugin, TPSMon.Instance, 0, 20);
@@ -248,7 +249,7 @@ public class CoreGame {
     public void PlayerJoined(Player p) {
         p.sendMessage(Strings.JOIN_MESSAGE);
         Stats.CreatePlayer(p);
-        LobbyEngine.GetLobby(0).AddPlayer(p);
+        LobbyEngine.GetLobby(1).AddPlayer(p);
     }
 
     public void PlayerLeft(Player p) {

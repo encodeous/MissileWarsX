@@ -1,9 +1,11 @@
 package ca.encodeous.mwx.commands;
 
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
+import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsRankedMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.lobbyengine.Lobby;
 import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,10 +23,11 @@ public class mwteamCommand implements CommandExecutor {
                 }
             }
             if(lobby == null){
-                lobby = LobbyEngine.GetLobby(0);
+                sender.sendMessage(Strings.LOBBY_COMMAND);
+                return true;
             }
             MissileWarsMatch match = lobby.Match;
-            if(match.isRanked){
+            if(match instanceof MissileWarsRankedMatch){
                 sender.sendMessage("Cannot switch teams in a ranked game.");
                 return true;
             }

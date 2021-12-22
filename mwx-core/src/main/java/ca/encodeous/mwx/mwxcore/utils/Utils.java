@@ -1,13 +1,14 @@
 package ca.encodeous.mwx.mwxcore.utils;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
+import ca.encodeous.mwx.mwxcore.gamestate.*;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -83,5 +84,28 @@ public class Utils {
             loc.setPitch(0);
             return loc;
         }
+    }
+    public static boolean CheckPrivPermission(Player p){
+        MissileWarsMatch match = LobbyEngine.FromPlayer(p);
+        if(match == null){
+            p.sendMessage(Strings.NO_PERMISSION);
+            return false;
+        }
+        if(match instanceof MissileWarsRankedMatch){
+            p.sendMessage(Strings.RANKED_PERM_DENIED);
+            return false;
+        }
+        if (!p.hasPermission("mwx.admin")) {
+            if (!(match instanceof MissileWarsPracticeMatch)) {
+                p.sendMessage(Strings.NO_PERMISSION);
+                return false;
+            } else {
+                if (!match.hasStarted || !(match.IsPlayerInTeam(p, PlayerTeam.Red) || match.IsPlayerInTeam(p, PlayerTeam.Green))) {
+                    p.sendMessage(Strings.IN_GAME_COMMAND);
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

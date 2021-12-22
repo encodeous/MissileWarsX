@@ -21,7 +21,7 @@ public class lobbyCommand implements CommandExecutor {
                 }else if(args.length == 1){
                     try{
                         int val = Integer.parseInt(args[0]);
-                        if(val < 0 || val >= LobbyEngine.Lobbies.size()){
+                        if(val <= 0 || val > LobbyEngine.Lobbies.size()){
                             sender.sendMessage("The lobby you specified does not exist.");
                         }else{
                             LobbyEngine.FromPlayer((Player) sender).lobby.RemovePlayer((Player) sender);

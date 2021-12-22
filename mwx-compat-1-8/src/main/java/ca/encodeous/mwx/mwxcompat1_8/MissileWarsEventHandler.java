@@ -40,27 +40,27 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event){
-        if(event.getBlock().getType() == Material.BEDROCK || event.getBlock().getType() == Material.OBSIDIAN){
-            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
-        }
         MissileWarsMatch match = LobbyEngine.FromWorld(event.getBlock().getWorld());
-        if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
-            if(match.AllowPlayerInteractProtectedRegion(event.getPlayer())) event.setCancelled(true);
+        if(match != null){
+            if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
+                if(!match.AllowPlayerInteractProtectedRegion(event.getPlayer())) event.setCancelled(true);
+            }
+            match.Tracer.RemoveBlock(event.getBlock().getLocation().toVector());
         }
         if(event.getBlock().getType() == CoreGame.GetImpl().GetPortalMaterial()){
             PropagatePortalBreak(event.getBlock());
         }
-        if(match != null){
-            match.Tracer.RemoveBlock(event.getBlock().getLocation().toVector());
+        if(event.getBlock().getType() == Material.BEDROCK || event.getBlock().getType() == Material.OBSIDIAN){
+            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
         }
     }
     @EventHandler
     public void BlockPlaceEvent(BlockPlaceEvent event){
         MissileWarsMatch match = LobbyEngine.FromWorld(event.getBlock().getWorld());
-        if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
-            if(match.AllowPlayerInteractProtectedRegion(event.getPlayer())) event.setCancelled(true);
-        }
         if(match != null){
+            if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
+                if(!match.AllowPlayerInteractProtectedRegion(event.getPlayer())) event.setCancelled(true);
+            }
             if(event.getBlock().getType() == Material.TNT){
                 match.Tracer.AddBlock(event.getPlayer().getUniqueId(), TraceType.TNT, event.getBlock().getLocation().toVector());
             }else if(event.getBlock().getType() == Material.REDSTONE_BLOCK){

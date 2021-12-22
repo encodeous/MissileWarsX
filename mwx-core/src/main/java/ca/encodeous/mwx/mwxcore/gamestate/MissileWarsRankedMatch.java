@@ -83,7 +83,7 @@ public class MissileWarsRankedMatch extends MissileWarsMatch{
     }
 
     @Override
-    protected void ProcessPlayerAddTeam(PlayerTeam team){
+    protected void ProcessPlayerAddTeam(Player p, PlayerTeam team){
         if(team == PlayerTeam.Red){
             isRedReady = false;
             for(Player pl : Red){
@@ -112,6 +112,12 @@ public class MissileWarsRankedMatch extends MissileWarsMatch{
                 }
             }
         }
+    }
+
+    @Override
+    protected void OnGameStart(){
+        RankedGreen.addAll(Green);
+        RankedRed.addAll(Red);
     }
 
     @Override
@@ -157,5 +163,22 @@ public class MissileWarsRankedMatch extends MissileWarsMatch{
             });
         }
         return;
+    }
+
+    public void TeamReady(PlayerTeam team){
+        if(team == PlayerTeam.Red){
+            lobby.SendMessage(String.format(Strings.RANKED_TEAM_READY, "&cRed"));
+            isRedReady = true;
+            for(Player p : Red){
+                p.sendMessage(Strings.RANKED_TEAM_READY_NOTIF);
+            }
+        }else{
+            lobby.SendMessage(String.format(Strings.RANKED_TEAM_READY, "&cGreen"));
+            isGreenReady = true;
+            for(Player p : Green){
+                p.sendMessage(Strings.RANKED_TEAM_READY_NOTIF);
+            }
+        }
+        CheckGameReadyState();
     }
 }

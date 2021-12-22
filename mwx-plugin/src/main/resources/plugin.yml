@@ -8,17 +8,17 @@ depend:
 description: Missile Wars Plugin
 api-version: 1.13
 commands:
-#  Admin Commands
+#  Admin/Privileged Commands
   mwmake:
     description: Creates a missile from a selection
     usage: /<command> <pivot-x> <pivot-y> <pivot-z> <sel-x> <sel-y> <sel-z> <sel2-x> <sel2-y> <sel2-z> <missile-name>
     permission: mwx.admin
   mwteam:
+    permission: mwx.admin
     description: Sets a player to a given team
     usage: /<command> <player-name> <red/green/spectator/lobby>
     aliases:
       - mwt
-    permission: mwx.admin
   mwpaste:
     description: Pastes a saved missile without updating at a certain location
     permission: mwx.admin
@@ -29,10 +29,9 @@ commands:
     usage: /<command> <pivot-x> <pivot-y> <pivot-z> <missile-name> <red/green>
   mwgive:
     description: Gives you the specified item
-    permission: mwx.admin
     aliases:
       - mwi
-    usage: /<command> [player-name] <missile-wars-item-id/*>
+    usage: /<command> [player-name] <missile-wars-item-id/*> [count]
   start:
     description: Forcefully starts the game
     usage: /<command>
@@ -44,7 +43,16 @@ commands:
     usage: /<command>
   wipe:
     description: Forcefully wipes the current lobby map
-    permission: mwx.admin
+    usage: /<command>
+  mode:
+    description: Switch between creative and survival mode
+    aliases:
+      - c
+      - gmc
+      - gms
+      - creative
+      - cr
+      - g
     usage: /<command>
   mwreload:
     description: Reloads the configuration file

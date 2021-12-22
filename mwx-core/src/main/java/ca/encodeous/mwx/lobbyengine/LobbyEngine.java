@@ -2,6 +2,7 @@ package ca.encodeous.mwx.lobbyengine;
 
 import ca.encodeous.mwx.configuration.LobbyInfo;
 import ca.encodeous.mwx.mwxcore.CoreGame;
+import ca.encodeous.mwx.mwxcore.gamestate.MatchType;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.lang.Strings;
@@ -20,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class LobbyEngine {
     public static ConcurrentHashMap<Integer, Lobby> Lobbies = new ConcurrentHashMap<>();
-    private static int lobbyCount, worldCount = 0;
+    private static int lobbyCount = 1, worldCount = 1;
     public static SkinFetcher Fetcher;
     public static void BuildTablist(Player p, PacketTablist list){
         Map<Integer, TabItem> tabs = list.getMutableSlots();
@@ -62,22 +63,14 @@ public class LobbyEngine {
             tabs.put(39, CreateText("&7" + (lobbyCount - 17) + " more lobbies..."));
             int lIdx = 0;
             for(LobbyInfo lobby : CoreGame.Instance.mwLobbies.Lobbies){
-                tabs.put(22 + lIdx, CreateText(Strings.MISSILE_WARS_BRAND + " &6" + lIdx));
-                Lobby realLobby = GetLobby(lIdx);
-                tabs.put(42 + lIdx, CreateText("&7" + lobby.MaxTeamSize + "v" + lobby.MaxTeamSize
-                        + " (" + (lobby.AutoJoin ? "Auto": "Manual") + (lobby.IsRanked ? "Ranked": "Unranked") +") &f - &6" + realLobby.GetPlayers().size() + "&f/&7"
-                        + (2 * lobby.MaxTeamSize)));
+                BuildLobbyTab(tabs, lIdx, lobby);
                 if(lIdx == 16) break;
                 lIdx++;
             }
         }else{
             int lIdx = 0;
             for(LobbyInfo lobby : CoreGame.Instance.mwLobbies.Lobbies){
-                tabs.put(22 + lIdx, CreateText(Strings.MISSILE_WARS_BRAND + " &6" + lIdx));
-                Lobby realLobby = GetLobby(lIdx);
-                tabs.put(42 + lIdx, CreateText("&7" + lobby.MaxTeamSize + "v" + lobby.MaxTeamSize
-                        + " (" + (lobby.AutoJoin ? "A": "M") + "/" + (lobby.IsRanked ? "R": "U") +") &f - &6" + realLobby.GetPlayers().size() + "&f/&7"
-                        + (2 * lobby.MaxTeamSize)));
+                BuildLobbyTab(tabs, lIdx, lobby);
                 lIdx++;
             }
         }
@@ -104,6 +97,15 @@ public class LobbyEngine {
         list.setHeader(Strings.TABLIST_HEADER);
         list.setFooter(Strings.TABLIST_FOOTER);
     }
+
+    private static void BuildLobbyTab(Map<Integer, TabItem> tabs, int lIdx, LobbyInfo lobby) {
+        tabs.put(22 + lIdx, CreateText(Strings.MISSILE_WARS_BRAND + " &6" + (lIdx + 1)));
+        Lobby realLobby = GetLobby(lIdx + 1);
+        tabs.put(42 + lIdx, CreateText("&7" + lobby.MaxTeamSize + "v" + lobby.MaxTeamSize
+                + " (" + (lobby.AutoJoin ? "A": "M") + "/" + (lobby.LobbyType.toString()) +") &f - &6" + realLobby.GetPlayers().size() + "&f/&7"
+                + (2 * lobby.MaxTeamSize)));
+    }
+
     private static TabItem CreateText(String text){
         return new TabItem(10000, text);
     }
@@ -126,9 +128,9 @@ public class LobbyEngine {
         }
         return null;
     }
-    public static Lobby CreateLobby(int teamSize, boolean isAutoJoin, boolean isRanked){
+    public static Lobby CreateLobby(int teamSize, boolean isAutoJoin, MatchType type){
         int id = lobbyCount++;
-        Lobby lobby = new Lobby(isAutoJoin, teamSize, id, isRanked);
+        Lobby lobby = new Lobby(isAutoJoin, teamSize, id, type);
         lobby.Match.Map = CreateMap(isAutoJoin);;
         lobby.Match.Map.CreateMap(()->{});
         Lobbies.put(id, lobby);
@@ -147,7 +149,7 @@ public class LobbyEngine {
         if(!Lobbies.containsKey(id)) return;
         Lobby lobby = Lobbies.get(id);
         if(!lobby.isClosed){
-            lobby.CloseLobby(GetLobby(0));
+            lobby.CloseLobby(GetLobby(1));
         }
         Lobbies.remove(id);
     }
@@ -165,7 +167,7 @@ public class LobbyEngine {
             DeleteLobby(lobby.lobbyId);
         }
         Lobbies = new ConcurrentHashMap<>();
-        lobbyCount = 0;
-        worldCount = 0;
+        lobbyCount = 1;
+        worldCount = 1;
     }
 }

@@ -4,6 +4,8 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.lobbyengine.Lobby;
 import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.mwxcore.lang.Strings;
+import ca.encodeous.mwx.mwxcore.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,8 +23,10 @@ public class mwwipeCommand implements CommandExecutor {
             }
             Player cur = (Player) sender;
             if(lobby == null){
-                lobby = LobbyEngine.GetLobby(0);
+                sender.sendMessage(Strings.LOBBY_COMMAND);
+                return true;
             }
+            if(!Utils.CheckPrivPermission(cur)) return true;
             MissileWarsMatch match = lobby.Match;
             if(match.Map.isBusy || match.endCounter.isRunning() || match.startCounter.isRunning()){
                 sender.sendMessage("The map cannot be wiped at this time!");
