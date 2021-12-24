@@ -15,27 +15,34 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class TrackedBreakage extends TrackedBlock {
-    private int time;
+    private double time;
+    private double timeBetweenBreakage;
     private int oldAnimation;
-    private double damage = 0;
+    private int damage = 0;
     private int entityId;
     private MissileWarsMatch match;
     public Material blockMaterial;
-    private int taskId = -1;
+    private ScheduledFuture<?> task = null;
     private Player lastPlayer = null;
+    private static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-    public TrackedBreakage(Block block, int time, MissileWarsMatch curMatch) {
+    public TrackedBreakage(Block block, double time, MissileWarsMatch curMatch) {
         blockMaterial = block.getType();
         this.time = time;
         entityId = new Random().nextInt();
+        timeBetweenBreakage = this.time / 10.0;
         match = curMatch;
     }
 
     public void clear(){
-        if(taskId != -1){
-            Bukkit.getScheduler().cancelTask(taskId);
+        if(task != null){
+            task.cancel(false);
         }
         damage = 0;
         showBreakage();
@@ -43,19 +50,27 @@ public class TrackedBreakage extends TrackedBlock {
 
     public void startBreak(Player p){
         lastPlayer = p;
+        if(timeBetweenBreakage == 0){
+            if(task != null){
+                task.cancel(false);
+            }
+            damage = 0;
+            breakBlock();
+            return;
+        }
         clear();
-        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(CoreGame.Instance.mwPlugin, new Runnable() {
+        task = scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 if(isBroken()){
-                    breakBlock();
                     clear();
+                    breakBlock();
                 }else{
                     showBreakage();
                 }
-                damage += time / 10.0;
+                damage += (int)(10 * (timeBetweenBreakage / time));
             }
-        }, 0, time / 10);
+        }, 0, (int)timeBetweenBreakage, TimeUnit.MILLISECONDS);
     }
 
     public void cancelBreak(){
@@ -71,19 +86,24 @@ public class TrackedBreakage extends TrackedBlock {
     }
 
     public void breakBlock() {
-        destroyBlockObject();
-        Location loc = Utils.LocationFromVec(Position, match.Map.MswWorld);
-        Block block = loc.getBlock();
-        Material mat = block.getType();
-        if(match.EventHandler.BlockBreakEvent(lastPlayer, block)){
-            block.breakNaturally();
-            if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_13.getValue()){
-                loc.getWorld().playEffect(loc, Effect.STEP_SOUND, mat);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, new Runnable() {
+            @Override
+            public void run() {
+                destroyBlockObject();
+                Location loc = Utils.LocationFromVec(Position, match.Map.MswWorld);
+                Block block = loc.getBlock();
+                Material mat = block.getType();
+                if(match.EventHandler.BlockBreakEvent(lastPlayer, block)){
+                    block.breakNaturally();
+                    if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_13.getValue()){
+                        loc.getWorld().playEffect(loc, Effect.STEP_SOUND, mat);
+                    }
+                    else{
+                        loc.getWorld().playEffect(loc, Effect.STEP_SOUND, mat.getId());
+                    }
+                }
             }
-            else{
-                loc.getWorld().playEffect(loc, Effect.STEP_SOUND, mat.getId());
-            }
-        }
+        }, 0);
     }
 
     public void destroyBlockObject() {
@@ -92,7 +112,7 @@ public class TrackedBreakage extends TrackedBlock {
     }
 
     public int getAnimation() {
-        return (int) (damage / time * 11) - 1;
+        return damage - 1;
     }
 
     public void sendBreakPacket(int animation) {

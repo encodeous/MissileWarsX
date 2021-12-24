@@ -27,7 +27,7 @@ public class TraceEngine {
 
     public TrackedBreakage AddBreak(Block b, int breakTimeMs){
         TrackedBreakage block = breaks.getOrDefault(b.getLocation().toVector(),
-                new TrackedBreakage(b, breakTimeMs / 50, LobbyEngine.FromWorld(b.getWorld()).lobby.Match));
+                new TrackedBreakage(b, breakTimeMs, LobbyEngine.FromWorld(b.getWorld()).lobby.Match));
         block.Position = b.getLocation().toVector();
         breaks.put(b.getLocation().toVector(), block);
         return block;
