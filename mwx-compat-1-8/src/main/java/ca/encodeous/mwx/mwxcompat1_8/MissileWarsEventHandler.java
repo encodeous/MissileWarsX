@@ -5,8 +5,8 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
-import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
-import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
+import ca.encodeous.mwx.mwxcore.trace.TraceEngine;
+import ca.encodeous.mwx.mwxcore.trace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
 import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
 import ca.encodeous.mwx.mwxcore.utils.Utils;
@@ -27,9 +27,10 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
+
 import java.util.Optional;
 
-import static ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine.PropagatePortalBreak;
+import static ca.encodeous.mwx.mwxcore.trace.TraceEngine.PropagatePortalBreak;
 import static org.bukkit.Bukkit.getServer;
 
 public class MissileWarsEventHandler implements Listener {
@@ -40,24 +41,19 @@ public class MissileWarsEventHandler implements Listener {
     }
     @EventHandler
     public void BlockBreakEvent(BlockBreakEvent event){
-        MissileWarsMatch match = LobbyEngine.FromWorld(event.getBlock().getWorld());
-        if(match != null){
-            if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
-                if(!match.AllowPlayerInteractProtectedRegion(event.getPlayer())) event.setCancelled(true);
-            }
-            match.Tracer.RemoveBlock(event.getBlock().getLocation().toVector());
-        }
-        if(event.getBlock().getType() == CoreGame.GetImpl().GetPortalMaterial()){
-            PropagatePortalBreak(event.getBlock());
-        }
-        if(event.getBlock().getType() == Material.BEDROCK || event.getBlock().getType() == Material.OBSIDIAN){
-            if(event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
-        }
+        MissileWarsMatch match = LobbyEngine.FromWorld(event.getPlayer().getWorld());
+        if(match == null) return;
+        if(!match.EventHandler.BlockBreakEvent(event.getPlayer(), event.getBlock())) event.setCancelled(true);
     }
+
     @EventHandler
     public void BlockPlaceEvent(BlockPlaceEvent event){
         MissileWarsMatch match = LobbyEngine.FromWorld(event.getBlock().getWorld());
         if(match != null){
+            if(match.Map.isBusy){
+                event.setCancelled(true);
+                return;
+            }
             if(StructureUtils.IsInProtectedRegion(event.getBlock().getLocation().toVector())){
                 if(!match.AllowPlayerInteractProtectedRegion(event.getPlayer())) event.setCancelled(true);
             }
@@ -93,6 +89,10 @@ public class MissileWarsEventHandler implements Listener {
     public void ExplodeEvent(EntityExplodeEvent e){
         MissileWarsMatch match = LobbyEngine.FromWorld(e.getLocation().getWorld());
         if(match == null) return;
+        if(match.Map.isBusy){
+            e.setCancelled(true);
+            return;
+        }
         e.blockList().removeIf(block -> StructureUtils.IsInProtectedRegion(block.getLocation().toVector()));
         if(e.getEntity() instanceof Fireball){
             e.blockList().removeIf(block ->
@@ -136,6 +136,10 @@ public class MissileWarsEventHandler implements Listener {
             Player p = (Player) e.getEntity();
             MissileWarsMatch match = LobbyEngine.FromPlayer(p);
             if(match != null){
+                if(match.Map.isBusy){
+                    e.setCancelled(true);
+                    return;
+                }
                 if(!match.IsPlayerInTeam(p, PlayerTeam.Red) && !match.IsPlayerInTeam(p, PlayerTeam.Green)){
                     e.setCancelled(true);
                 }
@@ -241,7 +245,6 @@ public class MissileWarsEventHandler implements Listener {
                 }
             }
         }
-
     }
     @EventHandler
     public void PlayerInventoryInteractEvent(InventoryClickEvent event){

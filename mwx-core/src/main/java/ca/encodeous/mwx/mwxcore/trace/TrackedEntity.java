@@ -1,4 +1,4 @@
-package ca.encodeous.mwx.mwxcore.missiletrace;
+package ca.encodeous.mwx.mwxcore.trace;
 
 import java.util.HashSet;
 import java.util.UUID;

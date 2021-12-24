@@ -2,8 +2,8 @@ package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
-import ca.encodeous.mwx.mwxcore.missiletrace.TrackedBlock;
+import ca.encodeous.mwx.mwxcore.trace.TraceEngine;
+import ca.encodeous.mwx.mwxcore.trace.TrackedBlock;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import ca.encodeous.mwx.lobbyengine.LobbyEngine;
@@ -26,6 +26,9 @@ public class PaperEventHandler implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityRemoveFromWorldEvent(EntityRemoveFromWorldEvent event){
         entityCount.put(event.getEntity().getWorld(), entityCount.getOrDefault(event.getEntity().getWorld(), 1) - 1);
+        MissileWarsMatch match = LobbyEngine.FromWorld(event.getEntity().getWorld());
+        if(match == null) return;
+        match.Tracer.RemoveEntity(event.getEntity().getUniqueId());
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityAddToWorldEvent(EntityAddToWorldEvent event){

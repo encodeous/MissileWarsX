@@ -5,7 +5,7 @@ import ca.encodeous.mwx.mwxcompat1_8.MwConstants;
 import ca.encodeous.mwx.mwxcore.StructureInterface;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
-import ca.encodeous.mwx.mwxcore.missiletrace.TraceType;
+import ca.encodeous.mwx.mwxcore.trace.TraceType;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
 import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
 import ca.encodeous.mwx.mwxcore.utils.Utils;

@@ -1,5 +1,6 @@
-package ca.encodeous.mwx.mwxcore.missiletrace;
+package ca.encodeous.mwx.mwxcore.trace;
 
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,6 +14,7 @@ import java.util.*;
 
 public class TraceEngine {
     private final HashMap<Vector, TrackedBlock> blocks = new HashMap<>();
+    private final HashMap<Vector, TrackedBreakage> breaks = new HashMap<>();
     private final HashMap<UUID, TrackedEntity> entities = new HashMap<>();
 
     public void AddBlock(UUID source, TraceType type, Vector loc){
@@ -21,6 +23,18 @@ public class TraceEngine {
         block.Sources.add(source);
         block.Type = type;
         blocks.put(loc, block);
+    }
+
+    public TrackedBreakage AddBreak(Block b, int breakTimeMs){
+        TrackedBreakage block = breaks.getOrDefault(b.getLocation().toVector(),
+                new TrackedBreakage(b, breakTimeMs / 50, LobbyEngine.FromWorld(b.getWorld()).lobby.Match));
+        block.Position = b.getLocation().toVector();
+        breaks.put(b.getLocation().toVector(), block);
+        return block;
+    }
+
+    public TrackedBreakage GetBreak(Block b){
+        return breaks.getOrDefault(b.getLocation().toVector(), null);
     }
 
     public TrackedEntity GetSources(Entity entity){
@@ -36,6 +50,7 @@ public class TraceEngine {
     public void TransformBlocks(List<Block> blocks, BlockFace face){
         ArrayList<Block> tracked = new ArrayList<>();
         ArrayList<TrackedBlock> blockMeta = new ArrayList<>();
+        // blocks
         for(Block block : blocks){
             Vector v = block.getLocation().toVector();
             if(this.blocks.containsKey(v)){
@@ -49,6 +64,15 @@ public class TraceEngine {
             TrackedBlock block = this.blocks.getOrDefault(newPos, new TrackedBlock());
             MergeBlockMeta(block, blockMeta.get(i));
             this.blocks.put(newPos, block);
+        }
+        // fast breaks
+        if(CoreGame.Instance.mwConfig.AllowFastBreak){
+            for(Block block : blocks){
+                Vector v = block.getLocation().toVector();
+                Vector newPos = PushBlockPos(v, face);
+                breaks.remove(v);
+                breaks.remove(newPos);
+            }
         }
     }
 
@@ -133,6 +157,14 @@ public class TraceEngine {
      */
     public void RemoveBlock(Vector loc){
         blocks.remove(loc);
+        breaks.remove(loc);
+    }
+
+    /**
+     * Untrack a breakage
+     */
+    public void RemoveBreak(Vector loc){
+        breaks.remove(loc);
     }
 
     final static int[] offsetx = new int[]{1,-1,0,0,0,0};

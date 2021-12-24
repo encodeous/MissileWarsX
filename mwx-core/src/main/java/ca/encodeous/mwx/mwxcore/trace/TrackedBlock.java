@@ -1,8 +1,7 @@
-package ca.encodeous.mwx.mwxcore.missiletrace;
+package ca.encodeous.mwx.mwxcore.trace;
 
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 

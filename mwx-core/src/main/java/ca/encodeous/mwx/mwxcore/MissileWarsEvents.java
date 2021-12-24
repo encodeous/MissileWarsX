@@ -1,10 +1,14 @@
 package ca.encodeous.mwx.mwxcore;
 
+import ca.encodeous.mwx.lobbyengine.LobbyEngine;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
 import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
+import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -15,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
+
+import static ca.encodeous.mwx.mwxcore.trace.TraceEngine.PropagatePortalBreak;
 
 public class MissileWarsEvents {
     private MissileWarsMatch match;
@@ -67,6 +73,26 @@ public class MissileWarsEvents {
                 }
                 match.PortalBroken(match.Map.RedPortal.IsInBounds(block.getLocation().toVector()), players);
             }
+        }
+        return true;
+    }
+
+    public boolean BlockBreakEvent(Player p, Block block) {
+        MissileWarsMatch match = LobbyEngine.FromWorld(block.getWorld());
+        if(match != null){
+            if(match.Map.isBusy){
+                return false;
+            }
+            if(StructureUtils.IsInProtectedRegion(block.getLocation().toVector())){
+                if(!match.AllowPlayerInteractProtectedRegion(p)) return false;
+            }
+            match.Tracer.RemoveBlock(block.getLocation().toVector());
+        }
+        if(block.getType() == CoreGame.GetImpl().GetPortalMaterial()){
+            PropagatePortalBreak(block);
+        }
+        if(block.getType() == Material.BEDROCK || block.getType() == Material.OBSIDIAN){
+            if(p.getGameMode() != GameMode.CREATIVE) return false;
         }
         return true;
     }

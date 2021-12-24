@@ -2,7 +2,7 @@ package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
+import ca.encodeous.mwx.mwxcore.trace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.utils.Ref;
 import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
 import ca.encodeous.mwx.lobbyengine.LobbyEngine;
@@ -20,7 +20,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import java.util.Optional;
 import java.util.UUID;
 
-import static ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine.PropagatePortalBreak;
+import static ca.encodeous.mwx.mwxcore.trace.TraceEngine.PropagatePortalBreak;
 
 public class MissileWarsEventHandler extends ca.encodeous.mwx.mwxcompat1_8.MissileWarsEventHandler {
     @EventHandler

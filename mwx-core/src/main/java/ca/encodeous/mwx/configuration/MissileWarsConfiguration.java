@@ -35,7 +35,14 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
      * Should helmets be given to players?
      */
     public boolean UseHelmets = false;
-
+    /**
+     * Allow faster breaking on specific blocks like Redstone and Pistons
+     */
+    public boolean AllowFastBreak = false;
+    /**
+     * Configures individual block breaking speeds
+     */
+    public Map<String, Integer> BreakSpeeds;
     public static MissileWarsConfiguration deserialize(Map<String, Object> args) {
         MissileWarsConfiguration conf = new MissileWarsConfiguration();
         conf.Items = new ArrayList<>();
@@ -46,6 +53,8 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         conf.TpsCriticalThreshold = (Integer)args.get("tps-critical-threshold");
         conf.HardEntityLimit = (Integer)args.get("lobby-entity-limit");
         conf.UseHelmets = (Boolean)args.get("use-helmets");
+        conf.AllowFastBreak = (Boolean)args.get("use-fast-break");
+        conf.BreakSpeeds = (Map<String, Integer>)args.get("break-speeds");
         return conf;
     }
 
@@ -59,6 +68,8 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         map.put("tps-critical-threshold", TpsCriticalThreshold);
         map.put("use-helmets", UseHelmets);
         map.put("items", Items);
+        map.put("use-fast-break", AllowFastBreak);
+        map.put("break-speeds", BreakSpeeds);
         return map;
     }
 }

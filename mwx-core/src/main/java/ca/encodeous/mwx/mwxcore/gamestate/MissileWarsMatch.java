@@ -5,7 +5,7 @@ import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MissileWarsEvents;
 import ca.encodeous.mwx.mwxcore.lang.Strings;
-import ca.encodeous.mwx.mwxcore.missiletrace.TraceEngine;
+import ca.encodeous.mwx.mwxcore.trace.TraceEngine;
 import ca.encodeous.mwx.mwxcore.utils.*;
 import ca.encodeous.mwx.mwxstats.MatchParticipation;
 import ca.encodeous.mwx.mwxstats.PlayerStats;
