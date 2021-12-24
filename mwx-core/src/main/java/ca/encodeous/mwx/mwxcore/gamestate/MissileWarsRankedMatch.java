@@ -4,15 +4,18 @@ import ca.encodeous.mwx.lobbyengine.Lobby;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Chat;
+import ca.encodeous.mwx.mwxcore.utils.TrueSkillPlayer;
+import ca.encodeous.mwx.mwxcore.utils.TrueSkillTeam;
 import ca.encodeous.mwx.mwxstats.MatchParticipation;
+import ca.encodeous.mwx.mwxstats.PlayerStats;
+import de.gesundkrank.jskills.GameInfo;
+import de.gesundkrank.jskills.IPlayer;
 import de.gesundkrank.jskills.Rating;
+import de.gesundkrank.jskills.TrueSkillCalculator;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MissileWarsRankedMatch extends MissileWarsMatch{
@@ -173,12 +176,30 @@ public class MissileWarsRankedMatch extends MissileWarsMatch{
                 p.sendMessage(Strings.RANKED_TEAM_READY_NOTIF);
             }
         }else{
-            lobby.SendMessage(String.format(Strings.RANKED_TEAM_READY, "&cGreen"));
+            lobby.SendMessage(String.format(Strings.RANKED_TEAM_READY, "&aGreen"));
             isGreenReady = true;
             for(Player p : Green){
                 p.sendMessage(Strings.RANKED_TEAM_READY_NOTIF);
             }
         }
         CheckGameReadyState();
+    }
+
+    public static HashMap<UUID, Rating> CalculateTrueSkill(List<PlayerStats> winners, List<PlayerStats> losers){
+        GameInfo gi = new GameInfo(1475, 100, 50, 5, 0.05);
+        TrueSkillTeam winnersRatings = new TrueSkillTeam();
+        TrueSkillTeam losersRatings = new TrueSkillTeam();
+        for(PlayerStats stat : winners){
+            winnersRatings.put(new TrueSkillPlayer(stat.PlayerId), new Rating(stat.TrueSkill, stat.TrueSkillDev));
+        }
+        for(PlayerStats stat : losers){
+            losersRatings.put(new TrueSkillPlayer(stat.PlayerId), new Rating(stat.TrueSkill, stat.TrueSkillDev));
+        }
+        Map<IPlayer, Rating> res = TrueSkillCalculator.calculateNewRatings(gi, Arrays.asList(winnersRatings, losersRatings), 1, 2);
+        HashMap<UUID, Rating> newStats = new HashMap<>();
+        for(Map.Entry<IPlayer, Rating> stat : res.entrySet()){
+            newStats.put(((TrueSkillPlayer)stat.getKey()).id, stat.getValue());
+        }
+        return newStats;
     }
 }

@@ -24,7 +24,6 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class MissileWarsMatch {
     // Map info
@@ -46,7 +45,7 @@ public class MissileWarsMatch {
     public TraceEngine Tracer;
     public Lobby lobby;
     Random mwRand = new Random();
-    public boolean isDraw;
+    public boolean isDraw = false, isRedPortalBroken = false, isGreenPortalBroken = false;
     public PlayerTeam winningTeam;
     // stats
     public ConcurrentHashMap<UUID, Integer> Deaths;
@@ -195,8 +194,12 @@ public class MissileWarsMatch {
             });
         }
     }
-
     public void PortalBroken(boolean isRed, ArrayList<Player> credits){
+        if(isDraw) return;
+        if(isRed && isRedPortalBroken) return;
+        if(!isRed && isGreenPortalBroken) return;
+        isRedPortalBroken = isRedPortalBroken || isRed;
+        isGreenPortalBroken = isGreenPortalBroken || !isRed;
         winningTeam = isRed? PlayerTeam.Green : PlayerTeam.Red;
         PlayerTeam lose = isRed? PlayerTeam.Red : PlayerTeam.Green;
         if(endCounter.isRunning()){
@@ -214,8 +217,10 @@ public class MissileWarsMatch {
                 CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.WIN);
             CoreGame.GetImpl().PlaySound(player.getKey(), SoundType.GAME_END);
         }
-        for(Player p : Teams.keySet()){
-            CoreGame.GetImpl().SendActionBar(p, Strings.DRAW_CHECK);
+        if(!isDraw){
+            for(Player p : Teams.keySet()){
+                CoreGame.GetImpl().SendActionBar(p, Strings.DRAW_CHECK);
+            }
         }
         endCounter.Start();
     }
@@ -399,24 +404,8 @@ public class MissileWarsMatch {
         startCounter.StopCounting();
         Deaths = new ConcurrentHashMap<>();
         Kills = new ConcurrentHashMap<>();
-    }
-
-    public static HashMap<UUID, Rating> CalculateTrueSkill(List<PlayerStats> winners, List<PlayerStats> losers){
-        GameInfo gi = new GameInfo(1475, 100, 50, 5, 0.05);
-        TrueSkillTeam winnersRatings = new TrueSkillTeam();
-        TrueSkillTeam losersRatings = new TrueSkillTeam();
-        for(PlayerStats stat : winners){
-            winnersRatings.put(new TrueSkillPlayer(stat.PlayerId), new Rating(stat.TrueSkill, stat.TrueSkillDev));
-        }
-        for(PlayerStats stat : losers){
-            losersRatings.put(new TrueSkillPlayer(stat.PlayerId), new Rating(stat.TrueSkill, stat.TrueSkillDev));
-        }
-        Map<IPlayer, Rating> res = TrueSkillCalculator.calculateNewRatings(gi, Arrays.asList(winnersRatings, losersRatings), 1, 2);
-        HashMap<UUID, Rating> newStats = new HashMap<>();
-        for(Map.Entry<IPlayer, Rating> stat : res.entrySet()){
-            newStats.put(((TrueSkillPlayer)stat.getKey()).id, stat.getValue());
-        }
-        return newStats;
+        isRedPortalBroken = false;
+        isGreenPortalBroken = false;
     }
 
     public void FinalizeMatch(boolean isDraw){

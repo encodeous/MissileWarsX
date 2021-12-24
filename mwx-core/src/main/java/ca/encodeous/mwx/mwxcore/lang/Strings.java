@@ -39,7 +39,7 @@ public class Strings {
     public static String CANNOT_DEPLOY = Chat.FCL("&cYou cannot deploy that there.");
 
     public static String RANKED_PLAYER_LEAVE = Chat.FCL("&cA player has left your team, please run &6/ready &cagain when everyone is ready.");
-    public static String RANKED_TEAM_READY = Chat.FCL("&fThe %s %fteam is now ready.");
+    public static String RANKED_TEAM_READY = Chat.FCL("&fThe %s &fteam is now ready.");
     public static String RANKED_TEAM_READY_NOTIF = Chat.FCL("&cYour team is now ready. &6Once the game is started, the teams will be locked and rankings will be calculated when the game ends.");
     public static String RANKED_LOBBY_NOT_ENOUGH_PLAYERS = Chat.FCL("&9The game needs at least 1 player in each team to start.");
     public static String RANKED_LOBBY_TEAM_WARNING = Chat.FCL("&aBoth teams are now ready. Once the timer reaches 0, the teams will be locked-in and no changes will be allowed.");

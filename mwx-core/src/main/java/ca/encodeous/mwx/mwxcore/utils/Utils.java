@@ -6,13 +6,21 @@ import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.MCVersion;
 import ca.encodeous.mwx.mwxcore.gamestate.*;
 import ca.encodeous.mwx.mwxcore.lang.Strings;
+import com.fastasyncworldedit.core.util.EditSessionBuilder;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import util.SpigotReflection;
+
+import java.lang.reflect.Method;
+import java.util.logging.Level;
 
 public class Utils {
     public static Location LocationFromVec(Vector vec, World w){
@@ -107,5 +115,43 @@ public class Utils {
             }
         }
         return true;
+    }
+    private static Method editSessionMethod = null;
+    public static boolean IsLegacy = true;
+    private static boolean hasInformed = false;
+    public static EditSession GetEditSession(World world){
+        // fawe version compatibility
+        EditSession ess = null;
+        if(IsLegacy){
+            try{
+                ess = new EditSessionBuilder(BukkitAdapter.adapt(world)).build();
+                if(!hasInformed){
+                    hasInformed = true;
+                    CoreGame.Instance.mwPlugin.getLogger().log(Level.INFO, "Detected & Using Legacy WorldEdit APIs");
+                }
+            }catch (NoClassDefFoundError e){
+                // ignored
+                IsLegacy = false;
+            }
+        }
+        if(!IsLegacy){
+            try {
+                if(editSessionMethod == null){
+                    editSessionMethod = WorldEdit.class.getMethod("newEditSession", com.sk89q.worldedit.world.World.class);
+                }
+                ess = (EditSession) editSessionMethod.invoke(WorldEdit.getInstance(), BukkitAdapter.adapt(world));
+            } catch (Exception e) {
+                CoreGame.Instance.mwPlugin.getLogger().log(Level.SEVERE, "Unable to access WorldEdit apis, make sure the correct version is installed!");
+                e.printStackTrace();
+            }
+        }
+        return ess;
+    }
+    public static void playBlockSound(Location loc, Material mat) {
+        Block curBlock = loc.getBlock();
+        Material curMat = curBlock.getType();
+        curBlock.setType(mat);
+        curBlock.breakNaturally();
+        curBlock.setType(curMat);
     }
 }

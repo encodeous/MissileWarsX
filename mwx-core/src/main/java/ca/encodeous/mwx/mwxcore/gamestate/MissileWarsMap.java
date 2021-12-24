@@ -3,9 +3,9 @@ package ca.encodeous.mwx.mwxcore.gamestate;
 import ca.encodeous.mwx.mwxcore.CoreGame;
 import ca.encodeous.mwx.mwxcore.lang.Strings;
 import ca.encodeous.mwx.mwxcore.utils.Bounds;
+import ca.encodeous.mwx.mwxcore.utils.Utils;
 import com.fastasyncworldedit.core.extent.clipboard.ReadOnlyClipboard;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -84,14 +84,12 @@ public class MissileWarsMap {
         if(!cachedClipboards.containsKey(TemplateWorld)){
             CuboidRegion srcRegion = WorldBoundingBox.toWorldeditRegion(TemplateWorld);
             Clipboard board;
-            try (EditSession session = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(MswWorld))){
+            try (EditSession session = Utils.GetEditSession(TemplateWorld)){
                 session.setFastMode(true);
                 board = ReadOnlyClipboard.of(
                         session, srcRegion, false, false
                 );
-                board.setOrigin(srcRegion.getMinimumPoint());
             }
-            board.disableHistory();
             cachedClipboards.put(TemplateWorld, board);
         }
         return cachedClipboards.get(TemplateWorld);
@@ -108,11 +106,11 @@ public class MissileWarsMap {
                     isFilled = true;
                     CuboidRegion destRegion = WorldBoundingBox.toWorldeditRegion(MswWorld);
                     Clipboard board = getClipboard();
-                    try (EditSession session = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(MswWorld))) {
+
+                    try (EditSession session = Utils.GetEditSession(MswWorld)) {
                         session.setFastMode(true);
                         Operation operation = new ClipboardHolder(board)
                                 .createPaste(session)
-                                .to(destRegion.getMinimumPoint())
                                 .ignoreAirBlocks(true)
                                 .copyEntities(false)
                                 .build();
@@ -140,12 +138,11 @@ public class MissileWarsMap {
                 CuboidRegion destFullRegion = WorldMaxBoundingBox.toWorldeditRegion(MswWorld);
                 CuboidRegion destRegion = WorldBoundingBox.toWorldeditRegion(MswWorld);
                 Clipboard board = getClipboard();
-                try (EditSession session = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(MswWorld))) {
+                try (EditSession session = Utils.GetEditSession(MswWorld)) {
                     session.setFastMode(true);
                     session.setBlocks((Region) destFullRegion, BukkitAdapter.asBlockType(Material.AIR));
                     Operation operation = new ClipboardHolder(board)
                             .createPaste(session)
-                            .to(destRegion.getMinimumPoint())
                             .ignoreAirBlocks(true)
                             .copyEntities(false)
                             .build();
