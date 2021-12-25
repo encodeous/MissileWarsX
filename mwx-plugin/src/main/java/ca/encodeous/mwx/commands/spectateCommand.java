@@ -1,8 +1,8 @@
 package ca.encodeous.mwx.commands;
 
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.data.PlayerTeam;
+import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

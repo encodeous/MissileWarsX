@@ -2,16 +2,18 @@ package ca.encodeous.mwx.mwxcompat1_8;
 
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.core.game.MissileWarsImplementation;
 import ca.encodeous.mwx.mwxcompat1_8.Structures.StructureCore;
-import ca.encodeous.mwx.mwxcore.*;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMap;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.utils.Bounds;
-import ca.encodeous.mwx.mwxcore.utils.Chat;
-import ca.encodeous.mwx.mwxcore.utils.Utils;
-import ca.encodeous.mwx.mwxcore.utils.WorldCopy;
-import ca.encodeous.mwx.mwxcore.world.*;
-import ca.encodeous.mwx.soundengine.SoundType;
+import ca.encodeous.mwx.core.game.MissileWarsMap;
+import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.data.Bounds;
+import ca.encodeous.mwx.core.utils.Chat;
+import ca.encodeous.mwx.core.utils.MCVersion;
+import ca.encodeous.mwx.core.utils.Utils;
+import ca.encodeous.mwx.core.utils.VoidWorldGen;
+import ca.encodeous.mwx.data.SoundType;
+import ca.encodeous.mwx.engines.structure.StructureInterface;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemFlag;
@@ -24,7 +26,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-import java.io.File;
 import java.util.*;
 
 public class MissileWars1_8 implements MissileWarsImplementation {

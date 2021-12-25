@@ -1,13 +1,10 @@
 package ca.encodeous.mwx.mwxplugin;
 
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.utils.Chat;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.core.utils.Chat;
+import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,8 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import pl.kacperduras.protocoltab.manager.PacketTablist;
 
 import java.util.concurrent.ConcurrentHashMap;

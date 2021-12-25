@@ -1,7 +1,7 @@
 package ca.encodeous.mwx.mwxcompat1_8;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
-import ca.encodeous.mwx.mwxcore.utils.Chat;
+import ca.encodeous.mwx.core.utils.Chat;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;

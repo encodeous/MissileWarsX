@@ -1,7 +1,7 @@
 package ca.encodeous.mwx.commands;
 
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.utils.Chat;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.core.utils.Chat;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

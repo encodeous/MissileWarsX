@@ -1,14 +1,9 @@
 package ca.encodeous.mwx.commands;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsPracticeMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
-import ca.encodeous.mwx.mwxcore.lang.Strings;
-import ca.encodeous.mwx.mwxcore.utils.Chat;
-import ca.encodeous.mwx.mwxcore.utils.Utils;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.core.utils.Chat;
+import ca.encodeous.mwx.core.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

@@ -1,10 +1,10 @@
 package ca.encodeous.mwx.commands;
 
-import ca.encodeous.mwx.configuration.Missile;
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.utils.Bounds;
-import ca.encodeous.mwx.mwxcore.utils.Chat;
-import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
+import ca.encodeous.mwx.configuration.MissileConfiguration;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.data.Bounds;
+import ca.encodeous.mwx.core.utils.Chat;
+import ca.encodeous.mwx.configuration.MissileSchematic;
 import ca.encodeous.mwx.mwxplugin.MissileWarsX;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -39,7 +39,7 @@ public class mwmakeCommand implements CommandExecutor {
                     p.sendMessage(Chat.FCL("&cFailed creating missile! Valid blocks are: [PISTON, GLASS, STAINED_GLASS, SLIME_BLOCK, TNT, REDSTONE_BLOCK, STAINED_CLAY]. Schematics must also not be empty!"));
                     return true;
                 }
-                Missile missile = new Missile();
+                MissileConfiguration missile = new MissileConfiguration();
                 missile.Schematic = schem;
                 missile.MissileItemId = name;
                 CoreGame.Instance.mwMissiles.put(missile.MissileItemId, missile);

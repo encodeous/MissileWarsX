@@ -1,11 +1,11 @@
 package ca.encodeous.mwx.commands;
 
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.lobbyengine.Lobby;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
-import ca.encodeous.mwx.mwxcore.lang.Strings;
-import ca.encodeous.mwx.mwxcore.utils.Utils;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.engines.lobby.Lobby;
+import ca.encodeous.mwx.engines.lobby.LobbyEngine;
+import ca.encodeous.mwx.core.lang.Strings;
+import ca.encodeous.mwx.core.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

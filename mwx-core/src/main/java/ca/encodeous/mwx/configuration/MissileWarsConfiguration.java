@@ -1,10 +1,8 @@
 package ca.encodeous.mwx.configuration;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MissileWarsConfiguration implements ConfigurationSerializable {
     /**

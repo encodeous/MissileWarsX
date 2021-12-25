@@ -1,17 +1,17 @@
 package ca.encodeous.mwx.mwxcompat1_8;
 
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.MCVersion;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
-import ca.encodeous.mwx.mwxcore.trace.TraceEngine;
-import ca.encodeous.mwx.mwxcore.trace.TraceType;
-import ca.encodeous.mwx.mwxcore.utils.Ref;
-import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
-import ca.encodeous.mwx.mwxcore.utils.Utils;
-import ca.encodeous.mwx.soundengine.SoundType;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.core.utils.MCVersion;
+import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.data.PlayerTeam;
+import ca.encodeous.mwx.engines.trace.TraceEngine;
+import ca.encodeous.mwx.data.TraceType;
+import ca.encodeous.mwx.data.Ref;
+import ca.encodeous.mwx.engines.structure.StructureUtils;
+import ca.encodeous.mwx.core.utils.Utils;
+import ca.encodeous.mwx.data.SoundType;
+import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,7 +30,7 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.Optional;
 
-import static ca.encodeous.mwx.mwxcore.trace.TraceEngine.PropagatePortalBreak;
+import static ca.encodeous.mwx.engines.trace.TraceEngine.PropagatePortalBreak;
 import static org.bukkit.Bukkit.getServer;
 
 public class MissileWarsEventHandler implements Listener {

@@ -1,9 +1,9 @@
 package ca.encodeous.mwx.commands;
 
-import ca.encodeous.mwx.mwxcore.lang.Strings;
-import ca.encodeous.mwx.mwxcore.utils.Chat;
-import ca.encodeous.mwx.lobbyengine.Lobby;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.core.lang.Strings;
+import ca.encodeous.mwx.core.utils.Chat;
+import ca.encodeous.mwx.engines.lobby.Lobby;
+import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

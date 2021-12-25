@@ -1,12 +1,12 @@
 package ca.encodeous.mwx.mwxcompat1_13;
 
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.trace.TraceEngine;
-import ca.encodeous.mwx.mwxcore.trace.TrackedBlock;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.engines.trace.TraceEngine;
+import ca.encodeous.mwx.engines.trace.TrackedBlock;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

@@ -2,54 +2,54 @@ data:
   ==: ca.encodeous.mwx.configuration.Missile
   attached-item-id: Juggernaut
   schematic:
-    ==: ca.encodeous.mwx.mwxcore.world.MissileSchematic
+    ==: ca.encodeous.mwx.configuration.MissileSchematic
     blocks:
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: REDSTONE
       rel-loc:
         ==: Vector
         x: -1.0
         y: -4.0
         z: 8.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: -1.0
         y: -4.0
         z: 9.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: REDSTONE
       rel-loc:
         ==: Vector
         x: -1.0
         y: -4.0
         z: 11.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: -1.0
         y: -4.0
         z: 12.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: -1.0
         y: -4.0
         z: 13.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: -1.0
         y: -3.0
         z: 6.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.mwxcore.world.PistonData
+        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
         head: false
         face: SOUTH
         sticky: false
@@ -59,17 +59,17 @@ data:
         x: -1.0
         y: -3.0
         z: 7.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: -1.0
         y: -3.0
         z: 9.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.mwxcore.world.PistonData
+        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
         head: false
         face: SOUTH
         sticky: false
@@ -79,52 +79,52 @@ data:
         x: -1.0
         y: -3.0
         z: 10.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: -1.0
         y: -3.0
         z: 12.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: -1.0
         y: -3.0
         z: 13.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: -1.0
         y: -2.0
         z: 9.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: -1.0
         y: -2.0
         z: 10.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: REDSTONE
       rel-loc:
         ==: Vector
         x: -1.0
         y: -2.0
         z: 13.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 0.0
         y: -4.0
         z: 13.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.mwxcore.world.PistonData
+        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
         head: false
         face: SOUTH
         sticky: false
@@ -134,17 +134,17 @@ data:
         x: 0.0
         y: -3.0
         z: 4.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: 0.0
         y: -3.0
         z: 6.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.mwxcore.world.PistonData
+        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
         head: false
         face: NORTH
         sticky: true
@@ -154,115 +154,115 @@ data:
         x: 0.0
         y: -3.0
         z: 7.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 0.0
         y: -3.0
         z: 12.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: 0.0
         y: -3.0
         z: 13.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 0.0
         y: -3.0
         z: 14.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: REDSTONE
       rel-loc:
         ==: Vector
         x: 0.0
         y: -2.0
         z: 6.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: GLASS
       rel-loc:
         ==: Vector
         x: 0.0
         y: -2.0
         z: 7.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 0.0
         y: -2.0
         z: 8.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 0.0
         y: -2.0
         z: 9.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 0.0
         y: -2.0
         z: 10.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 0.0
         y: -2.0
         z: 11.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: REDSTONE
       rel-loc:
         ==: Vector
         x: 1.0
         y: -4.0
         z: 8.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: 1.0
         y: -4.0
         z: 9.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -4.0
         z: 10.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -4.0
         z: 11.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -4.0
         z: 12.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -3.0
         z: 6.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.mwxcore.world.PistonData
+        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
         head: false
         face: SOUTH
         sticky: false
@@ -272,56 +272,56 @@ data:
         x: 1.0
         y: -3.0
         z: 7.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: SLIME
       rel-loc:
         ==: Vector
         x: 1.0
         y: -3.0
         z: 9.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -3.0
         z: 10.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -3.0
         z: 11.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -3.0
         z: 13.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -2.0
         z: 9.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -2.0
         z: 10.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector
         x: 1.0
         y: -2.0
         z: 11.0
-    - ==: ca.encodeous.mwx.mwxcore.world.MissileBlock
+    - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: TNT
       rel-loc:
         ==: Vector

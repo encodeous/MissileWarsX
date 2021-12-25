@@ -1,0 +1,19 @@
+package ca.encodeous.mwx.engines.structure;
+
+import ca.encodeous.mwx.configuration.MissileConfiguration;
+import ca.encodeous.mwx.data.PlayerTeam;
+import ca.encodeous.mwx.data.Bounds;
+import ca.encodeous.mwx.configuration.MissileBlock;
+import ca.encodeous.mwx.configuration.MissileSchematic;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
+public interface StructureInterface {
+    public MissileSchematic GetSchematic(Vector pivot, Bounds boundingBox, World world);
+    public boolean PlaceMissile(MissileConfiguration missile, Vector location, World world, boolean isRed, boolean update, Player p);
+    public void PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p);
+    public boolean SpawnShield(Vector location, World world, boolean isRed);
+    public boolean IsBlockOfTeam(PlayerTeam team, Block block);
+}

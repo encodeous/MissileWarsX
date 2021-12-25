@@ -3,11 +3,11 @@ package ca.encodeous.mwx.mwxplugin;
 import ca.encodeous.mwx.commands.*;
 import ca.encodeous.mwx.mwxcompat1_13.MissileWars1_13;
 import ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8;
-import ca.encodeous.mwx.mwxcore.CoreGame;
-import ca.encodeous.mwx.mwxcore.MCVersion;
-import ca.encodeous.mwx.mwxcore.MissileWarsImplementation;
+import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.mwx.core.utils.MCVersion;
+import ca.encodeous.mwx.core.game.MissileWarsImplementation;
 import com.keenant.tabbed.skin.SkinFetcher;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

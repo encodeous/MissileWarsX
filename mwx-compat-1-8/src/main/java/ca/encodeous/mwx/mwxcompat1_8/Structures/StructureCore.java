@@ -1,19 +1,19 @@
 package ca.encodeous.mwx.mwxcompat1_8.Structures;
 
-import ca.encodeous.mwx.configuration.Missile;
+import ca.encodeous.mwx.configuration.MissileConfiguration;
+import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.mwxcompat1_8.MwConstants;
-import ca.encodeous.mwx.mwxcore.StructureInterface;
-import ca.encodeous.mwx.mwxcore.gamestate.MissileWarsMatch;
-import ca.encodeous.mwx.mwxcore.gamestate.PlayerTeam;
-import ca.encodeous.mwx.mwxcore.trace.TraceType;
-import ca.encodeous.mwx.mwxcore.utils.Bounds;
-import ca.encodeous.mwx.mwxcore.utils.StructureUtils;
-import ca.encodeous.mwx.mwxcore.utils.Utils;
-import ca.encodeous.mwx.mwxcore.world.MissileBlock;
-import ca.encodeous.mwx.mwxcore.world.MissileMaterial;
-import ca.encodeous.mwx.mwxcore.world.MissileSchematic;
-import ca.encodeous.mwx.mwxcore.world.PistonData;
-import ca.encodeous.mwx.lobbyengine.LobbyEngine;
+import ca.encodeous.mwx.engines.structure.StructureInterface;
+import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.data.PlayerTeam;
+import ca.encodeous.mwx.data.TraceType;
+import ca.encodeous.mwx.data.Bounds;
+import ca.encodeous.mwx.engines.structure.StructureUtils;
+import ca.encodeous.mwx.core.utils.Utils;
+import ca.encodeous.mwx.configuration.MissileBlock;
+import ca.encodeous.mwx.data.MissileMaterial;
+import ca.encodeous.mwx.configuration.MissileSchematic;
+import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -42,7 +42,7 @@ public class StructureCore implements StructureInterface {
                     if (block.getType() == Material.PISTON_BASE) {
                         mBlock.Material = MissileMaterial.PISTON;
                         PistonBaseMaterial pbm = new PistonBaseMaterial(Material.PISTON_BASE, block.getData());
-                        mBlock.PistonData = new PistonData();
+                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
                         mBlock.PistonData.IsHead = false;
                         mBlock.PistonData.IsSticky = false;
                         mBlock.PistonData.IsPowered = pbm.isPowered();
@@ -50,7 +50,7 @@ public class StructureCore implements StructureInterface {
                     } else if (block.getType() == Material.PISTON_STICKY_BASE) {
                         mBlock.Material = MissileMaterial.PISTON;
                         PistonBaseMaterial pbm = new PistonBaseMaterial(Material.PISTON_BASE, block.getData());
-                        mBlock.PistonData = new PistonData();
+                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
                         mBlock.PistonData.IsHead = false;
                         mBlock.PistonData.IsSticky = true;
                         mBlock.PistonData.IsPowered = pbm.isPowered();
@@ -58,7 +58,7 @@ public class StructureCore implements StructureInterface {
                     } else if (block.getType() == Material.PISTON_EXTENSION) {
                         PistonExtensionMaterial pem = new PistonExtensionMaterial(Material.PISTON_BASE, block.getData());
                         mBlock.Material = MissileMaterial.PISTON;
-                        mBlock.PistonData = new PistonData();
+                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
                         mBlock.PistonData.IsHead = true;
                         mBlock.PistonData.IsSticky = pem.isSticky();
                         mBlock.PistonData.Face = pem.getAttachedFace();
@@ -85,7 +85,7 @@ public class StructureCore implements StructureInterface {
         return schematic;
     }
     @Override
-    public boolean PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
+    public boolean PlaceMissile(MissileConfiguration missile, Vector location, World world, boolean isRed, boolean update, Player p) {
         Bounds box = PreProcessMissilePlacement(missile, location, world, isRed, p);
         if (box == null) return false;
         if(update){
@@ -107,7 +107,7 @@ public class StructureCore implements StructureInterface {
         return true;
     }
 
-    protected Bounds PreProcessMissilePlacement(Missile missile, Vector location, World world, boolean isRed, Player p) {
+    protected Bounds PreProcessMissilePlacement(MissileConfiguration missile, Vector location, World world, boolean isRed, Player p) {
         List<MissileBlock> blocks;
         if(isRed){
             blocks = missile.Schematic.Blocks;
