@@ -21,7 +21,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: true
         face: WEST
         sticky: false
@@ -62,7 +62,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: true
         face: NORTH
         sticky: true
@@ -75,7 +75,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: false
         face: NORTH
         sticky: true
@@ -137,7 +137,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: false
         face: WEST
         sticky: false
@@ -157,7 +157,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: false
         face: WEST
         sticky: false
@@ -177,7 +177,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: false
         face: SOUTH
         sticky: false
@@ -197,7 +197,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: false
         face: SOUTH
         sticky: false
@@ -217,7 +217,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: false
         face: SOUTH
         sticky: false
@@ -244,7 +244,7 @@ data:
     - ==: ca.encodeous.mwx.configuration.MissileBlock
       mat: PISTON
       piston-data:
-        ==: ca.encodeous.mwx.configuration.MissileWarsCoreItem.PistonData
+        ==: ca.encodeous.mwx.configuration.PistonBlock
         head: false
         face: UP
         sticky: false

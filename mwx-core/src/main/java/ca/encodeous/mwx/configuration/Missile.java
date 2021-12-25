@@ -5,7 +5,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MissileConfiguration implements ConfigurationSerializable {
+public class Missile implements ConfigurationSerializable {
     /**
      * Missile Wars Item id of the missile
      */
@@ -15,8 +15,8 @@ public class MissileConfiguration implements ConfigurationSerializable {
      */
     public MissileSchematic Schematic;
 
-    public static MissileConfiguration deserialize(Map<String, Object> args) {
-        MissileConfiguration missile = new MissileConfiguration();
+    public static Missile deserialize(Map<String, Object> args) {
+        Missile missile = new Missile();
         missile.Schematic = (MissileSchematic) args.get("schematic");
         missile.MissileItemId = (String) args.get("attached-item-id");
         return missile;

@@ -1,6 +1,6 @@
 package ca.encodeous.mwx.core.game;
 
-import ca.encodeous.mwx.configuration.MissileConfiguration;
+import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.data.Ref;
@@ -368,7 +368,7 @@ public class MissileWarsMatch {
         if(hasStarted){
             if(IsPlayerInTeam(p, PlayerTeam.Red) || IsPlayerInTeam(p, PlayerTeam.Green)){
                 if(CoreGame.Instance.mwMissiles.containsKey(mwItemId) && !isInAir){
-                    MissileConfiguration ms = CoreGame.Instance.mwMissiles.get(mwItemId);
+                    Missile ms = CoreGame.Instance.mwMissiles.get(mwItemId);
                     boolean result = CoreGame.GetImpl().GetStructureManager().PlaceMissile(ms, target.getLocation().toVector(),
                             target.getWorld(), IsPlayerInTeam(p, PlayerTeam.Red), true, p);
                     if(result){

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class MissileBlock implements ConfigurationSerializable {
     public MissileMaterial Material;
-    public MissileWarsCoreItem.PistonData PistonData;
+    public PistonBlock PistonData;
     public Vector Location;
     public static BlockFace Rotate(BlockFace face) {
         switch (face) {
@@ -38,7 +38,7 @@ public class MissileBlock implements ConfigurationSerializable {
     public MissileBlock Flip(){
         MissileBlock block = new MissileBlock();
         if(Material == MissileMaterial.PISTON){
-            block.PistonData = new MissileWarsCoreItem.PistonData();
+            block.PistonData = new PistonBlock();
             block.PistonData.Face = Rotate(PistonData.Face);
             block.PistonData.IsPowered = PistonData.IsPowered;
             block.PistonData.IsHead = PistonData.IsHead;
@@ -52,7 +52,7 @@ public class MissileBlock implements ConfigurationSerializable {
         MissileBlock block = new MissileBlock();
         block.Material = MissileMaterial.valueOf((String)args.get("mat"));
         if(block.Material == MissileMaterial.PISTON){
-            block.PistonData = (MissileWarsCoreItem.PistonData) args.get("piston-data");
+            block.PistonData = (PistonBlock) args.get("piston-data");
         }
         block.Location = (Vector) args.get("rel-loc");
         return block;

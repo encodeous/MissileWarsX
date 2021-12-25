@@ -46,10 +46,10 @@ public class CoreGame {
     static {
         ConfigurationSerialization.registerClass(MissileWarsConfiguration.class, "missilewars-settings");
         ConfigurationSerialization.registerClass(MissileWarsItem.class, "item");
-        ConfigurationSerialization.registerClass(MissileConfiguration.class, "missile");
+        ConfigurationSerialization.registerClass(Missile.class, "missile");
         ConfigurationSerialization.registerClass(MissileBlock.class, "mblock");
         ConfigurationSerialization.registerClass(MissileSchematic.class, "mschem");
-        ConfigurationSerialization.registerClass(MissileWarsCoreItem.PistonData.class, "pdata");
+        ConfigurationSerialization.registerClass(PistonBlock.class, "pdata");
         ConfigurationSerialization.registerClass(Bounds.class, "bounds");
         ConfigurationSerialization.registerClass(LobbyConfiguration.class, "lobbies");
         ConfigurationSerialization.registerClass(LobbyDescription.class, "lobby");
@@ -76,7 +76,7 @@ public class CoreGame {
 
     // Missile Wars
     private MissileWarsImplementation mwImpl;
-    public HashMap<String, MissileConfiguration> mwMissiles = null;
+    public HashMap<String, Missile> mwMissiles = null;
     public TabManager tabManager = null;
     public World mwAuto = null, mwManual = null;
 

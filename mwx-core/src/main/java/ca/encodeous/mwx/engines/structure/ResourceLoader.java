@@ -1,6 +1,6 @@
 package ca.encodeous.mwx.engines.structure;
 
-import ca.encodeous.mwx.configuration.MissileConfiguration;
+import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.utils.MCVersion;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
@@ -74,14 +74,14 @@ public class ResourceLoader {
         }
     }
 
-    public static HashMap<String, MissileConfiguration> LoadMissiles(JavaPlugin plugin){
-        HashMap<String, MissileConfiguration> missiles = new HashMap<>();
+    public static HashMap<String, Missile> LoadMissiles(JavaPlugin plugin){
+        HashMap<String, Missile> missiles = new HashMap<>();
         if(new File(plugin.getDataFolder(), "missiles").exists()){
             File missileFolder = new File(plugin.getDataFolder(), "missiles");
             for(File f : missileFolder.listFiles()){
                 try{
                     YamlConfiguration config = YamlConfiguration.loadConfiguration(f);
-                    MissileConfiguration ms = (MissileConfiguration) config.get("data");
+                    Missile ms = (Missile) config.get("data");
                     missiles.put(ms.MissileItemId, ms);
                 }catch(Exception e){
                     // ignored
@@ -90,12 +90,12 @@ public class ResourceLoader {
         }
         return missiles;
     }
-    public static void SaveMissiles(JavaPlugin plugin, HashMap<String, MissileConfiguration> missiles){
+    public static void SaveMissiles(JavaPlugin plugin, HashMap<String, Missile> missiles){
         File missileFolder = new File(plugin.getDataFolder(), "missiles");
         if(!missileFolder.exists()){
             missileFolder.mkdirs();
         }
-        for(MissileConfiguration missile : missiles.values()){
+        for(Missile missile : missiles.values()){
             YamlConfiguration conf = new YamlConfiguration();
             conf.set("data", missile);
             File mwconff = new File(missileFolder, missile.MissileItemId + ".yml");
