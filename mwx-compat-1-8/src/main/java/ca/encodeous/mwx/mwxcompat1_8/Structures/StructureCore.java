@@ -93,9 +93,9 @@ public class StructureCore implements StructureInterface {
     }
 
     protected void UpdateMissileBounds(Bounds box, World world){
-        for(int i = box.getMinX(); i <= box.getMaxX(); i++){
-            for(int j = box.getMinY(); j <= box.getMaxY(); j++){
-                for(int k = box.getMinZ(); k <= box.getMaxZ(); k++) {
+        for(int i = box.getMinX() - 1; i <= box.getMaxX() + 1; i++){
+            for(int j = box.getMinY() - 1; j <= box.getMaxY() + 1; j++){
+                for(int k = box.getMinZ() - 1; k <= box.getMaxZ() + 1; k++) {
                     Block block = world.getBlockAt(i, j, k);
                     Material originalType = block.getType();
                     if(originalType == Material.SLIME_BLOCK || originalType == Material.REDSTONE_BLOCK){
@@ -108,7 +108,6 @@ public class StructureCore implements StructureInterface {
             }
         }
     }
-
     protected Bounds GetPlacementBounds(Missile missile, Vector location, World world, boolean isRed) {
         List<MissileBlock> blocks;
         if(isRed){
@@ -172,7 +171,7 @@ public class StructureCore implements StructureInterface {
                 PlaceBlock(block, location, world, isRed, p);
             }
         }
-        UpdateBlocks(redstoneBlocks, Material.REDSTONE_BLOCK, world, p, false);
+        UpdateBlocks(redstoneBlocks, Material.REDSTONE_BLOCK, world, p, true);
         UpdateBlocks(slimeBlocks, Material.SLIME_BLOCK, world, p, true);
     }
 
