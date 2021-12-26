@@ -1,7 +1,6 @@
 package ca.encodeous.mwx.mwxcompat1_8.Structures;
 
-import ca.encodeous.mwx.configuration.MissileConfiguration;
-import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
+import ca.encodeous.mwx.configuration.*;
 import ca.encodeous.mwx.mwxcompat1_8.MwConstants;
 import ca.encodeous.mwx.engines.structure.StructureInterface;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
@@ -10,9 +9,7 @@ import ca.encodeous.mwx.data.TraceType;
 import ca.encodeous.mwx.data.Bounds;
 import ca.encodeous.mwx.engines.structure.StructureUtils;
 import ca.encodeous.mwx.core.utils.Utils;
-import ca.encodeous.mwx.configuration.MissileBlock;
 import ca.encodeous.mwx.data.MissileMaterial;
-import ca.encodeous.mwx.configuration.MissileSchematic;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -24,6 +21,7 @@ import org.bukkit.material.PistonExtensionMaterial;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +40,7 @@ public class StructureCore implements StructureInterface {
                     if (block.getType() == Material.PISTON_BASE) {
                         mBlock.Material = MissileMaterial.PISTON;
                         PistonBaseMaterial pbm = new PistonBaseMaterial(Material.PISTON_BASE, block.getData());
-                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
+                        mBlock.PistonData = new PistonBlock();
                         mBlock.PistonData.IsHead = false;
                         mBlock.PistonData.IsSticky = false;
                         mBlock.PistonData.IsPowered = pbm.isPowered();
@@ -50,7 +48,7 @@ public class StructureCore implements StructureInterface {
                     } else if (block.getType() == Material.PISTON_STICKY_BASE) {
                         mBlock.Material = MissileMaterial.PISTON;
                         PistonBaseMaterial pbm = new PistonBaseMaterial(Material.PISTON_BASE, block.getData());
-                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
+                        mBlock.PistonData = new PistonBlock();
                         mBlock.PistonData.IsHead = false;
                         mBlock.PistonData.IsSticky = true;
                         mBlock.PistonData.IsPowered = pbm.isPowered();
@@ -58,7 +56,7 @@ public class StructureCore implements StructureInterface {
                     } else if (block.getType() == Material.PISTON_EXTENSION) {
                         PistonExtensionMaterial pem = new PistonExtensionMaterial(Material.PISTON_BASE, block.getData());
                         mBlock.Material = MissileMaterial.PISTON;
-                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
+                        mBlock.PistonData = new PistonBlock();
                         mBlock.PistonData.IsHead = true;
                         mBlock.PistonData.IsSticky = pem.isSticky();
                         mBlock.PistonData.Face = pem.getAttachedFace();
@@ -85,29 +83,33 @@ public class StructureCore implements StructureInterface {
         return schematic;
     }
     @Override
-    public boolean PlaceMissile(MissileConfiguration missile, Vector location, World world, boolean isRed, boolean update, Player p) {
-        Bounds box = PreProcessMissilePlacement(missile, location, world, isRed, p);
+    public boolean PlaceMissile(Missile missile, Vector location, World world, boolean isRed, boolean update, Player p) {
+        Bounds box = GetPlacementBounds(missile, location, world, isRed);
         if (box == null) return false;
-        if(update){
-            for(int i = box.getMinX(); i <= box.getMaxX(); i++){
-                for(int j = box.getMinY(); j <= box.getMaxY(); j++){
-                    for(int k = box.getMinZ(); k <= box.getMaxZ(); k++) {
-                        Block block = world.getBlockAt(i, j, k);
-                        Material originalType = block.getType();
-                        if(originalType == Material.SLIME_BLOCK || originalType == Material.REDSTONE_BLOCK){
-                            byte data = block.getData();
-                            block.setType(Material.STAINED_GLASS);
-                            block.setType(originalType);
-                            block.setData(data, true);
-                        }
+        PlaceTNT(missile, location, world, isRed, p, update);
+        if(update) UpdateMissileBounds(box, world);
+        PlaceComponents(missile, location, world, isRed, p, update);
+        return true;
+    }
+
+    protected void UpdateMissileBounds(Bounds box, World world){
+        for(int i = box.getMinX(); i <= box.getMaxX(); i++){
+            for(int j = box.getMinY(); j <= box.getMaxY(); j++){
+                for(int k = box.getMinZ(); k <= box.getMaxZ(); k++) {
+                    Block block = world.getBlockAt(i, j, k);
+                    Material originalType = block.getType();
+                    if(originalType == Material.SLIME_BLOCK || originalType == Material.REDSTONE_BLOCK){
+                        byte data = block.getData();
+                        block.setType(Material.STAINED_GLASS);
+                        block.setType(originalType);
+                        block.setData(data, true);
                     }
                 }
             }
         }
-        return true;
     }
 
-    protected Bounds PreProcessMissilePlacement(MissileConfiguration missile, Vector location, World world, boolean isRed, Player p) {
+    protected Bounds GetPlacementBounds(Missile missile, Vector location, World world, boolean isRed) {
         List<MissileBlock> blocks;
         if(isRed){
             blocks = missile.Schematic.Blocks;
@@ -122,18 +124,76 @@ public class StructureCore implements StructureInterface {
         if(!StructureUtils.CheckCanSpawn(isRed ? PlayerTeam.Red : PlayerTeam.Green, placedBlocks, world, false))
             return null;
         for(MissileBlock block : blocks){
-            PlaceBlock(block, location, world, isRed, p);
             box.stretch(location.clone().add(block.Location));
-            if(block.Material == MissileMaterial.TNT){
-                placedBlocks.add(location.clone().add(block.Location));
-            }
         }
         return box;
     }
+    protected void PlaceTNT(Missile missile, Vector location, World world, boolean isRed, Player p, boolean update) {
+        List<MissileBlock> blocks;
+        if(isRed){
+            blocks = missile.Schematic.Blocks;
+        }else{
+            blocks = missile.Schematic.CreateOppositeSchematic().Blocks;
+        }
+        ArrayList<Block> redstoneBlocks = new ArrayList<>();
+        for(MissileBlock block : blocks){
+            if(block.Material == MissileMaterial.TNT){
+                Vector loc = location.clone().add(block.Location);
+                Block realBlock = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                if(update && realBlock.getType() == Material.REDSTONE_BLOCK){
+                    redstoneBlocks.add(realBlock);
+                }else{
+                    PlaceBlock(block, location, world, isRed, p);
+                }
+            }
+        }
+    }
+    protected void PlaceComponents(Missile missile, Vector location, World world, boolean isRed, Player p, boolean update) {
+        List<MissileBlock> blocks;
+        if(isRed){
+            blocks = missile.Schematic.Blocks;
+        }else{
+            blocks = missile.Schematic.CreateOppositeSchematic().Blocks;
+        }
+        ArrayList<Block> redstoneBlocks = new ArrayList<>();
+        ArrayList<Block> slimeBlocks = new ArrayList<>();
+        for(MissileBlock block : blocks){
+            Vector loc = location.clone().add(block.Location);
+            if(update){
+                if(block.Material == MissileMaterial.REDSTONE){
+                    Block realBlock = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    redstoneBlocks.add(realBlock);
+                }else if(block.Material == MissileMaterial.SLIME){
+                    Block realBlock = world.getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+                    slimeBlocks.add(realBlock);
+                }
+            }
+            if(block.Material != MissileMaterial.TNT){
+                PlaceBlock(block, location, world, isRed, p);
+            }
+        }
+        UpdateBlocks(redstoneBlocks, Material.REDSTONE_BLOCK, world, p, false);
+        UpdateBlocks(slimeBlocks, Material.SLIME_BLOCK, world, p, true);
+    }
+
+    protected void UpdateBlocks(ArrayList<Block> blocks, Material rep, World w, Player p, boolean refill){
+        MissileWarsMatch match = LobbyEngine.FromWorld(w);
+        for(Block realBlock : blocks){
+            if(refill){
+                realBlock.setType(Material.STONE);
+            }
+            realBlock.setType(rep, true);
+            if(rep == Material.TNT){
+                match.Tracer.AddBlock(p.getUniqueId(), TraceType.TNT, realBlock.getLocation().toVector());
+            }
+        }
+    }
+
     @Override
-    public void PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p) {
+    public Material PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p) {
         Vector location = origin.clone().add(block.Location);
         Block realBlock = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        Material mat = realBlock.getType();
         if(block.Material == MissileMaterial.PISTON){
             if(block.PistonData.IsHead){
                 PistonExtensionMaterial pem = new PistonExtensionMaterial(Material.PISTON_EXTENSION);
@@ -174,7 +234,12 @@ public class StructureCore implements StructureInterface {
                 realBlock.setType(Material.STAINED_CLAY, false);
                 realBlock.setData(DyeColor.GREEN.getData(), false);
             }
-        }else if(block.Material == MissileMaterial.TNT){
+        } else PlaceCompatibleBlocks(block, world, p, location, realBlock);
+        return mat;
+    }
+
+    protected void PlaceCompatibleBlocks(MissileBlock block, World world, Player p, Vector location, Block realBlock) {
+        if(block.Material == MissileMaterial.TNT){
             realBlock.setType(Material.TNT, false);
             MissileWarsMatch match = LobbyEngine.FromWorld(world);
             if(match != null){
@@ -188,6 +253,7 @@ public class StructureCore implements StructureInterface {
             }
         }
     }
+
     @Override
     public boolean SpawnShield(Vector location, World world, boolean isRed) {
         Map<Vector, Integer> shield = MwConstants.ShieldData(isRed);

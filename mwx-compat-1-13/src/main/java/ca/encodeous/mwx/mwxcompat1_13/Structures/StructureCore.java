@@ -1,7 +1,7 @@
 package ca.encodeous.mwx.mwxcompat1_13.Structures;
 
-import ca.encodeous.mwx.configuration.MissileConfiguration;
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
+import ca.encodeous.mwx.configuration.PistonBlock;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.data.TraceType;
@@ -29,31 +29,28 @@ import static ca.encodeous.mwx.mwxcompat1_8.MwConstants.ShieldData;
 
 public class StructureCore extends ca.encodeous.mwx.mwxcompat1_8.Structures.StructureCore {
     @Override
-    public boolean PlaceMissile(MissileConfiguration missile, Vector location, World world, boolean isRed, boolean update, Player p) {
-        Bounds box = PreProcessMissilePlacement(missile, location, world, isRed, p);
-        if (box == null) return false;
-        if(update){
-            for(int i = box.getMinX(); i <= box.getMaxX(); i++){
-                for(int j = box.getMinY(); j <= box.getMaxY(); j++){
-                    for(int k = box.getMinZ(); k <= box.getMaxZ(); k++) {
-                        Block block = world.getBlockAt(i, j, k);
-                        Material originalType = block.getType();
-                        if(originalType == Material.SLIME_BLOCK || originalType == Material.REDSTONE_BLOCK){
-                            BlockData data = block.getBlockData();
-                            block.setType(Material.WHITE_STAINED_GLASS);
-                            block.setType(originalType);
-                            block.setBlockData(data, true);
-                        }
+    protected void UpdateMissileBounds(Bounds box, World world){
+        for(int i = box.getMinX(); i <= box.getMaxX(); i++){
+            for(int j = box.getMinY(); j <= box.getMaxY(); j++){
+                for(int k = box.getMinZ(); k <= box.getMaxZ(); k++) {
+                    Block block = world.getBlockAt(i, j, k);
+                    Material originalType = block.getType();
+                    if(originalType == Material.SLIME_BLOCK || originalType == Material.REDSTONE_BLOCK){
+                        BlockData data = block.getBlockData();
+                        block.setType(Material.WHITE_STAINED_GLASS);
+                        block.setType(originalType);
+                        block.setBlockData(data, true);
                     }
                 }
             }
         }
-        return true;
     }
+
     @Override
-    public void PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p) {
+    public Material PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p) {
         Vector location = origin.clone().add(block.Location);
         Block realBlock = world.getBlockAt(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        Material mat = realBlock.getType();
         if(block.Material == MissileMaterial.PISTON){
             if(block.PistonData.IsHead){
                 realBlock.setType(Material.PISTON_HEAD, false);
@@ -83,19 +80,8 @@ public class StructureCore extends ca.encodeous.mwx.mwxcompat1_8.Structures.Stru
             }else{
                 realBlock.setType(Material.GREEN_TERRACOTTA, false);
             }
-        }else if(block.Material == MissileMaterial.TNT){
-            realBlock.setType(Material.TNT, false);
-            MissileWarsMatch match = LobbyEngine.FromWorld(world);
-            if(match != null){
-                match.Tracer.AddBlock(p.getUniqueId(), TraceType.TNT, location);
-            }
-        }else if(block.Material == MissileMaterial.REDSTONE){
-            realBlock.setType(Material.REDSTONE_BLOCK, false);
-            MissileWarsMatch match = LobbyEngine.FromWorld(world);
-            if(match != null){
-                match.Tracer.AddBlock(p.getUniqueId(), TraceType.REDSTONE, location);
-            }
-        }
+        }else PlaceCompatibleBlocks(block, world, p, location, realBlock);
+        return mat;
     }
 
     @Override
@@ -173,7 +159,7 @@ public class StructureCore extends ca.encodeous.mwx.mwxcompat1_8.Structures.Stru
                     if (block.getType() == Material.PISTON) {
                         mBlock.Material = MissileMaterial.PISTON;
                         Piston piston = (Piston) block.getBlockData();
-                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
+                        mBlock.PistonData = new PistonBlock();
                         mBlock.PistonData.IsHead = false;
                         mBlock.PistonData.IsSticky = false;
                         mBlock.PistonData.IsPowered = piston.isExtended();
@@ -181,7 +167,7 @@ public class StructureCore extends ca.encodeous.mwx.mwxcompat1_8.Structures.Stru
                     } else if (block.getType() == Material.STICKY_PISTON) {
                         mBlock.Material = MissileMaterial.PISTON;
                         Piston piston = (Piston) block.getBlockData();
-                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
+                        mBlock.PistonData = new PistonBlock();
                         mBlock.PistonData.IsHead = false;
                         mBlock.PistonData.IsSticky = true;
                         mBlock.PistonData.IsPowered = piston.isExtended();
@@ -189,7 +175,7 @@ public class StructureCore extends ca.encodeous.mwx.mwxcompat1_8.Structures.Stru
                     } else if (block.getType() == Material.PISTON_HEAD) {
                         PistonHead pistonHead = (PistonHead) block.getBlockData();
                         mBlock.Material = MissileMaterial.PISTON;
-                        mBlock.PistonData = new MissileWarsCoreItem.PistonData();
+                        mBlock.PistonData = new PistonBlock();
                         mBlock.PistonData.IsHead = true;
                         mBlock.PistonData.IsSticky = pistonHead.getType() == TechnicalPiston.Type.STICKY;
                         mBlock.PistonData.Face = pistonHead.getFacing();

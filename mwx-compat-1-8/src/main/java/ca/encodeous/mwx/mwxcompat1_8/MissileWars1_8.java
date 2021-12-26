@@ -158,7 +158,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         map.WorldName = name;
         map.SeparateJoin = true;
         map.RedJoin = new HashSet<>(Arrays.asList(new Vector(-118,65,-6), new Vector(-118,65,-7), new Vector(-118,65,-8), new Vector(-118,65,-9)));
-        map.GreenJoin = new HashSet<>(Arrays.asList(new Vector(-118,65,9), new Vector(-118,65,9), new Vector(-118,65,7), new Vector(-118,65,6)));
+        map.GreenJoin = new HashSet<>(Arrays.asList(new Vector(-118,65,9), new Vector(-118,65,8), new Vector(-118,65,7), new Vector(-118,65,6)));
         map.TemplateWorld = CoreGame.Instance.mwManual;
         return getMissileWarsMap(name, map);
     }
