@@ -36,7 +36,7 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
     /**
      * Allow faster breaking on specific blocks like Redstone and Pistons
      */
-    public boolean AllowFastBreak = false;
+    public boolean UseFastBreak = true;
     /**
      * Should a stationary fireball explode if it is overlaps a block?
      */
@@ -59,7 +59,7 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         conf.TpsCriticalThreshold = (Integer)args.get("tps-critical-threshold");
         conf.HardEntityLimit = (Integer)args.get("lobby-entity-limit");
         conf.UseHelmets = (Boolean)args.get("use-helmets");
-        conf.AllowFastBreak = (Boolean)args.get("use-fast-break");
+        conf.UseFastBreak = (Boolean)args.get("use-fast-break");
         conf.BreakSpeeds = (Map<String, Integer>)args.get("break-speeds");
         conf.StationaryFireballExplode = (Boolean)args.get("stationary-fireball-explode");
         conf.AllowedEntities = (ArrayList<String>)args.get("allowed-entities");
@@ -76,7 +76,7 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         map.put("tps-critical-threshold", TpsCriticalThreshold);
         map.put("use-helmets", UseHelmets);
         map.put("items", Items);
-        map.put("use-fast-break", AllowFastBreak);
+        map.put("use-fast-break", UseFastBreak);
         map.put("break-speeds", BreakSpeeds);
         map.put("stationary-fireball-explode", StationaryFireballExplode);
         map.put("allowed-entities", AllowedEntities);

@@ -101,13 +101,13 @@ public class CoreGame {
             mwConfig = new MissileWarsConfiguration();
             mwConfig.Items = mwImpl.CreateDefaultItems();
             mwConfig.BreakSpeeds = new HashMap<>();
-            mwConfig.BreakSpeeds.put(Material.PISTON.name(), 300);
-            mwConfig.BreakSpeeds.put(Material.PISTON_HEAD.name(), 300);
-            mwConfig.BreakSpeeds.put(Material.STICKY_PISTON.name(), 300);
-            mwConfig.BreakSpeeds.put("PISTON_BASE", 300);
-            mwConfig.BreakSpeeds.put("PISTON_EXTENSION", 300);
-            mwConfig.BreakSpeeds.put("PISTON_STICKY_BASE", 300);
-            mwConfig.BreakSpeeds.put(Material.REDSTONE_BLOCK.name(), 800);
+            mwConfig.BreakSpeeds.put(Material.PISTON.name(), 500);
+            mwConfig.BreakSpeeds.put(Material.PISTON_HEAD.name(), 500);
+            mwConfig.BreakSpeeds.put(Material.STICKY_PISTON.name(), 500);
+            mwConfig.BreakSpeeds.put("PISTON_BASE", 500);
+            mwConfig.BreakSpeeds.put("PISTON_EXTENSION", 500);
+            mwConfig.BreakSpeeds.put("PISTON_STICKY_BASE", 500);
+            mwConfig.BreakSpeeds.put(Material.REDSTONE_BLOCK.name(), 5000);
             mwConfig.AllowedEntities = new ArrayList<>();
             mwConfig.AllowedEntities.add(EntityType.MINECART.name());
             mwConfig.AllowedEntities.add(EntityType.MINECART_TNT.name());
@@ -245,7 +245,7 @@ public class CoreGame {
                     }
                 }
         );
-        if (mwConfig.AllowFastBreak) {
+        if (mwConfig.UseFastBreak) {
             protocolManager.addPacketListener(
                     new PacketAdapter(mwPlugin, ListenerPriority.NORMAL,
                             PacketType.Play.Client.BLOCK_DIG) {

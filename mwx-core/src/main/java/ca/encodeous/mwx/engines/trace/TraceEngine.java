@@ -67,7 +67,7 @@ public class TraceEngine {
             this.blocks.put(newPos, block);
         }
         // fast breaks
-        if(CoreGame.Instance.mwConfig.AllowFastBreak){
+        if(CoreGame.Instance.mwConfig.UseFastBreak){
             for(Block block : blocks){
                 Vector v = block.getLocation().toVector();
                 Vector newPos = PushBlockPos(v, face);
