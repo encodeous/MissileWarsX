@@ -122,6 +122,13 @@ public class MissileWarsEventHandler implements Listener {
             if(e.getDamager() instanceof Projectile) {
                 ((Fireball) e.getEntity()).setDirection(e.getDamager().getVelocity().normalize());
                 ((Fireball) e.getEntity()).setShooter(TraceEngine.ResolveShooter((Projectile) e.getDamager()));
+            }else if(e.getDamager() instanceof TNTPrimed){
+                TNTPrimed tnt = (TNTPrimed)e.getDamager();
+                ((Fireball) e.getEntity()).setDirection(e.getDamager().getLocation().toVector().subtract(e.getEntity().getLocation().toVector()));
+                e.getEntity().setVelocity(e.getDamager().getLocation().toVector().subtract(e.getEntity().getLocation().toVector()));
+                if(tnt.getSource() != null && tnt.getSource() instanceof ProjectileSource){
+                    ((Fireball) e.getEntity()).setShooter((ProjectileSource) tnt.getSource());
+                }
             }else{
                 ((Fireball) e.getEntity()).setShooter((ProjectileSource) e.getDamager());
             }
