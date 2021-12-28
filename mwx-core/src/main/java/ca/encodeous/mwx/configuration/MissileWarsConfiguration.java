@@ -38,9 +38,17 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
      */
     public boolean AllowFastBreak = false;
     /**
+     * Should a stationary fireball explode if it is overlaps a block?
+     */
+    public boolean StationaryFireballExplode = true;
+    /**
      * Configures individual block breaking speeds
      */
     public Map<String, Integer> BreakSpeeds;
+    /**
+     * A list of the allowed entities permitted to exist in the game, leave blank to allow any
+     */
+    public ArrayList<String> AllowedEntities;
     public static MissileWarsConfiguration deserialize(Map<String, Object> args) {
         MissileWarsConfiguration conf = new MissileWarsConfiguration();
         conf.Items = new ArrayList<>();
@@ -53,6 +61,8 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         conf.UseHelmets = (Boolean)args.get("use-helmets");
         conf.AllowFastBreak = (Boolean)args.get("use-fast-break");
         conf.BreakSpeeds = (Map<String, Integer>)args.get("break-speeds");
+        conf.StationaryFireballExplode = (Boolean)args.get("stationary-fireball-explode");
+        conf.AllowedEntities = (ArrayList<String>)args.get("allowed-entities");
         return conf;
     }
 
@@ -68,6 +78,8 @@ public class MissileWarsConfiguration implements ConfigurationSerializable {
         map.put("items", Items);
         map.put("use-fast-break", AllowFastBreak);
         map.put("break-speeds", BreakSpeeds);
+        map.put("stationary-fireball-explode", StationaryFireballExplode);
+        map.put("allowed-entities", AllowedEntities);
         return map;
     }
 }

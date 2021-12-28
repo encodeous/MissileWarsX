@@ -32,10 +32,17 @@ public class PaperEventHandler implements Listener {
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityAddToWorldEvent(EntityAddToWorldEvent event){
+        if(CoreGame.Instance.mwConfig.AllowedEntities != null && !CoreGame.Instance.mwConfig.AllowedEntities.isEmpty()){
+            if(!CoreGame.Instance.mwConfig.AllowedEntities.contains(event.getEntity().getType().name())){
+                event.getEntity().remove();
+                return;
+            }
+        }
         entityCount.put(event.getEntity().getWorld(), entityCount.getOrDefault(event.getEntity().getWorld(), 0) + 1);
         if(entityCount.getOrDefault(event.getEntity().getWorld(), 0) > CoreGame.Instance.mwConfig.HardEntityLimit){
             if(!(event.getEntity() instanceof Player)){
                 event.getEntity().remove();
+                return;
             }
         }
         if(!(event.getEntity() instanceof TNTPrimed)) return;

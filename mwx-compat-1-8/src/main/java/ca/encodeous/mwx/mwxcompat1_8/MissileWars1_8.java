@@ -4,6 +4,7 @@ import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsImplementation;
+import ca.encodeous.mwx.data.Ref;
 import ca.encodeous.mwx.mwxcompat1_8.Structures.StructureCore;
 import ca.encodeous.mwx.core.game.MissileWarsMap;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
@@ -220,13 +221,26 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         e.setShooter(p);
         e.setIsIncendiary(true);
         e.setVelocity(new Vector(0, 1, 0));
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, () -> {
-            if (e.isDead()) {
-                a.remove();
-            } else {
-                a.setPassenger(e);
-            }
-        }, 2);
+        a.setPassenger(e);
+        StationaryFireballTrack(a, e);
+    }
+
+    public void StationaryFireballTrack(ArmorStand a, Fireball e) {
+        if(CoreGame.Instance.mwConfig.StationaryFireballExplode){
+            Ref<Integer> tid = new Ref<>(-1);
+            tid.val = Bukkit.getScheduler().scheduleSyncRepeatingTask(CoreGame.Instance.mwPlugin, () -> {
+                if (e.isDead() || a.isDead() || Objects.equals(a.getCustomName(), "removed")) {
+                    if(tid.val != -1){
+                        Bukkit.getScheduler().cancelTask(tid.val);
+                    }
+                    a.remove();
+                } else {
+                    if(e.getLocation().getBlock().getType().isSolid()){
+                        e.leaveVehicle();
+                    }
+                }
+            }, 2, 1);
+        }
     }
 
     @Override

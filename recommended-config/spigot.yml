@@ -8,11 +8,11 @@ world-settings:
   default:
     entity-tracking-range:
       players: 256
-      animals: 0
-      monsters: 0
+      animals: 256
+      monsters: 256
       misc: 256
       other: 256
 advancements:
   disable-saving: true
   disabled:
-  - '*'
+    - "*"

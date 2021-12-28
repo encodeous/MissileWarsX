@@ -117,7 +117,7 @@ public class MissileWarsEventHandler implements Listener {
 
     @EventHandler
     public void EntityDamageByEntityEvent(EntityDamageByEntityEvent e){
-        if(e.getEntity() instanceof Fireball && e.getEntity().getVehicle() != null && e.getEntity().getVehicle().getType() == EntityType.ARMOR_STAND && !(e.getDamager() instanceof TNTPrimed)){
+        if(e.getEntity() instanceof Fireball && e.getEntity().getVehicle() != null && e.getEntity().getVehicle().getType() == EntityType.ARMOR_STAND){
             Entity vehicle = e.getEntity().getVehicle();
             if(e.getDamager() instanceof Projectile) {
                 ((Fireball) e.getEntity()).setDirection(e.getDamager().getVelocity().normalize());
@@ -126,6 +126,7 @@ public class MissileWarsEventHandler implements Listener {
                 ((Fireball) e.getEntity()).setShooter((ProjectileSource) e.getDamager());
             }
             e.getEntity().leaveVehicle();
+            vehicle.setCustomName("removed");
             vehicle.remove();
         }
     }

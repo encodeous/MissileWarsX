@@ -380,7 +380,10 @@ public class MissileWarsMatch {
                     cancel.val = true;
                 }else{
                     StructureUtils.LaunchShield(p, mwItemId, cancel, use, IsPlayerInTeam(p, PlayerTeam.Red), this);
-                    if(mwItemId.equals(MissileWarsCoreItem.FIREBALL.getValue())) DeployFireball(target, cancel, use, p);
+                    if(mwItemId.equals(MissileWarsCoreItem.FIREBALL.getValue())){
+                        DeployFireball(target, cancel, use, p);
+                        cancel.val = true;
+                    }
                 }
             }
         }
@@ -388,11 +391,13 @@ public class MissileWarsMatch {
 
     private void DeployFireball(Block clickedBlock, Ref<Boolean> cancel, Ref<Boolean> use, Player p){
         if(clickedBlock == null) return;
-        CoreGame.GetImpl().PlaySound(clickedBlock.getLocation().add(new Vector(0.5, 2, 0.5)), SoundType.FIREBALL);
-        Vector loc = clickedBlock.getLocation().toVector().add(new Vector(0.5, 2, 0.5));
-        CoreGame.GetImpl().SummonFrozenFireball(loc, clickedBlock.getWorld(), p);
-        cancel.val = true;
-        use.val = true;
+        Location nLoc = clickedBlock.getLocation().add(new Vector(0.5, 2, 0.5));
+        if(!nLoc.getBlock().getType().isSolid()){
+            CoreGame.GetImpl().PlaySound(clickedBlock.getLocation().add(new Vector(0.5, 2, 0.5)), SoundType.FIREBALL);
+            Vector loc = clickedBlock.getLocation().toVector().add(new Vector(0.5, 2, 0.5));
+            CoreGame.GetImpl().SummonFrozenFireball(loc, clickedBlock.getWorld(), p);
+            use.val = true;
+        }
     }
 
     protected void ProcessResetMatchInfo(){};

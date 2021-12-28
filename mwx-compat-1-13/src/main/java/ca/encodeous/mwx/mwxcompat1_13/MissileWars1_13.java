@@ -1,6 +1,7 @@
 package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
+import ca.encodeous.mwx.data.Ref;
 import ca.encodeous.mwx.mwxcompat1_13.Structures.StructureCore;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.MCVersion;
@@ -9,6 +10,7 @@ import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.core.utils.Utils;
 import ca.encodeous.mwx.data.SoundType;
+import com.j256.ormlite.stmt.query.In;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -193,14 +195,9 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
             fb.setShooter(p);
             fb.setIsIncendiary(true);
             fb.setVelocity(new Vector(0, 1, 0));
+            a.setPassenger(fb);
         });
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, () -> {
-            if (e.isDead()) {
-                a.remove();
-            } else {
-                a.setPassenger(e);
-            }
-        }, 2);
+        StationaryFireballTrack(a, e);
     }
 
     @Override

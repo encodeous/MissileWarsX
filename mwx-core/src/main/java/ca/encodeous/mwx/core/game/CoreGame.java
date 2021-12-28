@@ -28,6 +28,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -107,6 +108,16 @@ public class CoreGame {
             mwConfig.BreakSpeeds.put("PISTON_EXTENSION", 300);
             mwConfig.BreakSpeeds.put("PISTON_STICKY_BASE", 300);
             mwConfig.BreakSpeeds.put(Material.REDSTONE_BLOCK.name(), 800);
+            mwConfig.AllowedEntities = new ArrayList<>();
+            mwConfig.AllowedEntities.add(EntityType.MINECART.name());
+            mwConfig.AllowedEntities.add(EntityType.MINECART_TNT.name());
+            mwConfig.AllowedEntities.add(EntityType.PRIMED_TNT.name());
+            mwConfig.AllowedEntities.add(EntityType.ARROW.name());
+            mwConfig.AllowedEntities.add(EntityType.ARMOR_STAND.name());
+            mwConfig.AllowedEntities.add(EntityType.FIREBALL.name());
+            mwConfig.AllowedEntities.add(EntityType.DROPPED_ITEM.name());
+            mwConfig.AllowedEntities.add(EntityType.PLAYER.name());
+            mwConfig.AllowedEntities.add(EntityType.SNOWBALL.name());
             config.set("data", mwConfig);
             try {
                 config.save(configFile);
