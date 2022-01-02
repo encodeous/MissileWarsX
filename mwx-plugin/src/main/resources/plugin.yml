@@ -1,6 +1,6 @@
 name: MissileWarsX
 version: ${project.version}
-main: ca.encodeous.mwx.mwxplugin.MissileWarsX
+main: ca.encodeous.mwx.MissileWarsX
 authors: [ Encodeous ]
 depend:
   - ProtocolLib

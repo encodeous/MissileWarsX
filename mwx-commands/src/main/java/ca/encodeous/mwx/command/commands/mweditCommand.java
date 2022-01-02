@@ -1,14 +1,16 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
+import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class mweditCommand implements CommandExecutor {
+public class mweditCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
@@ -36,5 +38,15 @@ public class mweditCommand implements CommandExecutor {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public void BuildCommandAutocomplete(LiteralArgumentBuilder<?> builder) {
+
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "mwedit";
     }
 }

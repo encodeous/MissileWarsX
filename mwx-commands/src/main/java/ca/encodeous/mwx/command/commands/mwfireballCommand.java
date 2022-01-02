@@ -1,11 +1,15 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
+import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.data.Ref;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import org.bukkit.World;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.BlockCommandSender;
@@ -15,7 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class mwfireballCommand implements CommandExecutor {
+public class mwfireballCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
@@ -40,5 +44,15 @@ public class mwfireballCommand implements CommandExecutor {
         }catch (Exception e){
             return false;
         }
+    }
+
+    @Override
+    public void BuildCommandAutocomplete(LiteralArgumentBuilder<?> builder) {
+//        builder.then(RequiredArgumentBuilder.argument("x", DoubleArgumentType.doubleArg()).then(RequiredArgumentBuilder.argument("y", DoubleArgumentType.doubleArg()).then(RequiredArgumentBuilder.argument("z", DoubleArgumentType.doubleArg()))));
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "mwfireball";
     }
 }

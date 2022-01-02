@@ -337,6 +337,12 @@ public class StructureCore implements StructureInterface {
 
     @Override
     public boolean IsNeutralBlock(Block block) {
-        return !IsBlockOfTeam(PlayerTeam.Green, block) && !IsBlockOfTeam(PlayerTeam.Red, block);
+        if(block.getType() == Material.STAINED_GLASS){
+            return !IsBlockOfTeam(PlayerTeam.Green, block) && !IsBlockOfTeam(PlayerTeam.Red, block);
+        }
+        if(block.getType() == Material.STAINED_GLASS_PANE){
+            return true;
+        }
+        return false;
     }
 }

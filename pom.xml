@@ -7,9 +7,10 @@
     <groupId>ca.encodeous.mwx</groupId>
     <artifactId>mwx-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
+
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <packaging>pom</packaging>
@@ -17,6 +18,10 @@
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>chimera-releases</id>
+            <url>https://repo.karuslabs.com/repository/chimera-releases/</url>
         </repository>
         <repository>
             <id>spigotmc-repo</id>
@@ -38,6 +43,10 @@
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
+        <repository>
+            <id>minecraft-repo</id>
+            <url>https://libraries.minecraft.net/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -53,7 +62,7 @@
         <dependency>
             <groupId>com.github.encodeous</groupId>
             <artifactId>ProtocolTab</artifactId>
-            <version>159faf43aa</version>
+            <version>64a0ea1ee6</version>
         </dependency>
     </dependencies>
     <modules>
@@ -62,5 +71,6 @@
         <module>mwx-compat-1-8</module>
         <module>mwx-compat-1-13</module>
         <module>mwx-stats</module>
+        <module>mwx-commands</module>
     </modules>
 </project>

@@ -1,4 +1,4 @@
-package ca.encodeous.mwx.mwxplugin;
+package ca.encodeous.mwx;
 
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;

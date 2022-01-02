@@ -1,18 +1,20 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
+import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.game.MissileWarsRankedMatch;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.engines.lobby.Lobby;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import ca.encodeous.mwx.core.lang.Strings;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class mwteamCommand implements CommandExecutor {
+public class mwteamCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
@@ -53,5 +55,15 @@ public class mwteamCommand implements CommandExecutor {
 
         }
         return false;
+    }
+
+    @Override
+    public void BuildCommandAutocomplete(LiteralArgumentBuilder<?> builder) {
+
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "mwteam";
     }
 }

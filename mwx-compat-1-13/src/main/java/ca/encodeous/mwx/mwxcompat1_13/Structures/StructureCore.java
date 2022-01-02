@@ -201,4 +201,15 @@ public class StructureCore extends ca.encodeous.mwx.mwxcompat1_8.Structures.Stru
         if(schematic.Blocks.isEmpty()) return null;
         return schematic;
     }
+
+    @Override
+    public boolean IsNeutralBlock(Block block) {
+        if(block.getType().toString().endsWith("STAINED_GLASS")){
+            return !IsBlockOfTeam(PlayerTeam.Green, block) && !IsBlockOfTeam(PlayerTeam.Red, block);
+        }
+        if(block.getType().toString().endsWith("STAINED_GLASS_PANE")){
+            return true;
+        }
+        return false;
+    }
 }
