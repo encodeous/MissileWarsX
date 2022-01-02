@@ -389,7 +389,7 @@ public class MissileWarsMatch {
         }
     }
 
-    private void DeployFireball(Block clickedBlock, Ref<Boolean> cancel, Ref<Boolean> use, Player p){
+    public void DeployFireball(Block clickedBlock, Ref<Boolean> cancel, Ref<Boolean> use, Player p){
         if(clickedBlock == null) return;
         Location nLoc = clickedBlock.getLocation().add(new Vector(0.5, 2, 0.5));
         if(!nLoc.getBlock().getType().isSolid()){

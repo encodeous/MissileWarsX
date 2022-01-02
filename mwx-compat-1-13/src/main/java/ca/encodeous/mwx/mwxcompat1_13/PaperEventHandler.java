@@ -2,11 +2,13 @@ package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.engines.trace.TraceEngine;
 import ca.encodeous.mwx.engines.trace.TrackedBlock;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,6 +17,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.HashSet;
@@ -34,14 +37,18 @@ public class PaperEventHandler implements Listener {
     public void EntityAddToWorldEvent(EntityAddToWorldEvent event){
         if(CoreGame.Instance.mwConfig.AllowedEntities != null && !CoreGame.Instance.mwConfig.AllowedEntities.isEmpty()){
             if(!CoreGame.Instance.mwConfig.AllowedEntities.contains(event.getEntity().getType().name())){
-                event.getEntity().remove();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, ()->{
+                    event.getEntity().remove();
+                }, 1);
                 return;
             }
         }
         entityCount.put(event.getEntity().getWorld(), entityCount.getOrDefault(event.getEntity().getWorld(), 0) + 1);
         if(entityCount.getOrDefault(event.getEntity().getWorld(), 0) > CoreGame.Instance.mwConfig.HardEntityLimit){
             if(!(event.getEntity() instanceof Player)){
-                event.getEntity().remove();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, ()->{
+                    event.getEntity().remove();
+                }, 1);
                 return;
             }
         }

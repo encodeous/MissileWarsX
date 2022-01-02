@@ -26,6 +26,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.Optional;
@@ -132,6 +133,8 @@ public class MissileWarsEventHandler implements Listener {
             }else{
                 ((Fireball) e.getEntity()).setShooter((ProjectileSource) e.getDamager());
             }
+            e.getEntity().setMetadata("ec-fbcreationtime", new FixedMetadataValue(CoreGame.Instance.mwPlugin, System.currentTimeMillis()));
+            e.getEntity().setMetadata("ec-fbcreationloc", new FixedMetadataValue(CoreGame.Instance.mwPlugin, e.getEntity().getLocation().clone()));
             e.getEntity().leaveVehicle();
             vehicle.setCustomName("removed");
             vehicle.remove();

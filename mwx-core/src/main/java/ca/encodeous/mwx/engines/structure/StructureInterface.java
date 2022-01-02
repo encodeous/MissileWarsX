@@ -17,4 +17,5 @@ public interface StructureInterface {
     public Material PlaceBlock(MissileBlock block, Vector origin, World world, boolean isRed, Player p);
     public boolean SpawnShield(Vector location, World world, boolean isRed);
     public boolean IsBlockOfTeam(PlayerTeam team, Block block);
+    public boolean IsNeutralBlock(Block block);
 }

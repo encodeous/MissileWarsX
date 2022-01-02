@@ -334,4 +334,9 @@ public class StructureCore implements StructureInterface {
         }
         return false;
     }
+
+    @Override
+    public boolean IsNeutralBlock(Block block) {
+        return !IsBlockOfTeam(PlayerTeam.Green, block) && !IsBlockOfTeam(PlayerTeam.Red, block);
+    }
 }

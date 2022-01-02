@@ -89,6 +89,7 @@ public final class MissileWarsX extends JavaPlugin {
         getCommand("mwteam").setExecutor(new mwteamCommand());
         getCommand("lobby").setExecutor(new lobbyCommand());
         getCommand("ping").setExecutor(new pingCommand());
+        getCommand("mwfireball").setExecutor(new mwfireballCommand());
         getCommand("mode").setExecutor(new modeCommand());
 
         MissileWars.InitializeGame();

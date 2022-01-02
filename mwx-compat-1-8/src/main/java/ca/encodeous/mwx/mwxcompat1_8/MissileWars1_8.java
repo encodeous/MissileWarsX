@@ -218,7 +218,7 @@ public class MissileWars1_8 implements MissileWarsImplementation {
         a.setMarker(true);
         Fireball e = world.spawn(Utils.LocationFromVec(location.add(new Vector(0,-1.5,0)), world), Fireball.class);
         e.setYield(1.5f);
-        e.setShooter(p);
+        if(p != null) e.setShooter(p);
         e.setIsIncendiary(true);
         e.setVelocity(new Vector(0, 1, 0));
         a.setPassenger(e);

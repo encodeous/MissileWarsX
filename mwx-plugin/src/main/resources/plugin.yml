@@ -27,6 +27,11 @@ commands:
     description: Pastes a saved missile and updates it at a certain location
     permission: mwx.admin
     usage: /<command> <pivot-x> <pivot-y> <pivot-z> <missile-name> <red/green>
+  mwfireball:
+    description: Summons a fireball
+    aliases:
+      - mwf
+    usage: /<command> <x> <y> <z>
   mwgive:
     description: Gives you the specified item
     aliases:

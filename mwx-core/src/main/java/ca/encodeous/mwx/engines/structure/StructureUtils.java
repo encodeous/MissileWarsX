@@ -19,6 +19,12 @@ import java.util.ArrayList;
 
 public class StructureUtils {
     public static boolean CheckCanSpawn(PlayerTeam team, ArrayList<Vector> blocks, World world, boolean isShield){
+        if(isShield){
+            for(Vector vec : blocks){
+                if (CheckSpawnPreconditions(world, vec)) return false;
+            }
+            return true;
+        }
         // referenced from OpenMissileWars
         int threshold = 0;
         Bounds bound = new Bounds();
@@ -30,21 +36,18 @@ public class StructureUtils {
                 for(int k = bound.getMinZ(); k <= bound.getMaxZ(); k++){
                     Vector vec = new Vector(i, j, k);
                     Block block = world.getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
-                    Material mat = block.getType();
-                    if(mat == Material.OBSIDIAN || mat == Material.BEDROCK
-                            || mat == CoreGame.GetImpl().GetPortalMaterial()
-                            || mat == Material.BARRIER) return false;
-                    if(IsInProtectedRegion(vec)) return false;
-                    if(isShield) continue;
+                    if (CheckSpawnPreconditions(world, vec)) return false;
                     boolean crossMid;
                     if (team == PlayerTeam.Red) {
-                        crossMid = vec.getBlockZ() >= 0;
+                        crossMid = vec.getBlockZ() > 0;
                     } else {
-                        crossMid = vec.getBlockZ() <= 0;
+                        crossMid = vec.getBlockZ() < 0;
                     }
 
                     boolean isSameTeamBlock = CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(team, block);
-                    if(!isSameTeamBlock && crossMid){
+                    boolean isNeutralBlock = CoreGame.GetImpl().GetStructureManager().IsNeutralBlock(block);
+                    boolean isEnemyBlock = !isSameTeamBlock && !isNeutralBlock;
+                    if(isEnemyBlock && crossMid){
                         threshold--;
                     }
                     if(isSameTeamBlock){
@@ -56,7 +59,17 @@ public class StructureUtils {
                 }
             }
         }
-        return threshold < 5;
+        return threshold <= 4;
+    }
+
+    private static boolean CheckSpawnPreconditions(World world, Vector vec) {
+        Block block = world.getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+        Material mat = block.getType();
+        if(mat == Material.OBSIDIAN || mat == Material.BEDROCK
+                || mat == CoreGame.GetImpl().GetPortalMaterial()
+                || mat == Material.BARRIER) return true;
+        if(IsInProtectedRegion(vec)) return true;
+        return false;
     }
 
     public static boolean IsInProtectedRegion(Vector vec){
