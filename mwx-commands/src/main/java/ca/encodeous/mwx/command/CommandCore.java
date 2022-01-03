@@ -1,6 +1,6 @@
 package ca.encodeous.mwx.command;
 
-import ca.encodeous.mwx.mwxcompat1_8.Reflection;
+import ca.encodeous.mwx.core.utils.Reflection;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import org.bukkit.Bukkit;

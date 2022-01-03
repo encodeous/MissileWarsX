@@ -70,5 +70,7 @@
         <module>mwx-compat-1-8</module>
         <module>mwx-compat-1-13</module>
         <module>mwx-stats</module>
+        <module>mwx-compatibility</module>
+        <module>mwx-commands</module>
     </modules>
 </project>

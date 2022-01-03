@@ -1,7 +1,5 @@
 package ca.encodeous.mwx;
 
-<<<<<<< HEAD
-import ca.encodeous.mwx.commands.*;
 import ca.encodeous.mwx.mwxcompat1_13.MissileWars1_13;
 import ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8;
 import ca.encodeous.mwx.core.game.CoreGame;
@@ -15,7 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.LogManager;
-=======
 import ca.encodeous.mwx.command.Command;
 import ca.encodeous.mwx.command.CommandCore;
 import ca.encodeous.mwx.command.RootCommand;
@@ -33,15 +30,13 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
->>>>>>> command-test
 import java.util.logging.Logger;
 
 public final class MissileWarsX extends JavaPlugin {
     public static MissileWarsX Instance;
     public MissileWarsImplementation mwImpl;
     public CoreGame MissileWars;
-<<<<<<< HEAD
+    public CommandCore Commands;
     private Logger logger = null;
     @Override
     public void onEnable() {
@@ -106,90 +101,8 @@ public final class MissileWarsX extends JavaPlugin {
         LobbyEngine.Fetcher = new SkinFetcher(this);
     }
 
-    private void ModernStart(){
+    private void ModernStart() {
         getLogger().info("Registering commands...");
-        getCommand("mwmake").setExecutor(new mwmakeCommand());
-        getCommand("mwpaste").setExecutor(new mwpasteCommand());
-        getCommand("mwlaunch").setExecutor(new mwlaunchCommand());
-        getCommand("mwedit").setExecutor(new mweditCommand());
-        getCommand("mwreload").setExecutor(new mwreloadCommand());
-        getCommand("mwgive").setExecutor(new mwgiveCommand());
-        getCommand("reset").setExecutor(new mwresetCommand());
-        getCommand("players").setExecutor(new playersCommand());
-        getCommand("ready").setExecutor(new readyCommand());
-        getCommand("wipe").setExecutor(new mwwipeCommand());
-        getCommand("mwitems").setExecutor(new mwitemsCommand());
-        getCommand("mwmissiles").setExecutor(new mwmissilesCommand());
-        getCommand("start").setExecutor(new mwstartCommand());
-        getCommand("spectate").setExecutor(new spectateCommand());
-        getCommand("mwteam").setExecutor(new mwteamCommand());
-        getCommand("lobby").setExecutor(new lobbyCommand());
-        getCommand("ping").setExecutor(new pingCommand());
-        getCommand("mwfireball").setExecutor(new mwfireballCommand());
-        getCommand("mode").setExecutor(new modeCommand());
-=======
-    public CommandCore Commands;
-    private Logger logger = null;
-
-    @Override
-    public void onEnable() {
-        // Plugin startup logic
-//        LogManager.getLogManager().getLogger("").setFilter(new ConsoleFilter());
-//        Bukkit.getServer().getPluginManager().registerEvents(new MiscEventHandler(), this);
-//
-//        Map<MCVersion, Class<?>> implementations = new HashMap<MCVersion, Class<?>>();
-//        implementations.put(MCVersion.v1_8, MissileWars1_8.class);
-//        implementations.put(MCVersion.v1_13, MissileWars1_13.class);
-//        Instance = this;
-//        logger = Bukkit.getLogger();
-//        logger.info("Starting MissileWarsX...");
-//        logger.info("Getting version compatibility adapter");
-//
-//        MCVersion version = MCVersion.QueryVersion();
-//        MCVersion newestVersion = null;
-//        boolean found = false;
-//        if(version.getValue() < MCVersion.v1_13.getValue()){
-//            // legacy
-//            for(Map.Entry<MCVersion, Class<?>> impl : implementations.entrySet()){
-//                if((!found || newestVersion.getValue() < impl.getKey().getValue()) && impl.getKey().getValue() < MCVersion.v1_13.getValue()){
-//                    found = true;
-//                    newestVersion = impl.getKey();
-//                }
-//            }
-//        }else{
-//            for(Map.Entry<MCVersion, Class<?>> impl : implementations.entrySet()){
-//                if((!found || newestVersion.getValue() < impl.getKey().getValue()) && impl.getKey().getValue() >= MCVersion.v1_13.getValue()){
-//                    found = true;
-//                    newestVersion = impl.getKey();
-//                }
-//            }
-//        }
-//
-//        if(!found){
-//            logger.severe("No suitable version adapter found for "+version.toString()+"! MissileWarsX cannot continue executing!");
-//            throw new RuntimeException();
-//        }
-//
-//        logger.info("Found version adapter " + newestVersion + " for version " + version.toString());
-//        try {
-//            mwImpl = (MissileWarsImplementation) implementations.get(newestVersion).newInstance();
-//        } catch (InstantiationException e) {
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
-//
-//        MissileWars = new CoreGame(mwImpl, this);
-//
-//        MissileWars.InitializeGame();
-//
-//        LobbyEngine.Fetcher = new SkinFetcher(this);
-
-//        Commands = new CommandCore(this);
-//        logger.info("Registering commands...");
-//        Commands.RegisterAllCommands();
-
-
         Object dedicatedServer = Reflection.invokeMethod("getServer", Bukkit.getServer());
         Class<?> minecraftServer = dedicatedServer.getClass().getSuperclass();
         Object vanillaCommandDispatcher = Reflection.get(minecraftServer, "vanillaCommandDispatcher", dedicatedServer);
@@ -208,9 +121,9 @@ public final class MissileWarsX extends JavaPlugin {
                             return 1;
                         })))
                 .SubCommand(CommandSubCommand.Literal("message").Executes((context) -> {
-                            context.SendMessage(context.GetEntity().getName() + " sent this command.");
-                            return 1;
-                        }))
+                    context.SendMessage(context.GetEntity().getName() + " sent this command.");
+                    return 1;
+                }))
 
                 .Register(commandDispatcher);
 
@@ -256,19 +169,8 @@ public final class MissileWarsX extends JavaPlugin {
 
         Dispatcher dispatcher = Dispatcher.of(this);
         dispatcher.getRoot().addChild(testCmd2);
-
-//        Commodore commodore = CommodoreProvider.getCommodore(this);
-
-//        PluginCommand pc = getCommand("lobby");
-//        commandDispatcher.register(LiteralArgumentBuilder.literal("lobby")
-//                .then(RequiredArgumentBuilder.argument("some-argument", StringArgumentType.string()))
-//                .then(RequiredArgumentBuilder.argument("some-other-argument", BoolArgumentType.bool())));
-//        pc.setExecutor(new TestCommand());
-////        commodore.register(pc, lab.build(), player -
-////            return true;
-////        });
->>>>>>> command-test
     }
+
 
     @Override
     public void onDisable() {

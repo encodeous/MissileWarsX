@@ -1,7 +1,7 @@
 package ca.encodeous.mwx.compatibility;
 
 import ca.encodeous.mwx.MissileWarsX;
-import ca.encodeous.mwx.commands.*;
+import ca.encodeous.mwx.command.commands.*;
 import ca.encodeous.mwx.core.utils.MCVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,13 +31,13 @@ public final class MissileWarsXCompat extends JavaPlugin {
             getCommand("mwedit").setExecutor(new mweditCommand());
             getCommand("mwreload").setExecutor(new mwreloadCommand());
             getCommand("mwgive").setExecutor(new mwgiveCommand());
-            getCommand("reset").setExecutor(new mwresetCommand());
+            getCommand("reset").setExecutor(new resetCommand());
             getCommand("players").setExecutor(new playersCommand());
             getCommand("ready").setExecutor(new readyCommand());
-            getCommand("wipe").setExecutor(new mwwipeCommand());
+            getCommand("wipe").setExecutor(new wipeCommand());
             getCommand("mwitems").setExecutor(new mwitemsCommand());
             getCommand("mwmissiles").setExecutor(new mwmissilesCommand());
-            getCommand("start").setExecutor(new mwstartCommand());
+            getCommand("start").setExecutor(new startCommand());
             getCommand("spectate").setExecutor(new spectateCommand());
             getCommand("mwteam").setExecutor(new mwteamCommand());
             getCommand("lobby").setExecutor(new lobbyCommand());

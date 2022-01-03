@@ -1,6 +1,6 @@
 package ca.encodeous.mwx.command;
 
-import ca.encodeous.mwx.mwxcompat1_8.Reflection;
+import ca.encodeous.mwx.core.utils.Reflection;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import org.bukkit.entity.Entity;

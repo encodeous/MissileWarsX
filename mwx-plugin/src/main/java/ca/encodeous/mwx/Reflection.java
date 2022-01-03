@@ -337,7 +337,7 @@ public class Reflection {
             return p.<Player>toArray(new Player[p.size()]);
         } catch (NoSuchMethodError e) {
             try {
-                Player[] players = (Player[]) ca.encodeous.mwx.mwxcompat1_8.Reflection.getMethod(Bukkit.class, "getOnlinePlayers").invoke(null, new Object[0]);
+                Player[] players = (Player[]) Reflection.getMethod(Bukkit.class, "getOnlinePlayers").invoke(null, new Object[0]);
                 return players;
             } catch (SecurityException | IllegalAccessException | IllegalArgumentException | java.lang.reflect.InvocationTargetException e1) {
                 e.printStackTrace();
