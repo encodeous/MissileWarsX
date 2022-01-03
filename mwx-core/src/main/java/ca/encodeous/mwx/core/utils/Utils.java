@@ -138,33 +138,31 @@ public class Utils {
         return Class.forName("com.sk89q.worldedit.world.World");
     }
 
+    private static boolean hasDetected = false;
+
     public static void DetectWe(){
         World world = Bukkit.getWorlds().get(0);
+        if(hasDetected) return;
+        hasDetected = true;
         EditSession ess = null;
+        if(MCVersion.QueryVersion().getValue() < MCVersion.v1_13.getValue()){
+            IsWe6 = true;
+            if(!hasInformed){
+                hasInformed = true;
+                CoreGame.Instance.mwPlugin.getLogger().log(Level.WARNING, "Detected & Using Extremely Legacy WorldEdit 6 APIs");
+            }
+            return;
+        }
         if(IsLegacy){
             try{
                 try{
-                    Class<?> clazz = Class.forName("com.sk89q.worldedit.bukkit.BukkitWorld");
-                    Object inst = Reflection.newInstance(Reflection.getConstructor(clazz, World.class), world);
+                    ess = new EditSessionBuilder(BukkitAdapter.adapt(world)).build();
+                }catch (Exception e){
                     IsWe6 = true;
-                }catch (ClassNotFoundException e){
-                    IsWe6 = false;
-                }
-                if(!IsWe6){
-                    try{
-                        ess = new EditSessionBuilder(BukkitAdapter.adapt(world)).build();
-                    }catch (Exception e){
-                        IsWe6 = true;
-                    }
                 }
                 if(!hasInformed){
                     hasInformed = true;
-                    if(IsWe6){
-                        CoreGame.Instance.mwPlugin.getLogger().log(Level.WARNING, "Detected & Using Extremely Legacy WorldEdit 6 APIs");
-                    }
-                    else{
-                        CoreGame.Instance.mwPlugin.getLogger().log(Level.INFO, "Detected & Using Legacy WorldEdit APIs");
-                    }
+                    CoreGame.Instance.mwPlugin.getLogger().log(Level.INFO, "Detected & Using Legacy WorldEdit APIs");
                 }
             }catch (NoClassDefFoundError e){
                 // ignored
@@ -172,7 +170,7 @@ public class Utils {
             }
         }
         if(!IsLegacy){
-            try {
+            try{
                 if(editSessionMethod == null){
                     editSessionMethod = WorldEdit.class.getMethod("newEditSession", com.sk89q.worldedit.world.World.class);
                 }
@@ -185,6 +183,7 @@ public class Utils {
     }
 
     public static Clipboard GetReadonlyClipboard(EditSession session, Region srcRegion){
+        DetectWe();
         if(IsWe6){
             try {
                 Class<?> clazz = Class.forName("com.boydti.fawe.object.clipboard.ReadOnlyClipboard");
@@ -210,6 +209,7 @@ public class Utils {
     }
 
     public static void SetTo(PasteBuilder pb, CuboidRegion region){
+        DetectWe();
         if(IsWe6){
             Class<?> clazz = null;
             try {
@@ -232,6 +232,7 @@ public class Utils {
     }
 
     public static void SetOrigin(Clipboard pb, CuboidRegion region){
+        DetectWe();
         if(IsWe6){
             Class<?> clazz = null;
             try {
@@ -254,6 +255,7 @@ public class Utils {
     }
 
     public static PasteBuilder createPaste(ClipboardHolder clipboard, Extent targetExtent, World world){
+        DetectWe();
         if(IsWe6){
             Class<?> clazz = null;
             try {
@@ -290,6 +292,7 @@ public class Utils {
     }
 
     public static ClipboardHolder GetHolder(Clipboard clipboard, World world){
+        DetectWe();
         if(IsWe6){
             Class<?> clazz = null;
             try {
