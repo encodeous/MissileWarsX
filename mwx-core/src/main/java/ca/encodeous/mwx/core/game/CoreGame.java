@@ -3,6 +3,7 @@ package ca.encodeous.mwx.core.game;
 import ca.encodeous.mwx.configuration.*;
 import ca.encodeous.mwx.configuration.LobbyConfiguration;
 import ca.encodeous.mwx.configuration.MissileWarsConfiguration;
+import ca.encodeous.mwx.core.utils.MCVersion;
 import ca.encodeous.mwx.data.Bounds;
 import ca.encodeous.mwx.engines.performance.RealTPS;
 import ca.encodeous.mwx.engines.performance.TPSMon;
@@ -30,6 +31,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.json.JSONArray;
@@ -58,9 +60,12 @@ public class CoreGame {
 
     public static CoreGame Instance = null;
 
-    public CoreGame(MissileWarsImplementation implementation, JavaPlugin plugin) {
+    JavaPlugin resourcePlugin;
+
+    public CoreGame(MissileWarsImplementation implementation, JavaPlugin plugin, JavaPlugin resources) {
         mwImpl = implementation;
         mwPlugin = plugin;
+        resourcePlugin = resources;
     }
 
     public static MissileWarsImplementation GetImpl() {
@@ -101,9 +106,11 @@ public class CoreGame {
             mwConfig = new MissileWarsConfiguration();
             mwConfig.Items = mwImpl.CreateDefaultItems();
             mwConfig.BreakSpeeds = new HashMap<>();
-            mwConfig.BreakSpeeds.put(Material.PISTON.name(), 500);
-            mwConfig.BreakSpeeds.put(Material.PISTON_HEAD.name(), 500);
-            mwConfig.BreakSpeeds.put(Material.STICKY_PISTON.name(), 500);
+            if(MCVersion.QueryVersion().getValue() >= MCVersion.v1_13.getValue()){
+                mwConfig.BreakSpeeds.put(Material.PISTON.name(), 500);
+                mwConfig.BreakSpeeds.put(Material.PISTON_HEAD.name(), 500);
+                mwConfig.BreakSpeeds.put(Material.STICKY_PISTON.name(), 500);
+            }
             mwConfig.BreakSpeeds.put("PISTON_BASE", 500);
             mwConfig.BreakSpeeds.put("PISTON_EXTENSION", 500);
             mwConfig.BreakSpeeds.put("PISTON_STICKY_BASE", 500);
@@ -164,7 +171,7 @@ public class CoreGame {
         // load worlds
         mwPlugin.getLogger().info("Loading template worlds...");
         try {
-            ResourceLoader.LoadWorldFiles(mwPlugin);
+            ResourceLoader.LoadWorldFiles(resourcePlugin);
         } catch (IOException e) {
             e.printStackTrace();
         }

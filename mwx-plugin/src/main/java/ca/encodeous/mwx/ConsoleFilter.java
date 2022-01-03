@@ -1,4 +1,4 @@
-package ca.encodeous.mwx.mwxplugin;
+package ca.encodeous.mwx;
 
 import java.util.logging.Filter;
 import java.util.logging.LogRecord;

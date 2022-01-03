@@ -1,5 +1,6 @@
 package ca.encodeous.mwx.commands;
 
+import ca.encodeous.mwx.MissileWarsCommand;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.core.utils.Chat;
@@ -9,7 +10,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class lobbyCommand implements CommandExecutor {
+public class lobbyCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{

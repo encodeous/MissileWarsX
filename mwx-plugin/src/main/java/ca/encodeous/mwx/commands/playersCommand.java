@@ -1,5 +1,6 @@
 package ca.encodeous.mwx.commands;
 
+import ca.encodeous.mwx.MissileWarsCommand;
 import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.engines.lobby.Lobby;
@@ -14,7 +15,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 
-public class playersCommand  implements CommandExecutor {
+public class playersCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player){

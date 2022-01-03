@@ -1,15 +1,25 @@
 package ca.encodeous.mwx.core.utils;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
+import ca.encodeous.mwx.data.Bounds;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.*;
 import ca.encodeous.mwx.core.lang.Strings;
+import com.fastasyncworldedit.core.extent.clipboard.ReadOnlyClipboard;
 import com.fastasyncworldedit.core.util.EditSessionBuilder;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.extent.Extent;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.session.PasteBuilder;
+import com.sk89q.worldedit.world.block.BlockType;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -18,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 
@@ -117,16 +128,43 @@ public class Utils {
     }
     private static Method editSessionMethod = null;
     public static boolean IsLegacy = true;
+    public static boolean IsWe6 = false;
     private static boolean hasInformed = false;
-    public static EditSession GetEditSession(World world){
-        // fawe version compatibility
+
+    private static Class<?> esb() throws ClassNotFoundException {
+        return Class.forName("com.boydti.fawe.util.EditSessionBuilder");
+    }
+    private static Class<?> weworld() throws ClassNotFoundException {
+        return Class.forName("com.sk89q.worldedit.world.World");
+    }
+
+    public static void DetectWe(){
+        World world = Bukkit.getWorlds().get(0);
         EditSession ess = null;
         if(IsLegacy){
             try{
-                ess = new EditSessionBuilder(BukkitAdapter.adapt(world)).build();
+                try{
+                    Class<?> clazz = Class.forName("com.sk89q.worldedit.bukkit.BukkitWorld");
+                    Object inst = Reflection.newInstance(Reflection.getConstructor(clazz, World.class), world);
+                    IsWe6 = true;
+                }catch (ClassNotFoundException e){
+                    IsWe6 = false;
+                }
+                if(!IsWe6){
+                    try{
+                        ess = new EditSessionBuilder(BukkitAdapter.adapt(world)).build();
+                    }catch (Exception e){
+                        IsWe6 = true;
+                    }
+                }
                 if(!hasInformed){
                     hasInformed = true;
-                    CoreGame.Instance.mwPlugin.getLogger().log(Level.INFO, "Detected & Using Legacy WorldEdit APIs");
+                    if(IsWe6){
+                        CoreGame.Instance.mwPlugin.getLogger().log(Level.WARNING, "Detected & Using Extremely Legacy WorldEdit 6 APIs");
+                    }
+                    else{
+                        CoreGame.Instance.mwPlugin.getLogger().log(Level.INFO, "Detected & Using Legacy WorldEdit APIs");
+                    }
                 }
             }catch (NoClassDefFoundError e){
                 // ignored
@@ -144,8 +182,278 @@ public class Utils {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static Clipboard GetReadonlyClipboard(EditSession session, Region srcRegion){
+        if(IsWe6){
+            try {
+                Class<?> clazz = Class.forName("com.boydti.fawe.object.clipboard.ReadOnlyClipboard");
+                Class<?> clazz2 = Class.forName("com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard");
+                Class<?> clazz3 = Class.forName("com.boydti.fawe.object.clipboard.FaweClipboard");
+                Object roc = Reflection.getMethod(clazz, "of", EditSession.class, Region.class, boolean.class, boolean.class)
+                        .invoke(null, session, srcRegion, false, false);
+                Object bac = Reflection.newInstance(Reflection.getConstructor(clazz2, Region.class, clazz3), srcRegion, roc);
+                return (Clipboard) bac;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }else{
+            return ReadOnlyClipboard.of(
+                    session, srcRegion, false, false
+            );
+        }
+    }
+
+    public static void SetTo(PasteBuilder pb, CuboidRegion region){
+        if(IsWe6){
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName("com.sk89q.worldedit.Vector");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Object vec = null;
+            try {
+                vec = Reflection.getMethod(CuboidRegion.class, "getMinimumPoint").invoke(region);
+                Reflection.getMethod(PasteBuilder.class, "to", clazz).invoke(pb, vec);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }else{
+            pb.to(region.getMinimumPoint());
+        }
+    }
+
+    public static void SetOrigin(Clipboard pb, CuboidRegion region){
+        if(IsWe6){
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName("com.sk89q.worldedit.Vector");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Object vec = null;
+            try {
+                vec = Reflection.getMethod(CuboidRegion.class, "getMinimumPoint").invoke(region);
+                Reflection.getMethod(Clipboard.class, "setOrigin", clazz).invoke(pb, vec);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }else{
+            pb.setOrigin(region.getMinimumPoint());
+        }
+    }
+
+    public static PasteBuilder createPaste(ClipboardHolder clipboard, Extent targetExtent, World world){
+        if(IsWe6){
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName("com.sk89q.worldedit.bukkit.BukkitWorld");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Class<?> clazz3 = null;
+            try {
+                clazz3 = Class.forName("com.sk89q.worldedit.world.registry.WorldData");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Object weWorld = Reflection.newInstance(Reflection.getConstructor(clazz, World.class), world);
+            Object weWorldData = null;
+            try {
+                weWorldData = Reflection.getMethod(clazz, "getWorldData").invoke(weWorld);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            try {
+                return (PasteBuilder) Reflection.getMethod(ClipboardHolder.class, "createPaste", Extent.class, clazz3).invoke(clipboard, targetExtent, weWorldData);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }else{
+            return clipboard.createPaste(targetExtent);
+        }
+    }
+
+    public static ClipboardHolder GetHolder(Clipboard clipboard, World world){
+        if(IsWe6){
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName("com.sk89q.worldedit.bukkit.BukkitWorld");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Class<?> clazz2 = null;
+            try {
+                clazz2 = Class.forName("com.sk89q.worldedit.session.ClipboardHolder");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Class<?> clazz3 = null;
+            try {
+                clazz3 = Class.forName("com.sk89q.worldedit.world.registry.WorldData");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Object weWorld = Reflection.newInstance(Reflection.getConstructor(clazz, World.class), world);
+            Object weWorldData = null;
+            try {
+                weWorldData = Reflection.getMethod(clazz, "getWorldData").invoke(weWorld);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            return (ClipboardHolder) Reflection.newInstance(Reflection.getConstructor(clazz2, Clipboard.class, clazz3), clipboard, weWorldData);
+        }else{
+            return new ClipboardHolder(clipboard);
+        }
+    }
+
+    public static EditSession GetEditSession(World world){
+        // fawe version compatibility
+        EditSession ess = null;
+        DetectWe();
+        if(IsWe6){
+            Object esb = null;
+            try {
+                esb = Reflection.newInstance(Reflection.getConstructor(esb(), String.class), world.getName());
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                ess = (EditSession)Reflection.getMethod(esb(), "build").invoke(esb);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        else if(IsLegacy) {
+            try {
+                try {
+                    ess = new EditSessionBuilder(BukkitAdapter.adapt(world)).build();
+                } catch (Exception e) {
+                    IsWe6 = true;
+                }
+            } catch (NoClassDefFoundError e) {
+                // ignored
+                IsLegacy = false;
+            }
+        }
+        else{
+            try {
+                if(editSessionMethod == null){
+                    editSessionMethod = WorldEdit.class.getMethod("newEditSession", com.sk89q.worldedit.world.World.class);
+                }
+                ess = (EditSession) editSessionMethod.invoke(WorldEdit.getInstance(), BukkitAdapter.adapt(world));
+            } catch (Exception e) {
+                CoreGame.Instance.mwPlugin.getLogger().log(Level.SEVERE, "Unable to access WorldEdit apis, make sure the correct version is installed!");
+                e.printStackTrace();
+            }
+        }
         return ess;
     }
+
+    public static Object We6Vec(int x, int y, int z){
+        Class<?> clazz = null;
+        try {
+            clazz = Class.forName("com.sk89q.worldedit.Vector");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return Reflection.newInstance(Reflection.getConstructor(clazz, int.class, int.class, int.class), x, y, z);
+    }
+
+    public static CuboidRegion GetRegion(Bounds bounds, World world){
+        DetectWe();
+        if(IsWe6){
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName("com.sk89q.worldedit.bukkit.BukkitWorld");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Class<?> vClazz = null;
+            try {
+                vClazz = Class.forName("com.sk89q.worldedit.Vector");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Object weWorld = Reflection.newInstance(Reflection.getConstructor(clazz, World.class), world);
+            Class<?> cbR = null;
+            try {
+                cbR = Class.forName("com.sk89q.worldedit.regions.CuboidRegion");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                return (CuboidRegion)Reflection.newInstance(Reflection.getConstructor(cbR, weworld(), vClazz, vClazz), weWorld,
+                        We6Vec(bounds.getMinX(), bounds.getMinY(), bounds.getMinZ()),
+                        We6Vec(bounds.getMaxX(), bounds.getMaxY(), bounds.getMaxZ()));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }else{
+            return new CuboidRegion(
+                    BukkitAdapter.asVector(Utils.LocationFromVec(bounds.Min, world)).toBlockPoint(),
+                    BukkitAdapter.asVector(Utils.LocationFromVec(bounds.Max, world)).toBlockPoint()
+            );
+        }
+    }
+
+    public static void WeSetBlock(EditSession es, Material mat, Region region){
+        DetectWe();
+        if(IsWe6){
+            Class<?> clazz = null;
+            try {
+                clazz = Class.forName("com.boydti.fawe.FaweCache");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Class<?> clazz2 = null;
+            try {
+                clazz2 = Class.forName("com.sk89q.worldedit.blocks.BaseBlock");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            Object weBlock = null;
+            try {
+                weBlock = Reflection.getMethod(clazz, "getBlock", int.class, int.class).invoke(null, mat.getId(), 0);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            try {
+                Reflection.getMethod(EditSession.class, "setBlocks", Region.class, clazz2).invoke(es, region, weBlock);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }else{
+            es.setBlocks(region, BukkitAdapter.asBlockType(mat));
+        }
+    }
+
     public static void playBlockSound(Location loc, Material mat) {
         Block curBlock = loc.getBlock();
         Material curMat = curBlock.getType();

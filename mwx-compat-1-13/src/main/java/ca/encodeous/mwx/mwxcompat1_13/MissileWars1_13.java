@@ -191,7 +191,7 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
             stand.setMarker(true);
         });
         Fireball e = world.spawn(Utils.LocationFromVec(location, world), Fireball.class, fb->{
-            fb.setYield(1.5f);
+            fb.setYield(1f);
             if(p != null) fb.setShooter(p);
             fb.setIsIncendiary(true);
             fb.setVelocity(new Vector(0, 1, 0));

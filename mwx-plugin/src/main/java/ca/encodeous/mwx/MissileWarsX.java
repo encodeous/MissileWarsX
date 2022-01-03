@@ -1,4 +1,4 @@
-package ca.encodeous.mwx.mwxplugin;
+package ca.encodeous.mwx;
 
 import ca.encodeous.mwx.commands.*;
 import ca.encodeous.mwx.mwxcompat1_13.MissileWars1_13;
@@ -56,7 +56,7 @@ public final class MissileWarsX extends JavaPlugin {
         }
 
         if(!found){
-            logger.severe("No suitable version adapter found for "+version.toString()+"! MissileWarsX cannot continue executing!");
+            logger.severe("No suitable version adapter found for "+version+"! MissileWarsX cannot continue executing!");
             throw new RuntimeException();
         }
 
@@ -69,9 +69,23 @@ public final class MissileWarsX extends JavaPlugin {
             e.printStackTrace();
         }
 
-        MissileWars = new CoreGame(mwImpl, this);
+        if(version.getValue() < MCVersion.v1_13.getValue()){
+            logger.info("You are running MissileWarsX on legacy Minecraft, you will be missing out on many features that only exist on the latest version of Minecraft.");
+            logger.info("Startup will be deferred. If startup has not resumed in a few moments, please install MissileWarsX-Compatibility if you have not already.");
+        }else{
+            ModernStart();
+            ResumeDeferredStartup(this);
+        }
+    }
 
-        logger.info("Registering commands...");
+    public void ResumeDeferredStartup(JavaPlugin resourcePlugin){
+        MissileWars = new CoreGame(mwImpl, this, resourcePlugin);
+        MissileWars.InitializeGame();
+        LobbyEngine.Fetcher = new SkinFetcher(this);
+    }
+
+    private void ModernStart(){
+        getLogger().info("Registering commands...");
         getCommand("mwmake").setExecutor(new mwmakeCommand());
         getCommand("mwpaste").setExecutor(new mwpasteCommand());
         getCommand("mwlaunch").setExecutor(new mwlaunchCommand());
@@ -91,12 +105,6 @@ public final class MissileWarsX extends JavaPlugin {
         getCommand("ping").setExecutor(new pingCommand());
         getCommand("mwfireball").setExecutor(new mwfireballCommand());
         getCommand("mode").setExecutor(new modeCommand());
-
-        MissileWars.InitializeGame();
-
-        Bukkit.unloadWorld("world", true);
-
-        LobbyEngine.Fetcher = new SkinFetcher(this);
     }
 
     @Override

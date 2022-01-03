@@ -1,4 +1,4 @@
-package ca.encodeous.mwx.mwxcompat1_8;
+package ca.encodeous.mwx.core.utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

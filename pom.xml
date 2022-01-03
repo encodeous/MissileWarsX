@@ -53,7 +53,7 @@
         <dependency>
             <groupId>com.github.encodeous</groupId>
             <artifactId>ProtocolTab</artifactId>
-            <version>159faf43aa</version>
+            <version>64a0ea1ee6</version>
         </dependency>
     </dependencies>
     <modules>
@@ -62,5 +62,6 @@
         <module>mwx-compat-1-8</module>
         <module>mwx-compat-1-13</module>
         <module>mwx-stats</module>
+        <module>mwx-compatibility</module>
     </modules>
 </project>

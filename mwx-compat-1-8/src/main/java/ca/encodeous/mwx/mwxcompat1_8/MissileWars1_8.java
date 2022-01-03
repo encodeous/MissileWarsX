@@ -212,11 +212,11 @@ public class MissileWars1_8 implements MissileWarsImplementation {
 
     @Override
     public void SummonFrozenFireball(Vector location, World world, Player p) {
-        ArmorStand a = world.spawn(Utils.LocationFromVec(location.add(new Vector(0,-1.5,0)), world), ArmorStand.class);
+        ArmorStand a = world.spawn(Utils.LocationFromVec(location.add(new Vector(0,-0.5,0)), world), ArmorStand.class);
         a.setVisible(false);
         a.setGravity(false);
         a.setMarker(true);
-        Fireball e = world.spawn(Utils.LocationFromVec(location.add(new Vector(0,-1.5,0)), world), Fireball.class);
+        Fireball e = world.spawn(Utils.LocationFromVec(location, world), Fireball.class);
         e.setYield(1.5f);
         if(p != null) e.setShooter(p);
         e.setIsIncendiary(true);

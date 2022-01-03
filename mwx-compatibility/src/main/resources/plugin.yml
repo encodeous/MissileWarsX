@@ -1,12 +1,12 @@
-name: MissileWarsX
+name: MissileWarsX-Compatibility
 version: ${project.version}
-main: ca.encodeous.mwx.MissileWarsX
+main: ca.encodeous.mwx.compatibility.MissileWarsXCompat
 authors: [ Encodeous ]
 depend:
-  - ProtocolLib
-  - FastAsyncWorldEdit
-description: MissileWarsX - An open source implementation of the Legendary Missile Wars minigame
-api-version: 1.13
+  - MissileWarsX
+loadbefore:
+  - MissileWarsX
+description: MissileWarsX Legacy Compatibility Plugin
 commands:
 #  Admin/Privileged Commands
   mwmake:

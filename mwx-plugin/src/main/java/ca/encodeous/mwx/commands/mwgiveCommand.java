@@ -1,5 +1,6 @@
 package ca.encodeous.mwx.commands;
 
+import ca.encodeous.mwx.MissileWarsCommand;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.Chat;
@@ -11,7 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class mwgiveCommand implements CommandExecutor {
+public class mwgiveCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{

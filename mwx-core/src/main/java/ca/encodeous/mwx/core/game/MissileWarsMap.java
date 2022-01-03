@@ -12,6 +12,7 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.session.PasteBuilder;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -82,12 +83,16 @@ public class MissileWarsMap {
     private Clipboard getClipboard(){
         if(!cachedClipboards.containsKey(TemplateWorld)){
             CuboidRegion srcRegion = WorldBoundingBox.toWorldeditRegion(TemplateWorld);
+            CuboidRegion srcRegion2 = WorldMaxBoundingBox.toWorldeditRegion(TemplateWorld);
             Clipboard board;
-            try (EditSession session = Utils.GetEditSession(TemplateWorld)){
-                session.setFastMode(true);
-                board = ReadOnlyClipboard.of(
-                        session, srcRegion, false, false
-                );
+            EditSession session = Utils.GetEditSession(TemplateWorld);
+            session.setFastMode(true);
+            board = Utils.GetReadonlyClipboard(session, srcRegion);
+            if(Utils.IsWe6){
+                Utils.SetOrigin(board, srcRegion2);
+            }
+            if(!Utils.IsWe6){
+                session.close();
             }
             cachedClipboards.put(TemplateWorld, board);
         }
@@ -103,17 +108,21 @@ public class MissileWarsMap {
                 @Override
                 public void run() {
                     isFilled = true;
-                    CuboidRegion destRegion = WorldBoundingBox.toWorldeditRegion(MswWorld);
                     Clipboard board = getClipboard();
-
-                    try (EditSession session = Utils.GetEditSession(MswWorld)) {
+                    CuboidRegion destFullRegion = WorldMaxBoundingBox.toWorldeditRegion(MswWorld);
+                    try {
+                        EditSession session = Utils.GetEditSession(MswWorld);
                         session.setFastMode(true);
-                        Operation operation = new ClipboardHolder(board)
-                                .createPaste(session)
-                                .ignoreAirBlocks(true)
-                                .copyEntities(false)
-                                .build();
-                        Operations.complete(operation);
+                        PasteBuilder builder =
+                                Utils.createPaste(Utils.GetHolder(board, TemplateWorld), session, MswWorld)
+                                        .ignoreAirBlocks(true);
+                        if(Utils.IsWe6){
+                            Utils.SetTo(builder, destFullRegion);
+                        }
+                        Operations.complete(builder.build());
+                        if(!Utils.IsWe6){
+                            session.close();
+                        }
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -135,17 +144,19 @@ public class MissileWarsMap {
             @Override
             public void run() {
                 CuboidRegion destFullRegion = WorldMaxBoundingBox.toWorldeditRegion(MswWorld);
-                CuboidRegion destRegion = WorldBoundingBox.toWorldeditRegion(MswWorld);
                 Clipboard board = getClipboard();
-                try (EditSession session = Utils.GetEditSession(MswWorld)) {
-                    session.setFastMode(true);
-                    session.setBlocks((Region) destFullRegion, BukkitAdapter.asBlockType(Material.AIR));
-                    Operation operation = new ClipboardHolder(board)
-                            .createPaste(session)
-                            .ignoreAirBlocks(true)
-                            .copyEntities(false)
-                            .build();
-                    Operations.complete(operation);
+                EditSession session = Utils.GetEditSession(MswWorld);
+                session.setFastMode(true);
+                Utils.WeSetBlock(session, Material.AIR, destFullRegion);
+                PasteBuilder builder =
+                        Utils.createPaste(Utils.GetHolder(board, TemplateWorld), session, MswWorld)
+                        .ignoreAirBlocks(true);
+                if(Utils.IsWe6){
+                    Utils.SetTo(builder, destFullRegion);
+                }
+                Operations.complete(builder.build());
+                if(!Utils.IsWe6){
+                    session.close();
                 }
                 Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, new Runnable() {
                     @Override

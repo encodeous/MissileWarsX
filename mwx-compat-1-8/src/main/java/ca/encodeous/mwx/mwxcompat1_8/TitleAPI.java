@@ -1,5 +1,6 @@
 package ca.encodeous.mwx.mwxcompat1_8;
 
+import ca.encodeous.mwx.core.utils.Reflection;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
