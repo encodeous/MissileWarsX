@@ -1,6 +1,7 @@
 package ca.encodeous.mwx.command.commands;
 
 import ca.encodeous.mwx.command.MissileWarsCommand;
+import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
@@ -9,6 +10,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -40,14 +42,8 @@ public class mwlaunchCommand extends MissileWarsCommand {
     }
 
     @Override
-    public void BuildCommandAutocomplete(LiteralArgumentBuilder<?> builder) {
-        ArgumentBuilder x = RequiredArgumentBuilder.argument("x", IntegerArgumentType.integer());
-        ArgumentBuilder y = RequiredArgumentBuilder.argument("y", IntegerArgumentType.integer());
-        ArgumentBuilder z = RequiredArgumentBuilder.argument("z", IntegerArgumentType.integer());
-        builder.then(x.then(y).then(z));
-        for(String missile : CoreGame.Instance.mwMissiles.keySet()) {
-            z.then(LiteralArgumentBuilder.literal(missile));
-        }
+    public RootCommand BuildCommand() {
+        throw new NotImplementedException("Building this command is not implemented");
     }
 
     @Override

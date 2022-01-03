@@ -1,9 +1,10 @@
 package ca.encodeous.mwx.command;
 
 import ca.encodeous.mwx.mwxcompat1_8.Reflection;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import me.lucko.commodore.Commodore;
-import me.lucko.commodore.CommodoreProvider;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import org.reflections.Reflections;
@@ -14,10 +15,8 @@ import java.util.*;
 
 public class CommandCore {
     private Plugin plugin;
-    private Commodore commodore;
     public CommandCore(Plugin registrantPlugin){
         plugin = registrantPlugin;
-        commodore = CommodoreProvider.getCommodore(plugin);
         plugin.getLogger().info("Detected modern minecraft, registering Brigadier command completions...");
     }
     public boolean RegisterCommand(Class<?> missileWarsCommand){
@@ -25,14 +24,22 @@ public class CommandCore {
                 Objects.requireNonNull(Reflection.getConstructor(missileWarsCommand)));
 
 
+
         PluginCommand pCmd = plugin.getServer().getPluginCommand(cmd.GetCommandName());
 
-        if(CommodoreProvider.isSupported()){
-            LiteralArgumentBuilder<?> lab = LiteralArgumentBuilder.literal(cmd.GetCommandName());
-            cmd.BuildCommandAutocomplete(lab);
-            commodore.register(pCmd, lab.build());
+        Object dedicatedServer = Reflection.invokeMethod("getServer", Bukkit.getServer());
+        Class<?> minecraftServer = dedicatedServer.getClass().getSuperclass();
+        Object vanillaCommandDispatcher = Reflection.get(minecraftServer, "vanillaCommandDispatcher", dedicatedServer);
+        if(vanillaCommandDispatcher != null) {
+            CommandDispatcher<Object> commandDispatcher = (CommandDispatcher<Object>) Reflection.get("g", vanillaCommandDispatcher);
+            if(commandDispatcher != null) {
+                cmd.BuildCommand().Register(commandDispatcher);
+            }else {
+                pCmd.setExecutor(cmd);
+            }
+        }else {
+            pCmd.setExecutor(cmd);
         }
-        pCmd.setExecutor(cmd);
 
         return true;
     }

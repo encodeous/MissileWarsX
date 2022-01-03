@@ -1,6 +1,7 @@
 package ca.encodeous.mwx.command.commands;
 
 import ca.encodeous.mwx.command.MissileWarsCommand;
+import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.Chat;
@@ -9,6 +10,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import me.lucko.commodore.MinecraftArgumentTypes;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
@@ -85,12 +87,8 @@ public class mwgiveCommand extends MissileWarsCommand {
     }
 
     @Override
-    public void BuildCommandAutocomplete(LiteralArgumentBuilder<?> builder) {
-//         builder.then(RequiredArgumentBuilder.argument("player",
-//                 MinecraftArgumentTypes.getByKey(NamespacedKey.minecraft("player"))));
-        builder.then(
-                RequiredArgumentBuilder.argument("test", StringArgumentType.string())
-        );
+    public RootCommand BuildCommand() {
+        throw new NotImplementedException("Building this command is not implemented");
     }
 
     @Override

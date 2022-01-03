@@ -1,11 +1,13 @@
 package ca.encodeous.mwx.command.commands;
 
 import ca.encodeous.mwx.command.MissileWarsCommand;
+import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.utils.Chat;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,8 +39,8 @@ public class mwpasteCommand extends MissileWarsCommand {
     }
 
     @Override
-    public void BuildCommandAutocomplete(LiteralArgumentBuilder<?> builder) {
-
+    public RootCommand BuildCommand() {
+        throw new NotImplementedException("Building this command is not implemented");
     }
 
     @Override

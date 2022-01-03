@@ -165,8 +165,8 @@ public class Reflection {
      * @param object     the object
      * @return the object
      */
-    public static Object invokeMethod(String methodName, Object object) {
-        return invokeMethod(object.getClass(), methodName, object, null, null);
+    public static <T> T invokeMethod(String methodName, Object object) {
+        return (T) invokeMethod(object.getClass(), methodName, object, null, null);
     }
 
     /**
