@@ -18,4 +18,5 @@ public interface StructureInterface {
     public boolean SpawnShield(Vector location, World world, boolean isRed);
     public boolean IsBlockOfTeam(PlayerTeam team, Block block);
     public boolean IsNeutralBlock(Block block);
+    public boolean IsGlassBlock(Block block);
 }

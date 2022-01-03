@@ -201,4 +201,8 @@ public class StructureCore extends ca.encodeous.mwx.mwxcompat1_8.Structures.Stru
         if(schematic.Blocks.isEmpty()) return null;
         return schematic;
     }
+
+    public boolean IsGlassBlock(Block block){
+        return block.getType().toString().endsWith("STAINED_GLASS") || block.getType().toString().endsWith("STAINED_GLASS_PANE");
+    }
 }

@@ -26,7 +26,7 @@ public class StructureUtils {
             return true;
         }
         // referenced from OpenMissileWars
-        int threshold = 0;
+        int boundingBoxThreshold = 0;
         Bounds bound = new Bounds();
         for(Vector vec : blocks){
             bound.stretch(vec);
@@ -46,20 +46,20 @@ public class StructureUtils {
 
                     boolean isSameTeamBlock = CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(team, block);
                     boolean isNeutralBlock = CoreGame.GetImpl().GetStructureManager().IsNeutralBlock(block);
-                    boolean isEnemyBlock = !isSameTeamBlock && !isNeutralBlock;
+                    boolean isEnemyBlock = !isSameTeamBlock && !isNeutralBlock && CoreGame.GetImpl().GetStructureManager().IsGlassBlock(block);
                     if(isEnemyBlock && crossMid){
-                        threshold--;
+                        boundingBoxThreshold--;
                     }
                     if(isSameTeamBlock){
-                        threshold++;
+                        boundingBoxThreshold++;
                     }
-                    if(CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(PlayerTeam.None, block) && !crossMid){
-                        threshold++;
+                    if(isNeutralBlock && !crossMid){
+                        boundingBoxThreshold++;
                     }
                 }
             }
         }
-        return threshold <= 4;
+        return boundingBoxThreshold <= 4;
     }
 
     private static boolean CheckSpawnPreconditions(World world, Vector vec) {

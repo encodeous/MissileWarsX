@@ -336,7 +336,12 @@ public class StructureCore implements StructureInterface {
     }
 
     @Override
+    public boolean IsGlassBlock(Block block){
+        return block.getType().toString().equals("STAINED_GLASS") || block.getType().toString().equals("STAINED_GLASS_PANE");
+    }
+
+    @Override
     public boolean IsNeutralBlock(Block block) {
-        return !IsBlockOfTeam(PlayerTeam.Green, block) && !IsBlockOfTeam(PlayerTeam.Red, block);
+        return !IsBlockOfTeam(PlayerTeam.Green, block) && !IsBlockOfTeam(PlayerTeam.Red, block) && IsGlassBlock(block);
     }
 }
