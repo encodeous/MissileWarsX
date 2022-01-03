@@ -167,9 +167,9 @@ public class MissileWarsMatch {
             public void Count(Counter counter, int count) {
                 int remTime = CoreGame.Instance.mwConfig.DrawSeconds - count;
                 if (remTime == 1) {
-                    lobby.SendMessage(String.format(Strings.RESETTING_GAME_PLURAL, remTime));
-                }else{
                     lobby.SendMessage(String.format(Strings.RESETTING_GAME, remTime));
+                }else{
+                    lobby.SendMessage(String.format(Strings.RESETTING_GAME_PLURAL, remTime));
                 }
                 for(Player p : Teams.keySet()){
                     CoreGame.GetImpl().PlaySound(p, SoundType.COUNTDOWN);
@@ -451,15 +451,15 @@ public class MissileWarsMatch {
             w.Streak = 0;
             w.Losses++;
         }
-        w.Kills += Kills.get(p.getUniqueId());
-        w.Deaths += Deaths.get(p.getUniqueId());
+        w.Kills += Kills.getOrDefault(p.getUniqueId(), 0);
+        w.Deaths += Deaths.getOrDefault(p.getUniqueId(), 0);
     }
 
     protected MatchParticipation ConfigureMatchDefaults(UUID matchId, ArrayList<Player> winTeam, Player p) {
         MatchParticipation x = new MatchParticipation();
         x.MatchId = matchId;
         x.HasWon = winTeam.contains(p);
-        x.Deaths = Deaths.get(p.getUniqueId());
+        x.Deaths = Deaths.getOrDefault(p.getUniqueId(), 0);
         x.PlayerId = p.getUniqueId();
         x.IsRanked = false;
         x.Kills = Kills.get(p.getUniqueId());
