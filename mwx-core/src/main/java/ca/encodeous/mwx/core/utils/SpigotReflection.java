@@ -29,11 +29,10 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Objects;
 import org.bukkit.entity.Player;
-import xyz.jpenilla.jmplib.Crafty;
 
-import static xyz.jpenilla.jmplib.Crafty.findField;
-import static xyz.jpenilla.jmplib.Crafty.needCraftClass;
-import static xyz.jpenilla.jmplib.Crafty.needNMSClassOrElse;
+import static ca.encodeous.mwx.core.utils.Crafty.findField;
+import static ca.encodeous.mwx.core.utils.Crafty.needCraftClass;
+import static ca.encodeous.mwx.core.utils.Crafty.needNMSClassOrElse;
 
 public final class SpigotReflection {
     private static final class Holder {

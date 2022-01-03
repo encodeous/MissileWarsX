@@ -46,11 +46,6 @@
             <version>f96af9aca1</version>
         </dependency>
         <dependency>
-            <groupId>com.github.jpenilla</groupId>
-            <artifactId>jmplib</artifactId>
-            <version>78a60af1bc</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.encodeous</groupId>
             <artifactId>ProtocolTab</artifactId>
             <version>64a0ea1ee6</version>
