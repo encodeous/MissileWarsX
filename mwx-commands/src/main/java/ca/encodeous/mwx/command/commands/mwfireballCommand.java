@@ -1,12 +1,17 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
-import ca.encodeous.mwx.MissileWarsCommand;
+import ca.encodeous.mwx.command.MissileWarsCommand;
+import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.data.Ref;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.World;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.BlockCommandSender;
@@ -41,5 +46,15 @@ public class mwfireballCommand extends MissileWarsCommand {
         }catch (Exception e){
             return false;
         }
+    }
+
+    @Override
+    public RootCommand BuildCommand() {
+        throw new NotImplementedException("Building this command is not implemented");
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "mwfireball";
     }
 }

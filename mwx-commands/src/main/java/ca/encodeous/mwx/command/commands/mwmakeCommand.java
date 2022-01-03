@@ -1,12 +1,14 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
-import ca.encodeous.mwx.MissileWarsCommand;
+import ca.encodeous.mwx.command.MissileWarsCommand;
+import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.data.Bounds;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.configuration.MissileSchematic;
-import ca.encodeous.mwx.MissileWarsX;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,7 +37,7 @@ public class mwmakeCommand extends MissileWarsCommand {
                         Integer.parseInt(args[7]),
                         Integer.parseInt(args[8]));
                 String name = args[9];
-                MissileSchematic schem = MissileWarsX.Instance.mwImpl.GetStructureManager().GetSchematic(pivot, Bounds.of(a,b), p.getWorld());
+                MissileSchematic schem = CoreGame.GetStructureManager().GetSchematic(pivot, Bounds.of(a,b), p.getWorld());
                 if(schem == null){
                     p.sendMessage(Chat.FCL("&cFailed creating missile! Valid blocks are: [PISTON, GLASS, STAINED_GLASS, SLIME_BLOCK, TNT, REDSTONE_BLOCK, STAINED_CLAY]. Schematics must also not be empty!"));
                     return true;
@@ -51,5 +53,15 @@ public class mwmakeCommand extends MissileWarsCommand {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public RootCommand BuildCommand() {
+        throw new NotImplementedException("Building this command is not implemented");
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "mwmake";
     }
 }

@@ -26,10 +26,27 @@ public class StructureUtils {
             return true;
         }
         // referenced from OpenMissileWars
-        int threshold = 0;
+        int boundingBoxThreshold = 0;
+        int replaceThreshold = 0;
         Bounds bound = new Bounds();
         for(Vector vec : blocks){
             bound.stretch(vec);
+            Block block = world.getBlockAt(vec.getBlockX(), vec.getBlockY(), vec.getBlockZ());
+            boolean crossMid;
+            if (team == PlayerTeam.Red) {
+                crossMid = vec.getBlockZ() > 0;
+            } else {
+                crossMid = vec.getBlockZ() < 0;
+            }
+
+            boolean isSameTeamBlock = CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(team, block);
+            boolean isNeutralBlock = CoreGame.GetImpl().GetStructureManager().IsNeutralBlock(block);
+            if((isSameTeamBlock || isNeutralBlock) && !crossMid){
+                replaceThreshold++;
+            }
+        }
+        if(replaceThreshold > 2){
+            return false;
         }
         for(int i = bound.getMinX(); i <= bound.getMaxX(); i++){
             for(int j = bound.getMinY(); j <= bound.getMaxY(); j++){
@@ -48,18 +65,18 @@ public class StructureUtils {
                     boolean isNeutralBlock = CoreGame.GetImpl().GetStructureManager().IsNeutralBlock(block);
                     boolean isEnemyBlock = !isSameTeamBlock && !isNeutralBlock;
                     if(isEnemyBlock && crossMid){
-                        threshold--;
+                        boundingBoxThreshold--;
                     }
                     if(isSameTeamBlock){
-                        threshold++;
+                        boundingBoxThreshold++;
                     }
                     if(CoreGame.GetImpl().GetStructureManager().IsBlockOfTeam(PlayerTeam.None, block) && !crossMid){
-                        threshold++;
+                        boundingBoxThreshold++;
                     }
                 }
             }
         }
-        return threshold <= 4;
+        return boundingBoxThreshold <= 4;
     }
 
     private static boolean CheckSpawnPreconditions(World world, Vector vec) {

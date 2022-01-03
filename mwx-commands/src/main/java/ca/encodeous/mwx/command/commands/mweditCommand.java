@@ -1,9 +1,10 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
-import ca.encodeous.mwx.MissileWarsCommand;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,5 +38,15 @@ public class mweditCommand extends MissileWarsCommand {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public RootCommand BuildCommand() {
+        throw new NotImplementedException("Building this command is not implemented");
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "mwedit";
     }
 }

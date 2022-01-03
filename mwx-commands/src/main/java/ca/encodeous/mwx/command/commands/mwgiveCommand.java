@@ -1,11 +1,18 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
-import ca.encodeous.mwx.MissileWarsCommand;
+import ca.encodeous.mwx.command.MissileWarsCommand;
+import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.core.utils.Utils;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import me.lucko.commodore.MinecraftArgumentTypes;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -77,5 +84,15 @@ public class mwgiveCommand extends MissileWarsCommand {
         }catch (Exception e){
             return false;
         }
+    }
+
+    @Override
+    public RootCommand BuildCommand() {
+        throw new NotImplementedException("Building this command is not implemented");
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "mwgive";
     }
 }

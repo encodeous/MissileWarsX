@@ -79,6 +79,8 @@ public class StatisticManager {
             source.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

@@ -1,4 +1,5 @@
-package ca.encodeous.mwx.core.utils;
+package ca.encodeous.mwx;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -165,8 +166,8 @@ public class Reflection {
      * @param object     the object
      * @return the object
      */
-    public static <T> T invokeMethod(String methodName, Object object) {
-        return (T) invokeMethod(object.getClass(), methodName, object, null, null);
+    public static Object invokeMethod(String methodName, Object object) {
+        return invokeMethod(object.getClass(), methodName, object, null, null);
     }
 
     /**
@@ -197,9 +198,9 @@ public class Reflection {
      * @param args   The Args
      * @return The object from the Invoked Method
      */
-    public static Object invokeMethod(Method method, Object object, Object... args) {
+    public static <T> T invokeMethod(Method method, Object object, Object... args) {
         try {
-            return method.invoke(object, args);
+            return (T) method.invoke(object, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -300,9 +301,9 @@ public class Reflection {
      * @param object    The Object
      * @return Get the Object from the Field
      */
-    public static Object get(String fieldName, Object object) {
+    public static <T> T get(String fieldName, Object object) {
         try {
-            return get(object.getClass().getDeclaredField(fieldName), object);
+            return (T) get(object.getClass().getDeclaredField(fieldName), object);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
             return null;
@@ -336,7 +337,7 @@ public class Reflection {
             return p.<Player>toArray(new Player[p.size()]);
         } catch (NoSuchMethodError e) {
             try {
-                Player[] players = (Player[]) Reflection.getMethod(Bukkit.class, "getOnlinePlayers").invoke(null, new Object[0]);
+                Player[] players = (Player[]) ca.encodeous.mwx.mwxcompat1_8.Reflection.getMethod(Bukkit.class, "getOnlinePlayers").invoke(null, new Object[0]);
                 return players;
             } catch (SecurityException | IllegalAccessException | IllegalArgumentException | java.lang.reflect.InvocationTargetException e1) {
                 e.printStackTrace();

@@ -1,17 +1,23 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
-import ca.encodeous.mwx.MissileWarsCommand;
+import ca.encodeous.mwx.command.MissileWarsCommand;
+import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.utils.Chat;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class mwpasteCommand extends MissileWarsCommand {
+public class mwlaunchCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
@@ -20,7 +26,7 @@ public class mwpasteCommand extends MissileWarsCommand {
                 Vector v = new Vector(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
                 if(CoreGame.Instance.mwMissiles.containsKey(args[3])){
                     Missile mws = CoreGame.Instance.mwMissiles.get(args[3]);
-                    boolean result = CoreGame.GetStructureManager().PlaceMissile(mws, v, p.getWorld(), args[4].equals("red"), false, p);
+                    boolean result = CoreGame.GetStructureManager().PlaceMissile(mws, v, p.getWorld(), args[4].equals("red"), true, p);
                     if(!result){
                         MissileWarsMatch.SendCannotPlaceMessage(p);
                     }
@@ -33,5 +39,15 @@ public class mwpasteCommand extends MissileWarsCommand {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public RootCommand BuildCommand() {
+        throw new NotImplementedException("Building this command is not implemented");
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "mwlaunch";
     }
 }
