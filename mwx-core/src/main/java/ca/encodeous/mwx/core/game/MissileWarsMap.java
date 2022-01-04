@@ -13,7 +13,6 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.PasteBuilder;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -23,6 +22,9 @@ import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -198,14 +200,19 @@ public class MissileWarsMap {
         if(!success){
             System.out.println("Unable to unload world " + MswWorld.getName() + " deleting anyways...");
         }
-        try {
-            FileUtils.deleteDirectory(worldFolder);
-        } catch (IOException e) {
-            try {
-                FileUtils.forceDeleteOnExit(worldFolder);
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+        boolean symbolic = Files.isSymbolicLink(worldFolder.toPath());
+        if(!symbolic)
+            Delete(worldFolder);
+    }
+
+    public static void Delete(File file) {
+        if(Files.isSymbolicLink(file.toPath())) return;
+        if(file.isDirectory()) {
+            for(File f : file.listFiles()) {
+                Delete(f);
             }
         }
+        file.delete();
     }
+
 }

@@ -2,15 +2,11 @@ package ca.encodeous.mwx.engines.structure;
 
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.utils.MCVersion;
-import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -67,8 +63,12 @@ public class ResourceLoader {
             file.mkdirs();
         } else {
             InputStream in = zip.getInputStream(entry);
-            FileOutputStream out = new FileOutputStream(file);
-            IOUtils.copy(in, out);
+            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+            byte[] buffer = new byte[8192];
+            int read;
+            while((read = in.read(buffer, 0, Math.min(in.available(), buffer.length))) != 0) {
+                out.write(buffer, 0, read);
+            }
             in.close();
             out.close();
         }
