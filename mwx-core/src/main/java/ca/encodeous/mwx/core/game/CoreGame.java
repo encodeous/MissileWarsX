@@ -14,6 +14,8 @@ import ca.encodeous.mwx.configuration.MissileSchematic;
 import ca.encodeous.mwx.mwxstats.StatisticManager;
 import ca.encodeous.mwx.engines.structure.ResourceLoader;
 import ca.encodeous.mwx.engines.structure.StructureInterface;
+import com.comphenix.packetwrapper.WrapperPlayServerPlayerInfo;
+import com.comphenix.packetwrapper.WrapperPlayServerTabComplete;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -24,6 +26,10 @@ import com.comphenix.protocol.events.PacketEvent;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -44,6 +50,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CoreGame {
     static {
@@ -286,6 +294,23 @@ public class CoreGame {
                     }
             );
         }
+
+        protocolManager.addPacketListener(
+                new PacketAdapter(mwPlugin, ListenerPriority.NORMAL,
+                        PacketType.Play.Server.PLAYER_INFO) {
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
+                        WrapperPlayServerPlayerInfo info = new WrapperPlayServerPlayerInfo(event.getPacket());
+                        var data = info.getData().stream().map(x->{
+                            if(x.getProfile().getName().endsWith("|UpdateMC")){
+                                x.getProfile().withName("~~" + x.getProfile().getName());
+                            }
+                            return x;
+                        }).collect(Collectors.toList());
+                        info.setData(data);
+                    }
+                }
+        );
     }
 
     public MissileWarsItem GetItemById(String id) {

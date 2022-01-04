@@ -30,6 +30,7 @@ public class Strings {
     public static String CONGRATULATE_WIN_TITLE = Chat.FCL("&6The %s &6team has won!");
     public static String GAME_DRAW = Chat.FCL("&6The game has ended in a draw!");
     public static String PING_MESSAGE = Chat.FCL("&6Your ping is &2%s &6ms.");
+    public static String PING_OTHER_MESSAGE = Chat.FCL("&e%s&6's ping is &2%s &6ms.");
     public static String PLAYERS_ONLINE = Chat.FCL("&2Currently there is/are %s player(s) online.\n");
     public static String AND = "and";
     public static String CONGRATULATIONS = "Congratulations";

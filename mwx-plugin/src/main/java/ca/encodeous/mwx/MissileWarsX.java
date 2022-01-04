@@ -1,6 +1,7 @@
 package ca.encodeous.mwx;
 
 import ca.encodeous.mwx.mwxcompat1_13.MissileWars1_13;
+import ca.encodeous.mwx.mwxcompat1_17.MissileWars1_17;
 import ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.MCVersion;
@@ -13,23 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.LogManager;
-import ca.encodeous.mwx.command.Command;
 import ca.encodeous.mwx.command.CommandCore;
-import ca.encodeous.mwx.command.RootCommand;
-import ca.encodeous.mwx.command.CommandSubCommand;
-import ca.encodeous.mwx.core.game.CoreGame;
-import ca.encodeous.mwx.core.game.MissileWarsImplementation;
-import com.karuslabs.commons.command.dispatcher.Dispatcher;
-import com.karuslabs.commons.command.tree.nodes.Argument;
-import com.karuslabs.commons.command.tree.nodes.Literal;
-import com.karuslabs.commons.command.types.PlayerType;
-import com.karuslabs.commons.command.types.PointType;
-import com.mojang.brigadier.CommandDispatcher;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+
 import java.util.logging.Logger;
 
 public final class MissileWarsX extends JavaPlugin {
@@ -47,6 +33,7 @@ public final class MissileWarsX extends JavaPlugin {
         Map<MCVersion, Class<?>> implementations = new HashMap<MCVersion, Class<?>>();
         implementations.put(MCVersion.v1_8, MissileWars1_8.class);
         implementations.put(MCVersion.v1_13, MissileWars1_13.class);
+        implementations.put(MCVersion.v1_17, MissileWars1_17.class);
         Instance = this;
         logger = Bukkit.getLogger();
         logger.info("Starting MissileWarsX...");
@@ -90,8 +77,8 @@ public final class MissileWarsX extends JavaPlugin {
             logger.info("You are running MissileWarsX on legacy Minecraft, you will be missing out on many features that only exist on the latest version of Minecraft.");
             logger.info("Startup will be deferred. If startup has not resumed in a few moments, please install MissileWarsX-Compatibility if you have not already.");
         }else{
-            ModernStart();
             ResumeDeferredStartup(this);
+            ModernStart();
         }
     }
 
@@ -99,76 +86,16 @@ public final class MissileWarsX extends JavaPlugin {
         MissileWars = new CoreGame(mwImpl, this, resourcePlugin);
         MissileWars.InitializeGame();
         LobbyEngine.Fetcher = new SkinFetcher(this);
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, ()->{
+            for(var p : Bukkit.getOnlinePlayers()){
+                mwImpl.GetCommandCore().UpdatePlayer(p);
+            }
+        }, 0, 20);
     }
 
     private void ModernStart() {
         getLogger().info("Registering commands...");
-        Object dedicatedServer = Reflection.invokeMethod("getServer", Bukkit.getServer());
-        Class<?> minecraftServer = dedicatedServer.getClass().getSuperclass();
-        Object vanillaCommandDispatcher = Reflection.get(minecraftServer, "vanillaCommandDispatcher", dedicatedServer);
-        CommandDispatcher<Object> commandDispatcher = Reflection.get("g", vanillaCommandDispatcher);
-
-
-        new RootCommand("testcommand", Command::AnyPermissionLevel)
-                .SubCommand(CommandSubCommand.Literal("int")
-                        .SubCommand(CommandSubCommand.Integer("num", 0, 10).Executes((context) -> {
-                            Bukkit.broadcastMessage("Integer: " + context.GetInteger("num"));
-                            return 1;
-                        })))
-                .SubCommand(CommandSubCommand.Literal("double")
-                        .SubCommand(CommandSubCommand.Double("num", 0, 10).Executes((context) -> {
-                            Bukkit.broadcastMessage("Double: " + context.GetDouble("num"));
-                            return 1;
-                        })))
-                .SubCommand(CommandSubCommand.Literal("message").Executes((context) -> {
-                    context.SendMessage(context.GetEntity().getName() + " sent this command.");
-                    return 1;
-                }))
-
-                .Register(commandDispatcher);
-
-        Argument.Builder<CommandSender, Player> player = Argument.of("player", new PlayerType());
-        Argument.Builder<CommandSender, ?> pt = Argument.of("pos", PointType.CUBIC.mapped());
-
-        Argument<CommandSender, Player> arguments = player.then(pt).build();
-
-//        LiteralCommandNode<Object> testCmd = LiteralArgumentBuilder.literal("asdf")
-//                .then(RequiredArgumentBuilder.argument("player", new PlayerType())
-//                    .then(RequiredArgumentBuilder.argument("pos", PointType.CUBIC.mapped())
-//                        .executes(ctx -> {
-//                            Bukkit.broadcastMessage("test");
-//                            Player p = ctx.getArgument("player", Player.class);
-//                            Object point = ctx.getArgument("pos", Object.class);
-//                            double x = Reflection.get("a", point);
-//                            double y = Reflection.get("b", point);
-//                            double z = Reflection.get("c", point);
-//                            p.teleport(new Location(p.getWorld(), x, y, z));
-//                            p.sendMessage("You have been teleported to " + point);
-//                            return 1;
-//                        }))).build();
-
-        Literal<CommandSender> testCmd2 = Literal.of("asdf")
-                .then(
-                        Argument.of("player", new PlayerType())
-                                .then(
-                                        Argument.of("pos", PointType.CUBIC.mapped())
-                                                .executes(ctx->{
-                                                    Bukkit.broadcastMessage("test");
-                                                    Player p = ctx.getArgument("player", Player.class);
-                                                    Object point = ctx.getArgument("pos", Object.class);
-                                                    double x = Reflection.get("e", Reflection.get("a", point));
-                                                    double y = Reflection.get("e", Reflection.get("b", point));
-                                                    double z = Reflection.get("e", Reflection.get("c", point));
-                                                    p.teleport(new Location(p.getWorld(), x, y, z, p.getLocation().getYaw(), p.getLocation().getPitch()));
-                                                    p.sendMessage("You have been teleported to " + x + " " + y + " " + z);
-                                                    return 1;
-                                                })
-                                )
-                )
-                .build();
-
-        Dispatcher dispatcher = Dispatcher.of(this);
-        dispatcher.getRoot().addChild(testCmd2);
+        mwImpl.GetCommandCore().Initialize();
     }
 
 
@@ -176,5 +103,6 @@ public final class MissileWarsX extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         MissileWars.StopGame(true);
+        mwImpl.GetCommandCore().Disable();
     }
 }

@@ -241,13 +241,13 @@ public class StructureCore implements StructureInterface {
         if(block.Material == MissileMaterial.TNT){
             realBlock.setType(Material.TNT, false);
             MissileWarsMatch match = LobbyEngine.FromWorld(world);
-            if(match != null){
+            if(match != null && p != null){
                 match.Tracer.AddBlock(p.getUniqueId(), TraceType.TNT, location);
             }
         }else if(block.Material == MissileMaterial.REDSTONE){
             realBlock.setType(Material.REDSTONE_BLOCK, false);
             MissileWarsMatch match = LobbyEngine.FromWorld(world);
-            if(match != null){
+            if(match != null && p != null){
                 match.Tracer.AddBlock(p.getUniqueId(), TraceType.REDSTONE, location);
             }
         }

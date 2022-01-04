@@ -1,16 +1,16 @@
 package ca.encodeous.mwx.command.commands;
 
+import ca.encodeous.mwx.command.CommandCore;
+import ca.encodeous.mwx.command.CommandRegister;
 import ca.encodeous.mwx.command.MissileWarsCommand;
-import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.core.utils.Utils;
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class modeCommand extends MissileWarsCommand {
+public class GamemodeCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
@@ -38,12 +38,20 @@ public class modeCommand extends MissileWarsCommand {
     }
 
     @Override
-    public RootCommand BuildCommand() {
-        throw new NotImplementedException("Building this command is not implemented");
-    }
-
-    @Override
-    public String GetCommandName() {
-        return "mode";
+    public void BuildCommand(CommandCore core) {
+        new CommandRegister("creative", "Sets your gamemode to creative mode", true).Create(e ->
+                e.withAliases("gmc", "c", "mwcreative")
+                        .executesPlayer((p, args) -> {
+                            p.setGameMode(GameMode.CREATIVE);
+                            p.sendMessage(String.format(Strings.GAMEMODE_UPDATED, p.getGameMode().name()));
+                        })
+        );
+        new CommandRegister("survival", "Sets your gamemode to survival mode", true).Create(e ->
+                e.withAliases("gms", "s", "mwsurvival")
+                        .executesPlayer((p, args) -> {
+                            p.setGameMode(GameMode.SURVIVAL);
+                            p.sendMessage(String.format(Strings.GAMEMODE_UPDATED, p.getGameMode().name()));
+                        })
+        );
     }
 }

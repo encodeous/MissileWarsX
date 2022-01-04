@@ -3,6 +3,7 @@ package ca.encodeous.mwx.core.game;
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.core.utils.MCVersion;
 import ca.encodeous.mwx.data.SoundType;
+import ca.encodeous.mwx.engines.command.CommandBase;
 import ca.encodeous.mwx.engines.structure.StructureInterface;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,4 +35,6 @@ public interface MissileWarsImplementation {
     public void PlaySound(Location loc, SoundType type);
     // Structures
     public StructureInterface GetStructureManager();
+    // Commands
+    public CommandBase GetCommandCore();
 }

@@ -1,23 +1,17 @@
 package ca.encodeous.mwx.command.commands;
 
+import ca.encodeous.mwx.command.CommandCore;
 import ca.encodeous.mwx.command.MissileWarsCommand;
-import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.utils.Chat;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class mwlaunchCommand extends MissileWarsCommand {
+public class LaunchCommand extends MissileWarsCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try{
@@ -42,12 +36,7 @@ public class mwlaunchCommand extends MissileWarsCommand {
     }
 
     @Override
-    public RootCommand BuildCommand() {
-        throw new NotImplementedException("Building this command is not implemented");
-    }
-
-    @Override
-    public String GetCommandName() {
-        return "mwlaunch";
+    public void BuildCommand(CommandCore core) {
+        // See PasteCommands
     }
 }

@@ -2,6 +2,8 @@ package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.data.Ref;
+import ca.encodeous.mwx.engines.command.CommandBase;
+import ca.encodeous.mwx.mwxcompat1_13.CommandAPI.CommandCore;
 import ca.encodeous.mwx.mwxcompat1_13.Structures.StructureCore;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.MCVersion;
@@ -208,5 +210,11 @@ public class MissileWars1_13 extends ca.encodeous.mwx.mwxcompat1_8.MissileWars1_
     @Override
     public StructureInterface GetStructureManager() {
         return Structures;
+    }
+
+    private static CommandCore commandCore = new CommandCore();
+    @Override
+    public CommandBase GetCommandCore() {
+        return commandCore;
     }
 }

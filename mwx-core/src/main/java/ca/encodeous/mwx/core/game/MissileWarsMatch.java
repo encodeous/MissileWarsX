@@ -15,6 +15,7 @@ import ca.encodeous.mwx.engines.structure.StructureUtils;
 import de.gesundkrank.jskills.*;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -360,7 +361,7 @@ public class MissileWarsMatch {
         if(affectGame && !hasStarted) CheckGameReadyState();
     }
 
-    public static void SendCannotPlaceMessage(Player p){
+    public static void SendCannotPlaceMessage(CommandSender p){
         p.sendMessage(Strings.CANNOT_DEPLOY);
     }
 

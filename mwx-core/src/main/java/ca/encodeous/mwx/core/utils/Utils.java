@@ -126,6 +126,25 @@ public class Utils {
         }
         return true;
     }
+    public static boolean CheckPrivPermissionSilent(Player p){
+        MissileWarsMatch match = LobbyEngine.FromPlayer(p);
+        if(match == null){
+            return false;
+        }
+        if(match instanceof MissileWarsRankedMatch){
+            return false;
+        }
+        if (!p.hasPermission("mwx.admin") && !p.isOp()) {
+            if (!(match instanceof MissileWarsPracticeMatch)) {
+                return false;
+            } else {
+                if (!match.hasStarted || !(match.IsPlayerInTeam(p, PlayerTeam.Red) || match.IsPlayerInTeam(p, PlayerTeam.Green))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     private static Method editSessionMethod = null;
     public static boolean IsLegacy = true;
     public static boolean IsWe6 = false;

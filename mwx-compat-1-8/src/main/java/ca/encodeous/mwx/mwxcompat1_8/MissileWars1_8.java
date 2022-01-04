@@ -5,6 +5,7 @@ import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsImplementation;
 import ca.encodeous.mwx.data.Ref;
+import ca.encodeous.mwx.engines.command.CommandBase;
 import ca.encodeous.mwx.mwxcompat1_8.Structures.StructureCore;
 import ca.encodeous.mwx.core.game.MissileWarsMap;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
@@ -349,5 +350,10 @@ public class MissileWars1_8 implements MissileWarsImplementation {
     @Override
     public StructureInterface GetStructureManager() {
         return Structures;
+    }
+
+    @Override
+    public CommandBase GetCommandCore() {
+        return null;
     }
 }
