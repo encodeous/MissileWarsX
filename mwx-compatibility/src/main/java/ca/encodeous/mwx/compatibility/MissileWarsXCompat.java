@@ -1,15 +1,9 @@
 package ca.encodeous.mwx.compatibility;
 
 import ca.encodeous.mwx.MissileWarsX;
-import ca.encodeous.mwx.commands.*;
+import ca.encodeous.mwx.command.commands.*;
 import ca.encodeous.mwx.core.utils.MCVersion;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 public final class MissileWarsXCompat extends JavaPlugin {
     @Override
@@ -25,25 +19,26 @@ public final class MissileWarsXCompat extends JavaPlugin {
             MissileWarsX.Instance.ResumeDeferredStartup(this);
 
             getLogger().info("Registering legacy commands with Spigot API");
-            getCommand("mwmake").setExecutor(new mwmakeCommand());
-            getCommand("mwpaste").setExecutor(new mwpasteCommand());
-            getCommand("mwlaunch").setExecutor(new mwlaunchCommand());
-            getCommand("mwedit").setExecutor(new mweditCommand());
-            getCommand("mwreload").setExecutor(new mwreloadCommand());
-            getCommand("mwgive").setExecutor(new mwgiveCommand());
-            getCommand("reset").setExecutor(new mwresetCommand());
-            getCommand("players").setExecutor(new playersCommand());
-            getCommand("ready").setExecutor(new readyCommand());
-            getCommand("wipe").setExecutor(new mwwipeCommand());
-            getCommand("mwitems").setExecutor(new mwitemsCommand());
-            getCommand("mwmissiles").setExecutor(new mwmissilesCommand());
-            getCommand("start").setExecutor(new mwstartCommand());
-            getCommand("spectate").setExecutor(new spectateCommand());
-            getCommand("mwteam").setExecutor(new mwteamCommand());
-            getCommand("lobby").setExecutor(new lobbyCommand());
-            getCommand("ping").setExecutor(new pingCommand());
-            getCommand("mwfireball").setExecutor(new mwfireballCommand());
-            getCommand("mode").setExecutor(new modeCommand());
+            getCommand("mwmake").setExecutor(new mwmake());
+            getCommand("mwpaste").setExecutor(new mwpaste());
+            getCommand("mwlaunch").setExecutor(new mwlaunch());
+            getCommand("mwedit").setExecutor(new mwedit());
+            getCommand("mwreload").setExecutor(new mwreload());
+            getCommand("mwgive").setExecutor(new mwgive());
+            getCommand("reset").setExecutor(new reset());
+            getCommand("players").setExecutor(new players());
+            getCommand("ready").setExecutor(new ready());
+            getCommand("wipe").setExecutor(new wipe());
+            getCommand("mwitems").setExecutor(new mwitems());
+            getCommand("mwmissiles").setExecutor(new mwmissiles());
+            getCommand("start").setExecutor(new start());
+            getCommand("spectate").setExecutor(new spectate());
+            getCommand("mwteam").setExecutor(new mwteam());
+            getCommand("lobby").setExecutor(new lobby());
+            getCommand("ping").setExecutor(new ping());
+            getCommand("mwfireball").setExecutor(new mwfireball());
+            getCommand("gms").setExecutor(new gms());
+            getCommand("gmc").setExecutor(new gmc());
         }
     }
 }

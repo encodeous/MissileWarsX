@@ -49,15 +49,15 @@ commands:
   wipe:
     description: Forcefully wipes the current lobby map
     usage: /<command>
-  mode:
-    description: Switch between creative and survival mode
+  gmc:
+    description: Switch to creative mode
     aliases:
       - c
-      - gmc
-      - gms
-      - creative
-      - cr
-      - g
+    usage: /<command>
+  gms:
+    description: Switch to survival mode
+    aliases:
+      - s
     usage: /<command>
   mwreload:
     description: Reloads the configuration file

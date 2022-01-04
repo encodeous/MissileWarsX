@@ -1,17 +1,16 @@
-package ca.encodeous.mwx.commands;
+package ca.encodeous.mwx.command.commands;
 
-import ca.encodeous.mwx.MissileWarsCommand;
+import ca.encodeous.mwx.command.MissileWarsCommand;
+import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class spectateCommand extends MissileWarsCommand {
+public class spectate extends MissileWarsCommand {
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
         try{
             if(sender instanceof Player){
                 if(LobbyEngine.FromPlayer((Player) sender) != null){
@@ -31,5 +30,23 @@ public class spectateCommand extends MissileWarsCommand {
 
         }
         return false;
+    }
+
+    @Override
+    public RootCommand BuildCommand() {
+        return new RootCommand("spectate").Executes(context -> {
+            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
+            if(match.IsPlayerInTeam(context.GetPlayer(), PlayerTeam.Spectator)){
+                match.AddPlayerToTeam(context.GetPlayer(), PlayerTeam.None);
+            }else{
+                match.AddPlayerToTeam(context.GetPlayer(), PlayerTeam.Spectator);
+            }
+            return 1;
+        });
+    }
+
+    @Override
+    public String GetCommandName() {
+        return "spectate";
     }
 }

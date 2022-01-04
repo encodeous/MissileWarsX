@@ -1,6 +1,6 @@
 package ca.encodeous.mwx;
 
-import ca.encodeous.mwx.commands.*;
+import ca.encodeous.mwx.core.utils.Reflection;
 import ca.encodeous.mwx.mwxcompat1_13.MissileWars1_13;
 import ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8;
 import ca.encodeous.mwx.core.game.CoreGame;
@@ -13,13 +13,23 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.LogManager;
+
+import ca.encodeous.mwx.command.CommandCore;
+import ca.encodeous.mwx.command.RootCommand;
+import ca.encodeous.mwx.command.CommandSubCommand;
+import com.mojang.brigadier.CommandDispatcher;
+
 import java.util.logging.Logger;
+
+import static ca.encodeous.mwx.command.CommandExecutionRequirement.*;
 
 public final class MissileWarsX extends JavaPlugin {
     public static MissileWarsX Instance;
     public MissileWarsImplementation mwImpl;
     public CoreGame MissileWars;
+    public CommandCore Commands;
     private Logger logger = null;
     @Override
     public void onEnable() {
@@ -73,8 +83,8 @@ public final class MissileWarsX extends JavaPlugin {
             logger.info("You are running MissileWarsX on legacy Minecraft, you will be missing out on many features that only exist on the latest version of Minecraft.");
             logger.info("Startup will be deferred. If startup has not resumed in a few moments, please install MissileWarsX-Compatibility if you have not already.");
         }else{
-            ModernStart();
             ResumeDeferredStartup(this);
+            ModernStart();
         }
     }
 
@@ -84,28 +94,89 @@ public final class MissileWarsX extends JavaPlugin {
         LobbyEngine.Fetcher = new SkinFetcher(this);
     }
 
-    private void ModernStart(){
+    private void ModernStart() {
         getLogger().info("Registering commands...");
-        getCommand("mwmake").setExecutor(new mwmakeCommand());
-        getCommand("mwpaste").setExecutor(new mwpasteCommand());
-        getCommand("mwlaunch").setExecutor(new mwlaunchCommand());
-        getCommand("mwedit").setExecutor(new mweditCommand());
-        getCommand("mwreload").setExecutor(new mwreloadCommand());
-        getCommand("mwgive").setExecutor(new mwgiveCommand());
-        getCommand("reset").setExecutor(new mwresetCommand());
-        getCommand("players").setExecutor(new playersCommand());
-        getCommand("ready").setExecutor(new readyCommand());
-        getCommand("wipe").setExecutor(new mwwipeCommand());
-        getCommand("mwitems").setExecutor(new mwitemsCommand());
-        getCommand("mwmissiles").setExecutor(new mwmissilesCommand());
-        getCommand("start").setExecutor(new mwstartCommand());
-        getCommand("spectate").setExecutor(new spectateCommand());
-        getCommand("mwteam").setExecutor(new mwteamCommand());
-        getCommand("lobby").setExecutor(new lobbyCommand());
-        getCommand("ping").setExecutor(new pingCommand());
-        getCommand("mwfireball").setExecutor(new mwfireballCommand());
-        getCommand("mode").setExecutor(new modeCommand());
+        Object dedicatedServer = Reflection.invokeMethod("getServer", Bukkit.getServer());
+        Class<?> minecraftServer = dedicatedServer.getClass().getSuperclass();
+        Object vanillaCommandDispatcher = Reflection.get(minecraftServer, "vanillaCommandDispatcher", dedicatedServer);
+        CommandDispatcher<Object> commandDispatcher = Reflection.get("g", vanillaCommandDispatcher);
+
+        new RootCommand("testcommand", "tc")
+                .SubCommand(CommandSubCommand.Literal("int")
+                        .SubCommand(CommandSubCommand.Integer("num", 0, 10).Executes(NONE, (context) -> {
+                            Bukkit.broadcastMessage("Integer: " + context.GetInteger("num"));
+                            return 1;
+                        })))
+                .SubCommand(CommandSubCommand.Literal("double")
+                        .SubCommand(CommandSubCommand.Double("num", 0, 10).Executes(NONE, (context) -> {
+                            Bukkit.broadcastMessage("Double: " + context.GetDouble("num"));
+                            return 1;
+                        })))
+                .SubCommand(CommandSubCommand.Literal("message")
+                        .SubCommand(CommandSubCommand.Literal("player").Executes(PLAYER, (context) -> {
+                            context.SendMessage(context.GetSenderName() + " sent this command (Player).");
+                            return 1;
+                        }))
+                        .SubCommand(CommandSubCommand.Literal("entity").Executes(ENTITY, (context) -> {
+                            context.SendMessage(context.GetSenderName() + " sent this command (Entity).");
+                            return 1;
+                        }))
+                        .SubCommand(CommandSubCommand.Literal("console").Executes(NONE, (context) -> {
+                            context.SendMessage(context.GetSenderName() + " sent this command (CommandSender).");
+                            return 1;
+                        })))
+                .SubCommand(CommandSubCommand.Literal("selector")
+                        .SubCommand(CommandSubCommand.Literal("player")
+                                .SubCommand(CommandSubCommand.Literal("single")
+                                        .SubCommand(CommandSubCommand.PlayerSingle("selector").Executes(NONE, context -> {
+                                            context.SendMessage(Objects.toString(context.GetPlayer("selector")));
+                                            return 1;
+                                        })))
+                                .SubCommand(CommandSubCommand.Literal("multiple")
+                                        .SubCommand(CommandSubCommand.PlayerMutliple("selector").Executes(NONE, context -> {
+                                            context.SendMessage(Objects.toString(context.GetPlayers("selector")));
+                                            return 1;
+                                        }))))
+                        .SubCommand(CommandSubCommand.Literal("entity")
+                                .SubCommand(CommandSubCommand.Literal("single")
+                                        .SubCommand(CommandSubCommand.EntitySingle("selector").Executes(NONE, context -> {
+                                            context.SendMessage(Objects.toString(context.GetEntity("selector")));
+                                            return 1;
+                                        })))
+                                .SubCommand(CommandSubCommand.Literal("multiple")
+                                        .SubCommand(CommandSubCommand.EntityMutliple("selector").Executes(NONE, context -> {
+                                            context.SendMessage(Objects.toString(context.GetEntities("selector")));
+                                            return 1;
+                                        })))))
+                .SubCommand(CommandSubCommand.Literal("coordinates")
+                        .SubCommand(CommandSubCommand.Literal("vec3")
+                                .SubCommand(CommandSubCommand.Position3d("position").Executes(PLAYER, context -> {
+                                    context.SendMessage(context.GetPosition("position").toString());
+                                    return 1;
+                                }))))
+                .SubCommand(CommandSubCommand.Literal("string")
+                        .SubCommand(CommandSubCommand.Literal("string")
+                                .SubCommand(CommandSubCommand.String("string").Executes(PLAYER, context -> {
+                                    context.SendMessage(context.GetString("string"));
+                                    return 1;
+                                })))
+                        .SubCommand(CommandSubCommand.Literal("greedy").
+                                SubCommand(CommandSubCommand.GreedyString("string").Executes(PLAYER, context -> {
+                                    context.SendMessage(context.GetString("string"));
+                                    return 1;
+                                })))
+                        .SubCommand(CommandSubCommand.Literal("word").
+                                SubCommand(CommandSubCommand.Word("string").Executes(PLAYER, context -> {
+                                    context.SendMessage(context.GetString("string"));
+                                    return 1;
+                                }))))
+
+                .Register(commandDispatcher);
+
+        Commands = new CommandCore(this);
+        Commands.RegisterAllCommands();
     }
+
 
     @Override
     public void onDisable() {

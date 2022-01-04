@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class Reflection {
@@ -23,19 +24,18 @@ public class Reflection {
     }
 
     /**
-     * Get a craft class
-     * (net.minecraft.server)
+     * Get a nms class
      *
      * @param name the name
      * @return nms class
      */
     public static Class<?> getNMSClass(String name) {
-        try {
-            return Class.forName("net.minecraft.server." + getVersion() + "." + name);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
+        String simpleName = name.substring(name.lastIndexOf('.') + 1);
+        return getClass(
+                "net.minecraft.server." + getVersion() + "." + name,
+                "net.minecraft." + name,
+                "net.minecraft.server." + getVersion() + "." + simpleName,
+                "net.minecraft." + simpleName);
     }
 
 
@@ -56,17 +56,18 @@ public class Reflection {
     }
 
     /**
-     * Get a class
+     * Get classes
      *
-     * @param name the name
-     * @return craft class
+     * @param names names of classes
+     * @return class
      */
-    public static Class<?> getClass(String name) {
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+    public static Class<?> getClass(String... names) {
+        for(int i = 0; i<names.length; i++) {
+            try {
+                return Class.forName(names[i]);
+            } catch (ClassNotFoundException ignored) {}
         }
+        new ClassNotFoundException(Arrays.toString(names)).printStackTrace();
         return null;
     }
 
@@ -95,7 +96,7 @@ public class Reflection {
      */
     public static Constructor getConstructor(Class<?> c, Class<?>... types) {
         try {
-            return c.getConstructor(types);
+            return c.getDeclaredConstructor(types);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -165,8 +166,19 @@ public class Reflection {
      * @param object     the object
      * @return the object
      */
-    public static Object invokeMethod(String methodName, Object object) {
-        return invokeMethod(object.getClass(), methodName, object, null, null);
+    public static <T> T invokeMethod(String methodName, Object object) {
+        return (T) invokeMethod(object.getClass(), methodName, object, null, null);
+    }
+
+    /**
+     * Invoke a method on an object
+     *
+     * @param methodName the method name
+     * @param object     the object
+     * @return the object
+     */
+    public static <T> T invokeMethodThrown(String methodName, Object object) throws InvocationTargetException {
+        return (T) invokeMethodThrown(object.getClass(), methodName, object, null, null);
     }
 
     /**
@@ -192,20 +204,56 @@ public class Reflection {
     /**
      * Invoke method object.
      *
+     * @param c              The Class
+     * @param methodName     The MethodName
+     * @param object         The Object
+     * @param parameterTypes The ParameterTypess
+     * @param parameter      The Parameters
+     * @return The Object from the Invoked Method
+     */
+    public static Object invokeMethodThrown(Class<?> c, String methodName, Object object, Class<?>[] parameterTypes, Object[] parameter) throws InvocationTargetException {
+        Method m = getMethod(c, methodName, parameterTypes);
+        try {
+            return m.invoke(object, parameter);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Invoke method object.
+     *
      * @param method The Method
      * @param object The Object
      * @param args   The Args
      * @return The object from the Invoked Method
      */
-    public static Object invokeMethod(Method method, Object object, Object... args) {
+    public static <T> T invokeMethod(Method method, Object object, Object... args) {
         try {
-            return method.invoke(object, args);
+            return (T) method.invoke(object, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    /**
+     * Invoke method object.
+     *
+     * @param method The Method
+     * @param object The Object
+     * @param args   The Args
+     * @return The object from the Invoked Method
+     */
+    public static <T> T invokeMethodThrown(Method method, Object object, Object... args) throws InvocationTargetException {
+        try {
+            return (T) method.invoke(object, args);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * New instance object.
@@ -216,6 +264,7 @@ public class Reflection {
      */
     public static Object newInstance(Constructor constructor, Object... args) {
         try {
+            constructor.setAccessible(true);
             return constructor.newInstance(args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
@@ -300,9 +349,9 @@ public class Reflection {
      * @param object    The Object
      * @return Get the Object from the Field
      */
-    public static Object get(String fieldName, Object object) {
+    public static <T> T get(String fieldName, Object object) {
         try {
-            return get(object.getClass().getDeclaredField(fieldName), object);
+            return (T) get(object.getClass().getDeclaredField(fieldName), object);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
             return null;
@@ -317,9 +366,9 @@ public class Reflection {
      * @param object    The Object
      * @return Get the Object from the Field
      */
-    public static Object get(Class<?> c, String fieldName, Object object) {
+    public static <T> T get(Class<?> c, String fieldName, Object object) {
         try {
-            return get(c.getDeclaredField(fieldName), object);
+            return (T) get(c.getDeclaredField(fieldName), object);
         } catch (NoSuchFieldException e) {
             return null;
         }
