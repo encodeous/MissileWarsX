@@ -2,7 +2,6 @@ package ca.encodeous.mwx;
 
 import ca.encodeous.mwx.core.utils.Reflection;
 import ca.encodeous.mwx.mwxcompat1_13.MissileWars1_13;
-import ca.encodeous.mwx.mwxcompat1_8.MissileWars1_8;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.MCVersion;
 import ca.encodeous.mwx.core.game.MissileWarsImplementation;
@@ -37,8 +36,7 @@ public final class MissileWarsX extends JavaPlugin {
         LogManager.getLogManager().getLogger("").setFilter(new ConsoleFilter());
         Bukkit.getServer().getPluginManager().registerEvents(new MiscEventHandler(), this);
 
-        Map<MCVersion, Class<?>> implementations = new HashMap<MCVersion, Class<?>>();
-        implementations.put(MCVersion.v1_8, MissileWars1_8.class);
+        Map<MCVersion, Class<?>> implementations = new HashMap<>();
         implementations.put(MCVersion.v1_13, MissileWars1_13.class);
         Instance = this;
         logger = Bukkit.getLogger();

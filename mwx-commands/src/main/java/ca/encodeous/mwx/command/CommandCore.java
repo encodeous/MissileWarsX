@@ -27,22 +27,18 @@ public class CommandCore {
 
 
 
-        PluginCommand pCmd = plugin.getServer().getPluginCommand(cmd.GetCommandName());
-
         Object dedicatedServer = Reflection.invokeMethod("getServer", Bukkit.getServer());
         Class<?> minecraftServer = dedicatedServer.getClass().getSuperclass();
         Object vanillaCommandDispatcher = Reflection.get(minecraftServer, "vanillaCommandDispatcher", dedicatedServer);
         if(vanillaCommandDispatcher != null) {
             CommandDispatcher<Object> commandDispatcher = Reflection.get("g", vanillaCommandDispatcher);
             if(commandDispatcher != null) {
-                try {
-                    cmd.BuildCommand().Register(commandDispatcher);
-                }catch(RuntimeException e) {}
+                cmd.BuildCommand().Register(commandDispatcher);
             }else {
-                pCmd.setExecutor(cmd);
+                throw new RuntimeException("Could not get access to the Brigadier Command Dispatcher");
             }
         }else {
-            pCmd.setExecutor(cmd);
+            throw new RuntimeException("Vanilla Command Dispatcher not found");
         }
 
         return true;
