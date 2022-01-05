@@ -8,13 +8,12 @@ import ca.encodeous.mwx.core.utils.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-public class gmc extends MissileWarsCommand {
+public class CreativeCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("gmc", Command::DefaultRestrictedCommand, "c").Executes((context) -> {
+        return new RootCommand("mwcreative", Command::DefaultRestrictedCommand, "c", "gmc", "creative").Executes((context) -> {
             Player p = context.GetSendingPlayer();
-            if(!Utils.CheckPrivPermission(p)) return 0;
             p.setGameMode(GameMode.CREATIVE);
             context.SendMessage(String.format(Strings.GAMEMODE_UPDATED, p.getGameMode().name()));
             return 1;
@@ -23,6 +22,6 @@ public class gmc extends MissileWarsCommand {
 
     @Override
     public String GetCommandName() {
-        return "mode";
+        return "mwcreative";
     }
 }
