@@ -77,7 +77,7 @@ The recommended server configuration is stored in the `recommended-config` folde
 # Contributing and Bug Reporting
 
 If you wish to contribute to this project, or if you find any bugs, please create a pull request or file an issue!
-Alternatively, you can message me on Discord: `Encodeous#7441`
+Alternatively, you can message me on Discord: `encodeous#7441`
 
 # Acknowledgements
 
