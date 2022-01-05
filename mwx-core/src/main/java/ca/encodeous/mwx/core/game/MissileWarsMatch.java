@@ -63,7 +63,7 @@ public class MissileWarsMatch {
         Teams = new ConcurrentHashMap<>();
         Tracer = new TraceEngine();
         EventHandler = new MissileWarsEvents(this);
-        startCounter = new Counter(CreateStartGameCountdown(), 20, 15);
+        startCounter = new Counter(CreateStartGameCountdown(), 10, 60); // 30 second counter
         itemCounter = new Counter(new ItemCountdown(this), 20, -1);
         endCounter = new Counter(CreateEndGameCountdown(), 20, CoreGame.Instance.mwConfig.DrawSeconds);
         Deaths = new ConcurrentHashMap<>();
@@ -127,16 +127,16 @@ public class MissileWarsMatch {
         return new Countable() {
             @Override
             public void Count(Counter counter, int count) {
-                int remTime = 15 - count;
-                if (remTime == 15 || remTime == 10 || remTime == 3 || remTime == 2) {
+                int remTime = 60 - count;
+                if (remTime == 60 || remTime == 40 || remTime == 20 || remTime == 10 || remTime == 8 || remTime == 6 || remTime == 4) { // Multiplied by 2 to give 0.5s interval
                     lobby.SendMessage(String.format(Strings.STARTING_GAME_PLURAL, remTime));
-                } else if (remTime == 1) {
+                } else if (remTime == 2) {
                     lobby.SendMessage(String.format(Strings.STARTING_GAME, remTime));
                 }
                 for(Player p : Teams.keySet()){
                     CoreGame.GetImpl().PlaySound(p, SoundType.COUNTDOWN);
                     p.setLevel(remTime);
-                    p.setExp(remTime / 15.0f);
+                    p.setExp(remTime / 60.0f);
                 }
             }
 

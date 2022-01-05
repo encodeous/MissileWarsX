@@ -19,8 +19,8 @@ public class Strings {
     public static String PLAYER_STOP_SPECTATE = Chat.FCL("%s &fstopped &9spectating.");
     public static String PLAYER_SPECTATE = Chat.FCL("%s &fis now &9spectating.");
     public static String PLAYER_SPECTATE_NOTIF = Chat.FCL("&6You are now &espectating&6. Type &e/lobby &6to return to the lobby.");
-    public static String STARTING_GAME_PLURAL = Chat.FCL("&aStarting game in &6%s &aseconds!");
-    public static String STARTING_GAME = Chat.FCL("&aStarting game in &6%s &asecond!");
+    public static String STARTING_GAME_PLURAL = Chat.FCL("&aStarting game in &c%s &aseconds!");
+    public static String STARTING_GAME = Chat.FCL("&aStarting game in &c%s &asecond!");
     public static String RESETTING_GAME_PLURAL = Chat.FCL("&aResetting game in &6%s &aseconds!");
     public static String RESETTING_GAME = Chat.FCL("&aResetting game in &6%s &asecond!");
     public static String STARTING_NOW = Chat.FCL("&cStarting now!");

@@ -6,13 +6,81 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static ca.encodeous.mwx.mwxcompat1_13.MwUtils.CreateItem;
 
-public class MwConstants extends ca.encodeous.mwx.mwxcompat1_8.MwConstants{
+public class MwConstants {
+
+    public static Map<Vector, Integer> ShieldData(boolean isRed){
+        // 1 - pink glass, 2 - white glass, 3 - red glass, 4 - light gray glass, 5 - gray glass, 6 - black glass, 7 - black glass panes, 8 - lime glass, 9 - green glass
+        Map<Vector, Integer> shield = new HashMap<>();
+        if(isRed){
+            shield.put(new Vector(), 1);
+            shield.put(new Vector(1,0,0), 3);
+            shield.put(new Vector(0,1,0), 3);
+            shield.put(new Vector(-1,0,0), 3);
+            shield.put(new Vector(0,-1,0), 3);
+        }else{
+            shield.put(new Vector(), 8);
+            shield.put(new Vector(1,0,0), 9);
+            shield.put(new Vector(0,1,0), 9);
+            shield.put(new Vector(-1,0,0), 9);
+            shield.put(new Vector(0,-1,0), 9);
+        }
+        // light gray
+        shield.put(new Vector(-2, 0, 0), 4);
+        shield.put(new Vector(-3, 0, 0), 4);
+        shield.put(new Vector(2, 0, 0), 4);
+        shield.put(new Vector(3, 0, 0), 4);
+        shield.put(new Vector(0, -2, 0), 4);
+        shield.put(new Vector(0, -3, 0), 4);
+        shield.put(new Vector(0, 3, 0), 4);
+        shield.put(new Vector(0, 2, 0), 4);
+        // white
+        shield.put(new Vector(1, 1, 0), 2);
+        shield.put(new Vector(1, -1, 0), 2);
+        shield.put(new Vector(-1, -1, 0), 2);
+        shield.put(new Vector(-1, 1, 0), 2);
+        // gray
+        shield.put(new Vector(2, -1, 0), 5);
+        shield.put(new Vector(2, 1, 0), 5);
+        shield.put(new Vector(-2, -1, 0), 5);
+        shield.put(new Vector(-2, 1, 0), 5);
+        shield.put(new Vector(1, -2, 0), 5);
+        shield.put(new Vector(-1, -2, 0), 5);
+        shield.put(new Vector(1, 2, 0), 5);
+        shield.put(new Vector(-1, 2, 0), 5);
+        // black
+        shield.put(new Vector(1, -3, 0), 6);
+        shield.put(new Vector(-1, -3, 0), 6);
+        shield.put(new Vector(-1, 3, 0), 6);
+        shield.put(new Vector(1, 3, 0), 6);
+        shield.put(new Vector(-3, 1, 0), 6);
+        shield.put(new Vector(-3, -1, 0), 6);
+        shield.put(new Vector(3, 1, 0), 6);
+        shield.put(new Vector(3, -1, 0), 6);
+        shield.put(new Vector(2, 2, 0), 6);
+        shield.put(new Vector(2, -2, 0), 6);
+        shield.put(new Vector(-2, 2, 0), 6);
+        shield.put(new Vector(-2, -2, 0), 6);
+        // panes
+        shield.put(new Vector(3, 2, 0), 7);
+        shield.put(new Vector(3, -2, 0), 7);
+        shield.put(new Vector(-3, -2, 0), 7);
+        shield.put(new Vector(-3, 2, 0), 7);
+        shield.put(new Vector(2, 3, 0), 7);
+        shield.put(new Vector(-2, 3, 0), 7);
+        shield.put(new Vector(-2, -3, 0), 7);
+        shield.put(new Vector(2, -3, 0), 7);
+        return shield;
+    }
+
     public static ArrayList<MissileWarsItem> CreateDefaultItems() {
         ArrayList<MissileWarsItem> items = new ArrayList<>();
         items.add(CreateItem("Shieldbuster",

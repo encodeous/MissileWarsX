@@ -7,21 +7,10 @@ import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.engines.lobby.Lobby;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 
 public class players extends MissileWarsCommand {
-    @Override
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format(Strings.PLAYERS_ONLINE, Bukkit.getOnlinePlayers().size()));
-        for(Lobby lobby : LobbyEngine.Lobbies.values()){
-            sb.append(Strings.MISSILE_WARS_BRAND + " &6" + lobby.lobbyId + ": " + Chat.FormatPlayerlist(new ArrayList<>(lobby.GetPlayers())) + "\n");
-        }
-        sender.sendMessage(Chat.FCL(sb.toString()));
-        return true;
-    }
 
     @Override
     public RootCommand BuildCommand() {
