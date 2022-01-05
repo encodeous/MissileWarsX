@@ -23,7 +23,7 @@ public class Strings {
     public static String STARTING_GAME = Chat.FCL("&aStarting game in &c%s &asecond!");
     public static String RESETTING_GAME_PLURAL = Chat.FCL("&aResetting game in &6%s &aseconds!");
     public static String RESETTING_GAME = Chat.FCL("&aResetting game in &6%s &asecond!");
-    public static String STARTING_NOW = Chat.FCL("&cStarting now!");
+    public static String STARTING_NOW = Chat.FCL("&aThe game has started!");
     public static String WIN_GAME_CREDITED = Chat.FCL("&fThe %s &fteam's portal was blown up by %s&r!");
     public static String WIN_GAME = Chat.FCL("&fThe %s &fteam's portal was blown up!");
     public static String CONGRATULATE_WIN = Chat.FCL("&6Congratulations %s &6team!");

@@ -130,13 +130,13 @@ public class MissileWarsMatch {
             public void Count(Counter counter, int count) {
                 int remTime = 60 - count;
                 if (remTime == 60 || remTime == 40 || remTime == 20 || remTime == 10 || remTime == 8 || remTime == 6 || remTime == 4) { // Multiplied by 2 to give 0.5s interval
-                    lobby.SendMessage(String.format(Strings.STARTING_GAME_PLURAL, remTime));
+                    lobby.SendMessage(String.format(Strings.STARTING_GAME_PLURAL, remTime / 2));
                 } else if (remTime == 2) {
-                    lobby.SendMessage(String.format(Strings.STARTING_GAME, remTime));
+                    lobby.SendMessage(String.format(Strings.STARTING_GAME, remTime / 2));
                 }
                 for(Player p : Teams.keySet()){
-                    CoreGame.GetImpl().PlaySound(p, SoundType.COUNTDOWN);
-                    p.setLevel(remTime);
+                    if(remTime % 2 == 0) CoreGame.GetImpl().PlaySound(p, SoundType.COUNTDOWN);
+                    p.setLevel(remTime / 2);
                     p.setExp(remTime / 60.0f);
                 }
             }
