@@ -22,6 +22,6 @@ public class SurvivalCommand extends MissileWarsCommand {
 
     @Override
     public String GetCommandName() {
-        return "mode";
+        return "mwsurvival";
     }
 }
