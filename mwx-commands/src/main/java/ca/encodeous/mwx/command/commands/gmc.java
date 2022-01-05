@@ -34,7 +34,7 @@ public class gmc extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("gmc", Command::FunctionPermissionLevel, "c").Executes((context) -> {
+        return new RootCommand("gmc", Command::DefaultRestrictedCommand, "c").Executes((context) -> {
             Player p = context.GetPlayer();
             if(!Utils.CheckPrivPermission(p)) return 0;
             p.setGameMode(GameMode.CREATIVE);

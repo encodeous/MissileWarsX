@@ -43,7 +43,7 @@ public class mwfireball extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwfireball", Command::FunctionPermissionLevel, "mwf")
+        return new RootCommand("mwfireball", Command::DefaultRestrictedCommand, "mwf")
                 .SubCommand(Position3d("location").Executes((context) -> {
                     MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
                     if(match == null) {

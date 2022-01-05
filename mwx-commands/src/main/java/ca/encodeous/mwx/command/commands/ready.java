@@ -1,5 +1,6 @@
 package ca.encodeous.mwx.command.commands;
 
+import ca.encodeous.mwx.command.Command;
 import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.engines.lobby.Lobby;
@@ -56,7 +57,7 @@ public class ready extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("ready").Executes(context -> {
+        return new RootCommand("ready", Command::DefaultPlayerCommand).Executes(context -> {
             MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
             Lobby lobby = match != null ? match.lobby : null;
             if(lobby == null) {

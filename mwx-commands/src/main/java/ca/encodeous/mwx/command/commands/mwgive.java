@@ -116,7 +116,7 @@ public class mwgive extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwgive", Command::FunctionPermissionLevel, "mwi")
+        return new RootCommand("mwgive", Command::DefaultRestrictedCommand, "mwi")
                 .SubCommand(addMissiles(PlayerSingle("selector")));
     }
 

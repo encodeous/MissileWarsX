@@ -34,7 +34,7 @@ public class gms extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("gms", Command::FunctionPermissionLevel, "s").Executes((context) -> {
+        return new RootCommand("gms", Command::DefaultRestrictedCommand, "s").Executes((context) -> {
             Player p = context.GetPlayer();
             if(!Utils.CheckPrivPermission(p)) return 0;
             p.setGameMode(GameMode.SURVIVAL);

@@ -59,7 +59,7 @@ public class mwpaste extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwpaste", Command::FunctionPermissionLevel)
+        return new RootCommand("mwpaste", Command::DefaultRestrictedCommand)
                 .SubCommand(addMissiles(Position3d("pivot")));
     }
 

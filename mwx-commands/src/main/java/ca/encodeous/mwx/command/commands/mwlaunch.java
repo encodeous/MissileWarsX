@@ -64,7 +64,7 @@ public class mwlaunch extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwlaunch", ca.encodeous.mwx.command.Command::FunctionPermissionLevel)
+        return new RootCommand("mwlaunch", ca.encodeous.mwx.command.Command::DefaultRestrictedCommand)
                 .SubCommand(addMissiles(Position3d("pivot")));
     }
 

@@ -48,7 +48,7 @@ public class wipe extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("wipe", Command::FunctionPermissionLevel).Executes(context -> {
+        return new RootCommand("wipe", Command::DefaultRestrictedCommand).Executes(context -> {
             MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
             Lobby lobby = match != null ? match.lobby : null;
             if(lobby == null) {

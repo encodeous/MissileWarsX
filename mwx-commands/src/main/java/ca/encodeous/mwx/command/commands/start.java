@@ -45,7 +45,7 @@ public class start extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("start", ca.encodeous.mwx.command.Command::FunctionPermissionLevel).Executes(context -> {
+        return new RootCommand("start", ca.encodeous.mwx.command.Command::DefaultPlayerCommand).Executes(context -> {
             MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
             Lobby lobby = match != null ? match.lobby : null;
             if(lobby == null) {

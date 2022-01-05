@@ -58,7 +58,7 @@ public class mwmake extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwmake", Command::HighestPermissionLevel)
+        return new RootCommand("mwmake", Command::DefaultAdminCommand)
                 .SubCommand(Position3d("pivot")
                         .SubCommand(Position3d("sel")
                                 .SubCommand(Position3d("sel2")

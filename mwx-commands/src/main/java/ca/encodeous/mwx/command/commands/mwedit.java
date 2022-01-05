@@ -43,7 +43,7 @@ public class mwedit extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwedit", Command::HighestPermissionLevel)
+        return new RootCommand("mwedit", Command::DefaultAdminCommand)
                 .SubCommand(Literal("auto").Executes((context) -> {
                     Player p = context.GetPlayer();
                     if(LobbyEngine.FromPlayer(p) != null) LobbyEngine.FromPlayer(p).RemovePlayer(p);

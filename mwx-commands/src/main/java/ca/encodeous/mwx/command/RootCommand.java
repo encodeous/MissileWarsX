@@ -1,6 +1,8 @@
 package ca.encodeous.mwx.command;
 
+import ca.encodeous.mwx.command.nms.CommandListenerWrapper;
 import ca.encodeous.mwx.core.game.CoreGame;
+import ca.encodeous.simplenms.proxy.NMSCore;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -17,8 +19,9 @@ public final class RootCommand extends CommandSubCommand {
     private final String[] aliases;
     private final boolean noChecks;
 
-    public RootCommand(String name, Predicate<Object> usageRequirement, String... aliases) {
-        super(LiteralArgumentBuilder.literal(name).requires(usageRequirement));
+    public RootCommand(String name, Predicate<CommandListenerWrapper> usageRequirement, String... aliases) {
+        super(LiteralArgumentBuilder.literal(name).requires((o) ->
+                usageRequirement.test(NMSCore.getNMSObject(CommandListenerWrapper.class, o))));
         this.aliases = aliases;
         noChecks = false;
     }

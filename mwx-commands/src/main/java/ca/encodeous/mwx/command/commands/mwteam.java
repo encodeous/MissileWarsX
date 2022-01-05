@@ -88,7 +88,7 @@ public class mwteam extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwteam", Command::FunctionPermissionLevel, "mwt")
+        return new RootCommand("mwteam", Command::DefaultPlayerCommand, "mwt")
                 .SubCommand(PlayerSingle("selector")
                         .SubCommand(Literal("green").Executes(NONE, (context) -> handleCommand(context, "green")))
                         .SubCommand(Literal("red").Executes(NONE, (context) -> handleCommand(context, "red")))

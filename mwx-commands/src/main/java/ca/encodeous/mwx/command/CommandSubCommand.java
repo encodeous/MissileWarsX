@@ -1,6 +1,9 @@
 package ca.encodeous.mwx.command;
 
+import ca.encodeous.mwx.command.nms.ArgumentEntity;
+import ca.encodeous.mwx.command.nms.ArgumentPosition;
 import ca.encodeous.mwx.core.utils.Reflection;
+import ca.encodeous.simplenms.proxy.NMSCore;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -8,10 +11,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import org.bukkit.command.CommandSender;
 
-import static ca.encodeous.mwx.command.Command.ArgumentEntity;
-import static ca.encodeous.mwx.command.Command.ArgumentPosition;
-import static ca.encodeous.mwx.command.CommandExecutionRequirement.NONE;
+import java.util.function.Predicate;
+
 import static ca.encodeous.mwx.command.CommandExecutionRequirement.PLAYER;
 
 public class CommandSubCommand {
@@ -27,8 +30,8 @@ public class CommandSubCommand {
         return this;
     }
 
-    public CommandSubCommand Executes(CommandExecutionRequirement requirement, Command cmd) {
-        command.executes((context) -> cmd.Execute(new CommandContext(context, requirement != NONE, requirement == PLAYER)));
+    public CommandSubCommand Executes(Predicate<CommandSender> requirement, Command cmd) {
+        command.executes((context) -> cmd.Execute(new CommandContext(context, requirement)));
         return this;
     }
 
@@ -58,19 +61,44 @@ public class CommandSubCommand {
         return new CommandSubCommand(RequiredArgumentBuilder.argument(name, DoubleArgumentType.doubleArg(minimum, maximum)));
     }
     public static CommandSubCommand PlayerSingle(String name) {
-        return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) Reflection.newInstance(Reflection.getConstructor(ArgumentEntity, boolean.class, boolean.class), true, true)));
+        try {
+            return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) NMSCore.constructNMSObject(ArgumentEntity.class, true, true).getProxyHandle()));
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    public static CommandSubCommand PlayerMutliple(String name) {
-        return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) Reflection.newInstance(Reflection.getConstructor(ArgumentEntity, boolean.class, boolean.class), false, true)));
+    public static CommandSubCommand PlayerMultiple(String name) {
+        try {
+            return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) NMSCore.constructNMSObject(ArgumentEntity.class, false, true).getProxyHandle()));
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public static CommandSubCommand EntitySingle(String name) {
-        return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) Reflection.newInstance(Reflection.getConstructor(ArgumentEntity, boolean.class, boolean.class), true, false)));
+        try {
+            return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) NMSCore.constructNMSObject(ArgumentEntity.class, true, false).getProxyHandle()));
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    public static CommandSubCommand EntityMutliple(String name) {
-        return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) Reflection.newInstance(Reflection.getConstructor(ArgumentEntity, boolean.class, boolean.class), false, false)));
+    public static CommandSubCommand EntityMultiple(String name) {
+        try {
+            return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) NMSCore.constructNMSObject(ArgumentEntity.class, false, false).getProxyHandle()));
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public static CommandSubCommand Position3d(String name) {
-        return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) Reflection.invokeMethod(ArgumentPosition, "a", null)));
+        try {
+            return new CommandSubCommand(RequiredArgumentBuilder.argument(name, (ArgumentType<?>) NMSCore.constructNMSObject(ArgumentPosition.class).getProxyHandle()));
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     public static CommandSubCommand String(String name) {
         return new CommandSubCommand(RequiredArgumentBuilder.argument(name, StringArgumentType.string()));

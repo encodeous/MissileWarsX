@@ -1,5 +1,6 @@
 package ca.encodeous.mwx.command.commands;
 
+import ca.encodeous.mwx.command.Command;
 import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
@@ -34,7 +35,7 @@ public class spectate extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("spectate").Executes(context -> {
+        return new RootCommand("spectate", Command::DefaultPlayerCommand).Executes(context -> {
             MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
             if(match.IsPlayerInTeam(context.GetPlayer(), PlayerTeam.Spectator)){
                 match.AddPlayerToTeam(context.GetPlayer(), PlayerTeam.None);

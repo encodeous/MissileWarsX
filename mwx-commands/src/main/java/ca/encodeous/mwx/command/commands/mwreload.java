@@ -21,7 +21,7 @@ public class mwreload extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwreload", Command::HighestPermissionLevel).Executes((context) -> {
+        return new RootCommand("mwreload", Command::DefaultAdminCommand).Executes((context) -> {
             CoreGame.Instance.Reload();
             context.SendMessage("&aSuccessfully reloaded game");
             return 1;

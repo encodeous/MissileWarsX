@@ -133,7 +133,7 @@ public final class MissileWarsX extends JavaPlugin {
                                             return 1;
                                         })))
                                 .SubCommand(CommandSubCommand.Literal("multiple")
-                                        .SubCommand(CommandSubCommand.PlayerMutliple("selector").Executes(NONE, context -> {
+                                        .SubCommand(CommandSubCommand.PlayerMultiple("selector").Executes(NONE, context -> {
                                             context.SendMessage(Objects.toString(context.GetPlayers("selector")));
                                             return 1;
                                         }))))
@@ -144,7 +144,7 @@ public final class MissileWarsX extends JavaPlugin {
                                             return 1;
                                         })))
                                 .SubCommand(CommandSubCommand.Literal("multiple")
-                                        .SubCommand(CommandSubCommand.EntityMutliple("selector").Executes(NONE, context -> {
+                                        .SubCommand(CommandSubCommand.EntityMultiple("selector").Executes(NONE, context -> {
                                             context.SendMessage(Objects.toString(context.GetEntities("selector")));
                                             return 1;
                                         })))))

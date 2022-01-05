@@ -51,7 +51,7 @@
         <dependency>
             <groupId>com.github.encodeous</groupId>
             <artifactId>SimpleNMS</artifactId>
-            <version>f96af9aca1</version>
+            <version>c758557a78</version>
         </dependency>
         <dependency>
             <groupId>com.github.encodeous</groupId>
