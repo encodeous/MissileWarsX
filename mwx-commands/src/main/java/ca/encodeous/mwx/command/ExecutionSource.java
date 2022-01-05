@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.function.Predicate;
 
 public enum ExecutionSource implements Predicate<CommandSender> {
-    NONE(s->true),
+    ANY(s->true),
     ENTITY(s->s instanceof Entity),
     PLAYER(s->s instanceof Player),
     COMMAND_BLOCK(s->s instanceof BlockCommandSender),

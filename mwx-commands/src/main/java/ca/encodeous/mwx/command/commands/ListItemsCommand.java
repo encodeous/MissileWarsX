@@ -7,13 +7,13 @@ import ca.encodeous.mwx.core.game.CoreGame;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ca.encodeous.mwx.command.ExecutionSource.NONE;
+import static ca.encodeous.mwx.command.ExecutionSource.ANY;
 
 public class ListItemsCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwitems", "items").Executes(NONE, context -> {
+        return new RootCommand("mwitems", "items").Executes(ANY, context -> {
             List<String> results = CoreGame.Instance.mwConfig.Items.stream()
                     .map(x -> "&cId: "+x.MissileWarsItemId + " - Stack Size: " + x.StackSize + " - Max Stack Size: " + x.MaxStackSize)
                     .collect(Collectors.toList());

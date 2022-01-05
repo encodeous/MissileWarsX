@@ -101,12 +101,12 @@ public final class MissileWarsX extends JavaPlugin {
 
         new RootCommand("testcommand", "tc")
                 .SubCommand(CommandSubCommand.Literal("int")
-                        .SubCommand(CommandSubCommand.Integer("num", 0, 10).Executes(NONE, (context) -> {
+                        .SubCommand(CommandSubCommand.Integer("num", 0, 10).Executes(ANY, (context) -> {
                             Bukkit.broadcastMessage("Integer: " + context.GetInteger("num"));
                             return 1;
                         })))
                 .SubCommand(CommandSubCommand.Literal("double")
-                        .SubCommand(CommandSubCommand.Double("num", 0, 10).Executes(NONE, (context) -> {
+                        .SubCommand(CommandSubCommand.Double("num", 0, 10).Executes(ANY, (context) -> {
                             Bukkit.broadcastMessage("Double: " + context.GetDouble("num"));
                             return 1;
                         })))
@@ -119,30 +119,30 @@ public final class MissileWarsX extends JavaPlugin {
                             context.SendMessage(context.GetSenderName() + " sent this command (Entity).");
                             return 1;
                         }))
-                        .SubCommand(CommandSubCommand.Literal("console").Executes(NONE, (context) -> {
+                        .SubCommand(CommandSubCommand.Literal("console").Executes(ANY, (context) -> {
                             context.SendMessage(context.GetSenderName() + " sent this command (CommandSender).");
                             return 1;
                         })))
                 .SubCommand(CommandSubCommand.Literal("selector")
                         .SubCommand(CommandSubCommand.Literal("player")
                                 .SubCommand(CommandSubCommand.Literal("single")
-                                        .SubCommand(CommandSubCommand.PlayerSingle("selector").Executes(NONE, context -> {
+                                        .SubCommand(CommandSubCommand.PlayerSingle("selector").Executes(ANY, context -> {
                                             context.SendMessage(Objects.toString(context.GetPlayer("selector")));
                                             return 1;
                                         })))
                                 .SubCommand(CommandSubCommand.Literal("multiple")
-                                        .SubCommand(CommandSubCommand.PlayerMultiple("selector").Executes(NONE, context -> {
+                                        .SubCommand(CommandSubCommand.PlayerMultiple("selector").Executes(ANY, context -> {
                                             context.SendMessage(Objects.toString(context.GetPlayers("selector")));
                                             return 1;
                                         }))))
                         .SubCommand(CommandSubCommand.Literal("entity")
                                 .SubCommand(CommandSubCommand.Literal("single")
-                                        .SubCommand(CommandSubCommand.EntitySingle("selector").Executes(NONE, context -> {
+                                        .SubCommand(CommandSubCommand.EntitySingle("selector").Executes(ANY, context -> {
                                             context.SendMessage(Objects.toString(context.GetEntity("selector")));
                                             return 1;
                                         })))
                                 .SubCommand(CommandSubCommand.Literal("multiple")
-                                        .SubCommand(CommandSubCommand.EntityMultiple("selector").Executes(NONE, context -> {
+                                        .SubCommand(CommandSubCommand.EntityMultiple("selector").Executes(ANY, context -> {
                                             context.SendMessage(Objects.toString(context.GetEntities("selector")));
                                             return 1;
                                         })))))

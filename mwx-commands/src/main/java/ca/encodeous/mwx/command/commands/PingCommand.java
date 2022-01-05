@@ -1,6 +1,5 @@
 package ca.encodeous.mwx.command.commands;
 
-import ca.encodeous.mwx.command.CommandSubCommand;
 import ca.encodeous.mwx.command.ExecutionSource;
 import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.command.RootCommand;
@@ -15,7 +14,7 @@ public class PingCommand extends MissileWarsCommand {
     public RootCommand BuildCommand() {
         return new RootCommand("mwping", "ping")
                 .SubCommand(PlayerSingle("target")
-                        .Executes(ExecutionSource.NONE, context -> {
+                        .Executes(ExecutionSource.ANY, context -> {
                             var player = context.GetPlayer("target");
                             context.SendMessage(String.format(Strings.PING_OTHER_MESSAGE, player.getName(), Utils.GetPlayerPing(player)));
                             return 1;

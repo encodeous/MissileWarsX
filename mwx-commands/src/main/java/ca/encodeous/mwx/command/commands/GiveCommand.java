@@ -5,9 +5,7 @@ import ca.encodeous.mwx.configuration.MissileWarsItem;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.utils.Chat;
-import ca.encodeous.mwx.core.utils.Utils;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collection;
 
 import static ca.encodeous.mwx.command.CommandSubCommand.*;
-import static ca.encodeous.mwx.command.ExecutionSource.NONE;
+import static ca.encodeous.mwx.command.ExecutionSource.ANY;
 
 public class GiveCommand extends MissileWarsCommand {
     private void CompleteGive(MissileWarsMatch sourceMatch, Collection<Entity> entities, MissileWarsItem item, int count){
@@ -46,12 +44,12 @@ public class GiveCommand extends MissileWarsCommand {
         String name = item == null ? "all" : item.MissileWarsItemId;
         return Literal(name)
                 .SubCommand(Integer("count", 1, 64)
-                        .Executes(NONE, (context) -> {
+                        .Executes(ANY, (context) -> {
                             var match = LobbyEngine.FromWorld(context.GetSendingWorld());
                             CompleteGive(match, context.GetEntities("targets"), item, context.GetInteger("count"));
                             return 1;
                         }))
-                .Executes(NONE, (context) -> {
+                .Executes(ANY, (context) -> {
                     var match = LobbyEngine.FromWorld(context.GetSendingWorld());
                     CompleteGive(match, context.GetEntities("targets"), item, 1);
                     return 1;

@@ -22,7 +22,6 @@ public class WipeCommand extends MissileWarsCommand {
                 context.SendMessage(Strings.LOBBY_COMMAND);
                 return 0;
             }
-            if(!Utils.CheckPrivPermission(context.GetSendingPlayer())) return 0;
             if(match.Map.isBusy || match.endCounter.isRunning() || match.startCounter.isRunning()){
                 context.SendMessage("&cThe map cannot be wiped at this time!");
                 return 0;

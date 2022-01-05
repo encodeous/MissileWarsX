@@ -11,9 +11,6 @@ import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.Location;
 
 import static ca.encodeous.mwx.command.CommandSubCommand.Position3d;
-import static ca.encodeous.mwx.command.ExecutionSource.COMMAND_BLOCK;
-import static ca.encodeous.mwx.command.ExecutionSource.ENTITY;
-import static ca.encodeous.mwx.command.ExecutionSource.PLAYER;
 
 public class FireballCommand extends MissileWarsCommand {
 
@@ -21,7 +18,7 @@ public class FireballCommand extends MissileWarsCommand {
     public RootCommand BuildCommand() {
         return new RootCommand("mwfireball", Command::DefaultRestrictedCommand, "mwf", "fireball")
                 .SubCommand(Position3d("location")
-                        .Executes(COMMAND_BLOCK.or(ENTITY).or(PLAYER), (context) -> {
+                        .Executes(ExecutionSource.HAS_WORLD, (context) -> {
                     MissileWarsMatch match = LobbyEngine.FromWorld(context.GetSendingWorld());
                     if(match == null) {
                         context.SendMessage("&cYou cannot summon a fireball");
