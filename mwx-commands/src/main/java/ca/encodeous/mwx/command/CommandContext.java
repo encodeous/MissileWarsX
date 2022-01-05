@@ -86,13 +86,8 @@ public class CommandContext {
         return (Player) player.getBukkitEntity();
     }
 
-    public ArrayList<Player> GetPlayers(String name) throws CommandSyntaxException {
-        Collection<NMSEntity> CollectionEntityPlayer = NMSCore.getStaticNMSObject(ArgumentEntity.class).d(context, name);
-        ArrayList<Player> players = new ArrayList<>();
-        for(NMSEntity EntityPlayer : CollectionEntityPlayer) {
-            players.add((Player) EntityPlayer.getBukkitEntity());
-        }
-        return players;
+    public Collection<Player> GetPlayers(String name) throws CommandSyntaxException {
+        return ArgumentEntity.GetPlayers(context, name);
     }
 
     public Entity GetEntity(String name) throws CommandSyntaxException {
@@ -100,13 +95,8 @@ public class CommandContext {
         return player.getBukkitEntity();
     }
 
-    public ArrayList<Entity> GetEntities(String name) throws CommandSyntaxException {
-        Collection<NMSEntity> CollectionEntityPlayer = NMSCore.getStaticNMSObject(ArgumentEntity.class).b(context, name);
-        ArrayList<Entity> players = new ArrayList<>();
-        for(NMSEntity EntityPlayer : CollectionEntityPlayer) {
-            players.add(EntityPlayer.getBukkitEntity());
-        }
-        return players;
+    public Collection<Entity> GetEntities(String name) throws CommandSyntaxException {
+        return ArgumentEntity.GetEntities(context, name);
     }
 
     public Location GetPosition(String name, World world) throws CommandSyntaxException {
