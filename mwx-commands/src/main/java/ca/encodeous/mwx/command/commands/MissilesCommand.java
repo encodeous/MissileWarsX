@@ -8,11 +8,11 @@ import ca.encodeous.mwx.core.utils.Chat;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class mwmissiles extends MissileWarsCommand {
+public class MissilesCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("mwmissiles").Executes((context) -> {
+        return new RootCommand("mwmissiles", "missiles").Executes((context) -> {
             List<String> results = CoreGame.Instance.mwMissiles.values().stream()
                     .map(x-> "&cId: " + x.MissileItemId)
                     .collect(Collectors.toList());
