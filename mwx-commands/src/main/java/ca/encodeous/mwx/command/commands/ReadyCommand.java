@@ -10,7 +10,7 @@ import ca.encodeous.mwx.core.game.MissileWarsRankedMatch;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.core.lang.Strings;
 
-public class ready extends MissileWarsCommand {
+public class ReadyCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
