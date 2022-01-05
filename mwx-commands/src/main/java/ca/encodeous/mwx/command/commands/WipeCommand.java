@@ -11,11 +11,11 @@ import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.core.utils.Utils;
 import org.bukkit.entity.Player;
 
-public class wipe extends MissileWarsCommand {
+public class WipeCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("wipe", Command::DefaultRestrictedCommand).Executes(context -> {
+        return new RootCommand("mwwipe", Command::DefaultRestrictedCommand, "wipe").Executes(context -> {
             MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
             Lobby lobby = match != null ? match.lobby : null;
             if(lobby == null) {
@@ -36,6 +36,6 @@ public class wipe extends MissileWarsCommand {
 
     @Override
     public String GetCommandName() {
-        return "wipe";
+        return "mwwipe";
     }
 }
