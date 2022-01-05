@@ -7,7 +7,7 @@ import ca.encodeous.mwx.core.game.CoreGame;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ca.encodeous.mwx.command.CommandExecutionRequirement.NONE;
+import static ca.encodeous.mwx.command.ExecutionSource.NONE;
 
 public class mwitems extends MissileWarsCommand {
 

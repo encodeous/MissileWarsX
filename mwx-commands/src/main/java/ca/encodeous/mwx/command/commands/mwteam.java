@@ -10,7 +10,7 @@ import ca.encodeous.mwx.core.lang.Strings;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.bukkit.entity.Player;
 
-import static ca.encodeous.mwx.command.CommandExecutionRequirement.NONE;
+import static ca.encodeous.mwx.command.ExecutionSource.NONE;
 import static ca.encodeous.mwx.command.CommandSubCommand.Literal;
 import static ca.encodeous.mwx.command.CommandSubCommand.PlayerSingle;
 

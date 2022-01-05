@@ -28,7 +28,7 @@ public class mwmake extends MissileWarsCommand {
                                             Location pivot = context.GetPosition("pivot");
                                             Location a = context.GetPosition("sel");
                                             Location b = context.GetPosition("sel2");
-                                            MissileSchematic schem = CoreGame.GetStructureManager().GetSchematic(pivot.toVector(), Bounds.of(a.toVector(), b.toVector()), context.GetPlayer().getWorld());
+                                            MissileSchematic schem = CoreGame.GetStructureManager().GetSchematic(pivot.toVector(), Bounds.of(a.toVector(), b.toVector()), context.GetSendingPlayer().getWorld());
                                             if(schem == null){
                                                 context.SendMessage("&cFailed creating missile! Valid blocks are: [PISTON, GLASS, STAINED_GLASS, SLIME_BLOCK, TNT, REDSTONE_BLOCK, STAINED_CLAY]. Schematics must also not be empty!");
                                                 return 0;

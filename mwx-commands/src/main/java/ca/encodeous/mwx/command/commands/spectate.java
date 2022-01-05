@@ -12,11 +12,11 @@ public class spectate extends MissileWarsCommand {
     @Override
     public RootCommand BuildCommand() {
         return new RootCommand("spectate", Command::DefaultPlayerCommand).Executes(context -> {
-            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
-            if(match.IsPlayerInTeam(context.GetPlayer(), PlayerTeam.Spectator)){
-                match.AddPlayerToTeam(context.GetPlayer(), PlayerTeam.None);
+            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
+            if(match.IsPlayerInTeam(context.GetSendingPlayer(), PlayerTeam.Spectator)){
+                match.AddPlayerToTeam(context.GetSendingPlayer(), PlayerTeam.None);
             }else{
-                match.AddPlayerToTeam(context.GetPlayer(), PlayerTeam.Spectator);
+                match.AddPlayerToTeam(context.GetSendingPlayer(), PlayerTeam.Spectator);
             }
             return 1;
         });

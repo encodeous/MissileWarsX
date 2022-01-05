@@ -7,7 +7,6 @@ import ca.encodeous.mwx.command.nms.NMSEntity;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.core.utils.Reflection;
 import ca.encodeous.simplenms.proxy.NMSCore;
-import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -17,14 +16,11 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
 
@@ -90,7 +86,7 @@ public class CommandContext {
         return ArgumentEntity.GetPlayers(context, name);
     }
 
-    public Entity GetEntity(String name) throws CommandSyntaxException {
+    public Entity GetSendingEntity(String name) throws CommandSyntaxException {
         NMSEntity player = NMSCore.getStaticNMSObject(ArgumentEntity.class).a(context, name);
         return player.getBukkitEntity();
     }
@@ -105,6 +101,10 @@ public class CommandContext {
     }
 
     public Location GetPosition(String name) throws CommandSyntaxException {
+        return GetPosition(name, GetSendingWorld());
+    }
+
+    public World GetSendingWorld(){
         World w = null;
         if(commandSender != null){
             if(commandSender instanceof BlockCommandSender b){
@@ -115,14 +115,14 @@ public class CommandContext {
                 w = e.getWorld();
             }
         }
-        return GetPosition(name, w);
+        return w;
     }
 
-    public Entity GetEntity() {
+    public Entity GetSendingEntity() {
         return (Entity) commandSender;
     }
 
-    public Player GetPlayer() {
+    public Player GetSendingPlayer() {
         return (Player) commandSender;
     }
 

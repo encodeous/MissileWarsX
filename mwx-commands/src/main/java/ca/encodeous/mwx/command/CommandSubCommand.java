@@ -2,7 +2,6 @@ package ca.encodeous.mwx.command;
 
 import ca.encodeous.mwx.command.nms.ArgumentEntity;
 import ca.encodeous.mwx.command.nms.ArgumentPosition;
-import ca.encodeous.mwx.core.utils.Reflection;
 import ca.encodeous.simplenms.proxy.NMSCore;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
@@ -15,7 +14,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.function.Predicate;
 
-import static ca.encodeous.mwx.command.CommandExecutionRequirement.PLAYER;
+import static ca.encodeous.mwx.command.ExecutionSource.PLAYER;
 
 public class CommandSubCommand {
     

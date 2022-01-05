@@ -15,7 +15,7 @@ public class ready extends MissileWarsCommand {
     @Override
     public RootCommand BuildCommand() {
         return new RootCommand("ready", Command::DefaultPlayerCommand).Executes(context -> {
-            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
+            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
             Lobby lobby = match != null ? match.lobby : null;
             if(lobby == null) {
                 context.SendMessage(Strings.LOBBY_COMMAND);
@@ -29,11 +29,11 @@ public class ready extends MissileWarsCommand {
                 context.SendMessage("&cThis command can only be run in a ranked game!");
                 return 0;
             }
-            if(!match.Red.contains(context.GetPlayer()) && !match.Green.contains(context.GetPlayer())){
+            if(!match.Red.contains(context.GetSendingPlayer()) && !match.Green.contains(context.GetSendingPlayer())){
                 context.SendMessage("&cYou must be in a team to run this command");
                 return 0;
             }
-            if(match.Red.contains(context.GetPlayer())){
+            if(match.Red.contains(context.GetSendingPlayer())){
                 rankedMatch.TeamReady(PlayerTeam.Red);
             }else{
                 rankedMatch.TeamReady(PlayerTeam.Green);

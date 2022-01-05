@@ -13,7 +13,7 @@ public class reset extends MissileWarsCommand {
     @Override
     public RootCommand BuildCommand() {
         return new RootCommand("reset", Command::DefaultAdminCommand, "end").Executes(context -> {
-            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
+            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
             Lobby lobby = match != null ? match.lobby : null;
             if(lobby == null) {
                 context.SendMessage(Strings.LOBBY_COMMAND);

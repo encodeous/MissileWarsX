@@ -1,17 +1,13 @@
 package ca.encodeous.mwx.command;
 
 import ca.encodeous.mwx.command.nms.CommandListenerWrapper;
-import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.simplenms.proxy.NMSCore;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.Plugin;
 
-import java.util.*;
 import java.util.function.Predicate;
 
 public final class RootCommand extends CommandSubCommand {
@@ -51,7 +47,7 @@ public final class RootCommand extends CommandSubCommand {
         return this;
     }
 
-    public RootCommand Executes(CommandExecutionRequirement requirement, Command cmd) {
+    public RootCommand Executes(ExecutionSource requirement, Command cmd) {
         super.Executes(requirement, cmd);
         return this;
     }

@@ -22,7 +22,7 @@ import com.mojang.brigadier.CommandDispatcher;
 
 import java.util.logging.Logger;
 
-import static ca.encodeous.mwx.command.CommandExecutionRequirement.*;
+import static ca.encodeous.mwx.command.ExecutionSource.*;
 
 public final class MissileWarsX extends JavaPlugin {
     public static MissileWarsX Instance;
@@ -138,7 +138,7 @@ public final class MissileWarsX extends JavaPlugin {
                         .SubCommand(CommandSubCommand.Literal("entity")
                                 .SubCommand(CommandSubCommand.Literal("single")
                                         .SubCommand(CommandSubCommand.EntitySingle("selector").Executes(NONE, context -> {
-                                            context.SendMessage(Objects.toString(context.GetEntity("selector")));
+                                            context.SendMessage(Objects.toString(context.GetSendingEntity("selector")));
                                             return 1;
                                         })))
                                 .SubCommand(CommandSubCommand.Literal("multiple")

@@ -17,9 +17,9 @@ import static ca.encodeous.mwx.command.CommandSubCommand.Position3d;
 public class mwlaunch extends MissileWarsCommand {
 
     private int spawn(CommandContext context, Missile missile, boolean red) throws CommandSyntaxException {
-        boolean result = CoreGame.GetStructureManager().PlaceMissile(missile, context.GetPosition("pivot").toVector(), context.GetPlayer().getWorld(), red, true, context.GetPlayer());
+        boolean result = CoreGame.GetStructureManager().PlaceMissile(missile, context.GetPosition("pivot").toVector(), context.GetSendingPlayer().getWorld(), red, true, context.GetSendingPlayer());
         if(!result){
-            MissileWarsMatch.SendCannotPlaceMessage(context.GetPlayer());
+            MissileWarsMatch.SendCannotPlaceMessage(context.GetSendingPlayer());
             return 0;
         }
         return 1;

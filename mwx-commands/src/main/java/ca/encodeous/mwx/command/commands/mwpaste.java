@@ -13,9 +13,9 @@ import static ca.encodeous.mwx.command.CommandSubCommand.*;
 public class mwpaste extends MissileWarsCommand {
 
     private int spawn(CommandContext context, Missile missile, boolean red) throws CommandSyntaxException {
-        boolean result = CoreGame.GetStructureManager().PlaceMissile(missile, context.GetPosition("pivot").toVector(), context.GetPlayer().getWorld(), red, false, context.GetPlayer());
+        boolean result = CoreGame.GetStructureManager().PlaceMissile(missile, context.GetPosition("pivot").toVector(), context.GetSendingPlayer().getWorld(), red, false, context.GetSendingPlayer());
         if(!result){
-            MissileWarsMatch.SendCannotPlaceMessage(context.GetPlayer());
+            MissileWarsMatch.SendCannotPlaceMessage(context.GetSendingPlayer());
             return 0;
         }
         return 1;

@@ -16,19 +16,19 @@ public class wipe extends MissileWarsCommand {
     @Override
     public RootCommand BuildCommand() {
         return new RootCommand("wipe", Command::DefaultRestrictedCommand).Executes(context -> {
-            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetPlayer());
+            MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
             Lobby lobby = match != null ? match.lobby : null;
             if(lobby == null) {
                 context.SendMessage(Strings.LOBBY_COMMAND);
                 return 0;
             }
-            if(!Utils.CheckPrivPermission(context.GetPlayer())) return 0;
+            if(!Utils.CheckPrivPermission(context.GetSendingPlayer())) return 0;
             if(match.Map.isBusy || match.endCounter.isRunning() || match.startCounter.isRunning()){
                 context.SendMessage("&cThe map cannot be wiped at this time!");
                 return 0;
             }
             for(Player p : match.lobby.GetPlayers())
-                CoreGame.GetImpl().SendTitle(p, "&9The map is being wiped", "&9by " + context.GetPlayer().getDisplayName() + "&r.");
+                CoreGame.GetImpl().SendTitle(p, "&9The map is being wiped", "&9by " + context.GetSendingPlayer().getDisplayName() + "&r.");
             match.Wipe(() -> lobby.SendMessage("&9The lobby has been wiped"));
             return 1;
         });

@@ -10,7 +10,7 @@ public class ping extends MissileWarsCommand {
     @Override
     public RootCommand BuildCommand() {
         return new RootCommand("ping").Executes((context) -> {
-            int ping = Utils.GetPlayerPing(context.GetPlayer());
+            int ping = Utils.GetPlayerPing(context.GetSendingPlayer());
             context.SendMessage(String.format(Strings.PING_MESSAGE, ping));
             return ping;
         });
