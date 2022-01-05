@@ -8,13 +8,12 @@ import ca.encodeous.mwx.core.utils.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-public class gms extends MissileWarsCommand {
+public class SurvivalCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("gms", Command::DefaultRestrictedCommand, "s").Executes((context) -> {
+        return new RootCommand("mwsurvival", Command::DefaultRestrictedCommand, "s", "gms", "survival").Executes((context) -> {
             Player p = context.GetSendingPlayer();
-            if(!Utils.CheckPrivPermission(p)) return 0;
             p.setGameMode(GameMode.SURVIVAL);
             context.SendMessage(String.format(Strings.GAMEMODE_UPDATED, p.getGameMode().name()));
             return 1;
