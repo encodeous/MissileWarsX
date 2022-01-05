@@ -44,7 +44,7 @@ public class TeamCommand extends MissileWarsCommand {
     @Override
     public RootCommand BuildCommand() {
         return new RootCommand("mwteam", Command::DefaultRestrictedCommand, "mwt")
-                .SubCommand(PlayerSingle("selector")
+                .SubCommand(PlayerSingle("targets")
                         .SubCommand(CreateLiteralForTeam("green"))
                         .SubCommand(CreateLiteralForTeam("red"))
                         .SubCommand(CreateLiteralForTeam("lobby"))
