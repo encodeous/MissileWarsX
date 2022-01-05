@@ -9,14 +9,14 @@ public interface Command {
     int Execute(CommandContext context) throws CommandSyntaxException;
 
     public static boolean DefaultPlayerCommand(CommandListenerWrapper source){
-        return false;
+        return true;
     }
 
     public static boolean DefaultRestrictedCommand(CommandListenerWrapper source){
-        return false;
+        return true;
     }
 
     public static boolean DefaultAdminCommand(CommandListenerWrapper source){
-        return false;
+        return true;
     }
 }
