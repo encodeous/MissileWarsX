@@ -3,10 +3,7 @@ package ca.encodeous.mwx.command;
 import ca.encodeous.mwx.command.nms.ArgumentEntity;
 import ca.encodeous.mwx.command.nms.ArgumentPosition;
 import ca.encodeous.simplenms.proxy.NMSCore;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -58,6 +55,9 @@ public class CommandSubCommand {
     }
     public static CommandSubCommand Double(String name, double minimum, double maximum) {
         return new CommandSubCommand(RequiredArgumentBuilder.argument(name, DoubleArgumentType.doubleArg(minimum, maximum)));
+    }
+    public static CommandSubCommand Boolean(String name) {
+        return new CommandSubCommand(RequiredArgumentBuilder.argument(name, BoolArgumentType.bool()));
     }
     public static CommandSubCommand PlayerSingle(String name) {
         try {

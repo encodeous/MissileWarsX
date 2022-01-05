@@ -7,6 +7,7 @@ import ca.encodeous.mwx.command.nms.NMSEntity;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.core.utils.Reflection;
 import ca.encodeous.simplenms.proxy.NMSCore;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -71,6 +72,10 @@ public class CommandContext {
 
     public double GetDouble(String name) {
         return DoubleArgumentType.getDouble(context, name);
+    }
+
+    public boolean GetBoolean(String name) {
+        return BoolArgumentType.getBool(context, name);
     }
 
     public String GetString(String name) {
