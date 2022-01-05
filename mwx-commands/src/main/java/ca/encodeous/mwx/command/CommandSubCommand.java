@@ -65,7 +65,7 @@ public class CommandSubCommand {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandSubCommand.PlayerSingle(String) failed");
     }
     public static CommandSubCommand PlayerMultiple(String name) {
         try {
@@ -73,7 +73,7 @@ public class CommandSubCommand {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandSubCommand.PlayerMultiple(String) failed");
     }
     public static CommandSubCommand EntitySingle(String name) {
         try {
@@ -81,7 +81,7 @@ public class CommandSubCommand {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandSubCommand.EntitySingle(String) failed");
     }
     public static CommandSubCommand EntityMultiple(String name) {
         try {
@@ -89,7 +89,7 @@ public class CommandSubCommand {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandSubCommand.EntityMultiple(String) failed");
     }
     public static CommandSubCommand Position3d(String name) {
         try {
@@ -97,7 +97,7 @@ public class CommandSubCommand {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandSubCommand.Position3d(String) failed");
     }
     public static CommandSubCommand String(String name) {
         return new CommandSubCommand(RequiredArgumentBuilder.argument(name, StringArgumentType.string()));
