@@ -15,6 +15,7 @@ public interface ArgumentPosition extends NMSProxy {
      * @return
      */
     @NMSStatic
+    @NMSMethod
     public BaseBlockPosition a(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 }

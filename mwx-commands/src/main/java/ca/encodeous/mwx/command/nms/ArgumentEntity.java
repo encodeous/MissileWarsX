@@ -17,6 +17,7 @@ public interface ArgumentEntity extends NMSProxy {
      * @return
      */
     @NMSStatic
+    @NMSMethod
     public NMSEntity e(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 
@@ -27,6 +28,7 @@ public interface ArgumentEntity extends NMSProxy {
      * @return
      */
     @NMSStatic
+    @NMSMethod
     public NMSEntity a(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 
@@ -37,6 +39,7 @@ public interface ArgumentEntity extends NMSProxy {
      * @return
      */
     @NMSStatic
+    @NMSMethod
     public Collection<NMSEntity> d(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 
@@ -47,6 +50,7 @@ public interface ArgumentEntity extends NMSProxy {
      * @return
      */
     @NMSStatic
+    @NMSMethod
     public Collection<NMSEntity> b(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 }
