@@ -86,7 +86,7 @@ public class CommandContext {
         return ArgumentEntity.GetPlayers(context, name);
     }
 
-    public Entity GetSendingEntity(String name) throws CommandSyntaxException {
+    public Entity GetEntity(String name) throws CommandSyntaxException {
         NMSEntity player = NMSCore.getStaticNMSObject(ArgumentEntity.class).a(context, name);
         return player.getBukkitEntity();
     }

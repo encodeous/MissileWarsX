@@ -138,7 +138,7 @@ public final class MissileWarsX extends JavaPlugin {
                         .SubCommand(CommandSubCommand.Literal("entity")
                                 .SubCommand(CommandSubCommand.Literal("single")
                                         .SubCommand(CommandSubCommand.EntitySingle("selector").Executes(NONE, context -> {
-                                            context.SendMessage(Objects.toString(context.GetSendingEntity("selector")));
+                                            context.SendMessage(Objects.toString(context.GetEntity("selector")));
                                             return 1;
                                         })))
                                 .SubCommand(CommandSubCommand.Literal("multiple")
