@@ -8,11 +8,11 @@ import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import ca.encodeous.mwx.core.game.MissileWarsRankedMatch;
 import ca.encodeous.mwx.core.lang.Strings;
 
-public class start extends MissileWarsCommand {
+public class StartCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("start", ca.encodeous.mwx.command.Command::DefaultPlayerCommand).Executes(context -> {
+        return new RootCommand("mwstart", ca.encodeous.mwx.command.Command::DefaultPlayerCommand, "start").Executes(context -> {
             MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
             Lobby lobby = match != null ? match.lobby : null;
             if(lobby == null) {
@@ -38,6 +38,6 @@ public class start extends MissileWarsCommand {
 
     @Override
     public String GetCommandName() {
-        return "start";
+        return "mwstart";
     }
 }
