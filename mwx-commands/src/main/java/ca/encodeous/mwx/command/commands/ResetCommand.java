@@ -8,7 +8,7 @@ import ca.encodeous.mwx.engines.lobby.Lobby;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import ca.encodeous.mwx.core.lang.Strings;
 
-public class reset extends MissileWarsCommand {
+public class ResetCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
