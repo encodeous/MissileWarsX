@@ -1,17 +1,19 @@
 package ca.encodeous.mwx.command.commands;
 
+import ca.encodeous.mwx.command.Command;
 import ca.encodeous.mwx.command.CommandSubCommand;
 import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.command.RootCommand;
+import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 
-public class lobby extends MissileWarsCommand {
+public class LobbyCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("lobby","l", "mw", "leave")
+        return new RootCommand("mwlobby", Command::DefaultPlayerCommand, "l", "mw", "leave", "lobby")
                 .Executes(context -> {
                     MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
                     match.RemovePlayer(context.GetSendingPlayer());
@@ -19,7 +21,7 @@ public class lobby extends MissileWarsCommand {
                     return 1;
                 })
                 .SubCommand(
-                        CommandSubCommand.Integer("lobby", 1)
+                        CommandSubCommand.Integer("lobby", 1, CoreGame.Instance.mwLobbies.Lobbies.size())
                                 .Executes(context -> {
                                     int lobby = context.GetInteger("lobby");
                                     if(lobby > LobbyEngine.Lobbies.size()){
@@ -37,6 +39,6 @@ public class lobby extends MissileWarsCommand {
 
     @Override
     public String GetCommandName() {
-        return "lobby";
+        return "mwlobby";
     }
 }
