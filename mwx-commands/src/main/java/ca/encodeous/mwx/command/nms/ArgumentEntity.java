@@ -3,6 +3,7 @@ package ca.encodeous.mwx.command.nms;
 import ca.encodeous.simplenms.NMSProxy;
 import ca.encodeous.simplenms.annotations.NMSClass;
 import ca.encodeous.simplenms.annotations.NMSMethod;
+import ca.encodeous.simplenms.annotations.NMSStatic;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ public interface ArgumentEntity extends NMSProxy {
      * @param name
      * @return
      */
-    @NMSMethod
+    @NMSStatic
     public NMSEntity e(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 
@@ -25,7 +26,7 @@ public interface ArgumentEntity extends NMSProxy {
      * @param name
      * @return
      */
-    @NMSMethod
+    @NMSStatic
     public NMSEntity a(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 
@@ -35,7 +36,7 @@ public interface ArgumentEntity extends NMSProxy {
      * @param name
      * @return
      */
-    @NMSMethod
+    @NMSStatic
     public Collection<NMSEntity> d(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 
@@ -45,7 +46,7 @@ public interface ArgumentEntity extends NMSProxy {
      * @param name
      * @return
      */
-    @NMSMethod
+    @NMSStatic
     public Collection<NMSEntity> b(com.mojang.brigadier.context.CommandContext<?> context, String name)
             throws CommandSyntaxException;
 }
