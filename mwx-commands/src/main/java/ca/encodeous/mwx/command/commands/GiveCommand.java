@@ -10,10 +10,14 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static ca.encodeous.mwx.command.CommandNode.*;
 import static ca.encodeous.mwx.command.ExecutionSource.ANY;
+import static ca.encodeous.mwx.command.ExecutionSource.PLAYER;
 
 public class GiveCommand extends MissileWarsCommand {
     private void CompleteGive(MissileWarsMatch sourceMatch, Collection<Entity> entities, MissileWarsItem item, int count){
@@ -40,35 +44,52 @@ public class GiveCommand extends MissileWarsCommand {
         }
     }
 
-    private CommandNode AddItem(MissileWarsItem item){
+    private CommandNode AddItem(MissileWarsItem item, boolean hasTarget){
         String name = item == null ? "all" : item.MissileWarsItemId;
-        return Literal(name)
-                .SubCommand(Integer("count", 1, 64)
-                        .Executes(ANY, (context) -> {
-                            var match = LobbyEngine.FromWorld(context.GetSendingWorld());
-                            CompleteGive(match, context.GetEntities("targets"), item, context.GetInteger("count"));
-                            return 1;
-                        }))
-                .Executes(ANY, (context) -> {
-                    var match = LobbyEngine.FromWorld(context.GetSendingWorld());
-                    CompleteGive(match, context.GetEntities("targets"), item, 1);
-                    return 1;
-                });
+        if(hasTarget){
+            return Literal(name)
+                    .SubCommand(Integer("count", 1, 2304)
+                            .Executes(ANY, (context) -> {
+                                var match = LobbyEngine.FromWorld(context.GetSendingWorld());
+                                CompleteGive(match, context.GetEntities("targets"), item, context.GetInteger("count"));
+                                return 1;
+                            }))
+                    .Executes(ANY, (context) -> {
+                        var match = LobbyEngine.FromWorld(context.GetSendingWorld());
+                        CompleteGive(match, context.GetEntities("targets"), item, 1);
+                        return 1;
+                    });
+        }else{
+            return Literal(name)
+                    .SubCommand(Integer("count", 1, 2304)
+                            .Executes(PLAYER, (context) -> {
+                                var match = LobbyEngine.FromWorld(context.GetSendingWorld());
+                                CompleteGive(match, Arrays.asList(context.GetSendingPlayer()), item, context.GetInteger("count"));
+                                return 1;
+                            }))
+                    .Executes(PLAYER, (context) -> {
+                        var match = LobbyEngine.FromWorld(context.GetSendingWorld());
+                        CompleteGive(match, Arrays.asList(context.GetSendingPlayer()), item, 1);
+                        return 1;
+                    });
+        }
     }
 
-    private void AddMissiles(CommandNode prevArg){
+    private void AddMissiles(CommandNode prevArg, boolean hasTarget){
         for(MissileWarsItem item : CoreGame.Instance.mwConfig.Items){
             if(item.IsExempt) continue;
-            prevArg.SubCommand(AddItem(item));
+            prevArg.SubCommand(AddItem(item, hasTarget));
         }
-        prevArg.SubCommand(AddItem(null));
+        prevArg.SubCommand(AddItem(null, hasTarget));
     }
 
     @Override
     public RootCommand BuildCommand() {
+        var rootCmd = new RootCommand("mwgive", Command::DefaultRestrictedCommand, "mwi");
+        AddMissiles(rootCmd, false);
         var prevCmd = PlayerMultiple("targets");
-        AddMissiles(prevCmd);
-        return new RootCommand("mwgive", Command::DefaultRestrictedCommand, "mwi")
+        AddMissiles(prevCmd, true);
+        return rootCmd
                 .SubCommand(prevCmd);
     }
 
