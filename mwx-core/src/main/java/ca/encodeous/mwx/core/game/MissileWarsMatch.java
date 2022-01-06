@@ -143,23 +143,28 @@ public class MissileWarsMatch {
 
             @Override
             public void FinishedCount(Counter counter) {
-                lobby.SendMessage(Strings.STARTING_NOW);
-                hasStarted = true;
-                for(Player p : Teams.keySet()){
-                    p.setLevel(0);
-                }
-                for(Player p : Green){
-                    TeleportPlayer(p, PlayerTeam.Green);
-                    p.setGameMode(GameMode.SURVIVAL);
-                }
-                for(Player p : Red){
-                    TeleportPlayer(p, PlayerTeam.Red);
-                    p.setGameMode(GameMode.SURVIVAL);
-                }
-                OnGameStart();
-                itemCounter.Start();
+                BeginGame();
             }
         };
+    }
+
+    public void BeginGame(){
+        lobby.SendMessage(Strings.STARTING_NOW);
+        hasStarted = true;
+        startCounter.StopCounting();
+        for(Player p : Teams.keySet()){
+            p.setLevel(0);
+        }
+        for(Player p : Green){
+            TeleportPlayer(p, PlayerTeam.Green);
+            p.setGameMode(GameMode.SURVIVAL);
+        }
+        for(Player p : Red){
+            TeleportPlayer(p, PlayerTeam.Red);
+            p.setGameMode(GameMode.SURVIVAL);
+        }
+        OnGameStart();
+        itemCounter.Start();
     }
 
     public Countable CreateEndGameCountdown(){
