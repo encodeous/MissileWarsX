@@ -72,7 +72,7 @@ public class CommandNode {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandNode.PlayerSingle(String) failed");
     }
     public static CommandNode PlayerMultiple(String name) {
         try {
@@ -80,7 +80,7 @@ public class CommandNode {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandNode.PlayerMultiple(String) failed");
     }
     public static CommandNode EntitySingle(String name) {
         try {
@@ -88,7 +88,7 @@ public class CommandNode {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandNode.EntitySingle(String) failed");
     }
     public static CommandNode EntityMultiple(String name) {
         try {
@@ -96,7 +96,7 @@ public class CommandNode {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandNode.EntityMultiple(String) failed");
     }
     public static CommandNode Position3d(String name) {
         try {
@@ -104,7 +104,7 @@ public class CommandNode {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
-        return null;
+        throw new RuntimeException("CommandNode.Position3d(String) failed");
     }
     public static CommandNode String(String name) {
         return new CommandNode(RequiredArgumentBuilder.argument(name, StringArgumentType.string()));
