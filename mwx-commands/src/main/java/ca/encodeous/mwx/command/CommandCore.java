@@ -75,7 +75,7 @@ public class CommandCore {
                     .Executes(ExecutionSource.PLAYER, context->{
                         LobbyEngine.FromPlayer(context.GetSendingPlayer()).lobby.RemovePlayer(context.GetSendingPlayer());
                         LobbyEngine.GetLobby(lid).AddPlayer(context.GetSendingPlayer());
-                        context.SendMessage("&9You have been teleported to lobby " + lobby + ".");
+                        context.SendMessage("&9You have been teleported to lobby " + lid + ".");
                         return 1;
                     });
             cmd.Register(GetDispatcher());

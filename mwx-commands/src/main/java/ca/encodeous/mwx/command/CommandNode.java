@@ -2,6 +2,7 @@ package ca.encodeous.mwx.command;
 
 import ca.encodeous.mwx.command.nms.ArgumentEntity;
 import ca.encodeous.mwx.command.nms.ArgumentPosition;
+import ca.encodeous.mwx.command.nms.CommandListenerWrapper;
 import ca.encodeous.simplenms.proxy.NMSCore;
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -33,6 +34,12 @@ public class CommandNode {
 
     public CommandNode Executes(Command cmd) {
         return Executes(PLAYER, cmd);
+    }
+
+    public CommandNode Requires(Predicate<CommandListenerWrapper> usageRequirement){
+        command.requires((o) ->
+                usageRequirement.test(NMSCore.getNMSObject(CommandListenerWrapper.class, o)));
+        return this;
     }
 
     public static CommandNode Literal(String literal) {

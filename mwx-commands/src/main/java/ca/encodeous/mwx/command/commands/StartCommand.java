@@ -1,9 +1,6 @@
 package ca.encodeous.mwx.command.commands;
 
-import ca.encodeous.mwx.command.CommandContext;
-import ca.encodeous.mwx.command.CommandNode;
-import ca.encodeous.mwx.command.MissileWarsCommand;
-import ca.encodeous.mwx.command.RootCommand;
+import ca.encodeous.mwx.command.*;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.engines.lobby.Lobby;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
@@ -25,6 +22,7 @@ public class StartCommand extends MissileWarsCommand {
                     } else return 0;
                 })
                 .SubCommand(CommandNode.Literal("now")
+                        .Requires(Command::DefaultRestrictedCommand)
                         .Executes(context -> {
                             MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
                             if (CheckCommandExec(context, match) == 1) {

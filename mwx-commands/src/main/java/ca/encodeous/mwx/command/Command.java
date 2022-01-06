@@ -15,14 +15,14 @@ public interface Command {
     }
 
     public static boolean DefaultRestrictedCommand(CommandListenerWrapper source){
-        if(source instanceof Player p){
+        if(source.getBukkitSender() instanceof Player p){
             return Utils.CheckPrivPermissionSilent(p);
         }
         return true;
     }
 
     public static boolean DefaultAdminCommand(CommandListenerWrapper source){
-        if(source instanceof Player p){
+        if(source.getBukkitSender() instanceof Player p){
             return p.hasPermission("mwx.admin");
         }
         return true;

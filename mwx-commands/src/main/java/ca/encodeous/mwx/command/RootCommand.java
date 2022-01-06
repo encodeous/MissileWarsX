@@ -13,27 +13,22 @@ import java.util.function.Predicate;
 public final class RootCommand extends CommandNode {
 
     private final String[] aliases;
-    private final boolean noChecks;
 
     public RootCommand(String name, Predicate<CommandListenerWrapper> usageRequirement, String... aliases) {
         super(LiteralArgumentBuilder.literal(name).requires((o) ->
                 usageRequirement.test(NMSCore.getNMSObject(CommandListenerWrapper.class, o))));
         this.aliases = aliases;
-        noChecks = false;
     }
 
     public RootCommand(String name, String... aliases) {
         super(LiteralArgumentBuilder.literal(name));
         this.aliases = aliases;
-        noChecks = true;
     }
 
     public void Register(CommandDispatcher<Object> dispatcher) {
         var builder = (LiteralArgumentBuilder<Object>) command;
-        if(noChecks) {
-            Bukkit.getPluginManager().addPermission(new Permission("minecraft.command." + builder.getLiteral(), PermissionDefault.TRUE));
-            for(String alias : aliases) Bukkit.getPluginManager().addPermission(new Permission("minecraft.command." + alias, PermissionDefault.TRUE));
-        }
+        Bukkit.getPluginManager().addPermission(new Permission("minecraft.command." + builder.getLiteral(), PermissionDefault.TRUE));
+        for(String alias : aliases) Bukkit.getPluginManager().addPermission(new Permission("minecraft.command." + alias, PermissionDefault.TRUE));
         var cmd = dispatcher.register(builder);
         for(String alias : aliases) {
             var aliasCmd = LiteralArgumentBuilder.literal(alias).redirect(cmd).executes(builder.getCommand());
