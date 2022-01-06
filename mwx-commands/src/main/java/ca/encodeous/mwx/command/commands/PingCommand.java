@@ -6,7 +6,7 @@ import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.core.utils.Utils;
 
-import static ca.encodeous.mwx.command.CommandSubCommand.PlayerSingle;
+import static ca.encodeous.mwx.command.CommandNode.PlayerSingle;
 
 public class PingCommand extends MissileWarsCommand {
 

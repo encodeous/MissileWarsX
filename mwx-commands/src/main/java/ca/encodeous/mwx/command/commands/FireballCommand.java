@@ -5,12 +5,11 @@ import ca.encodeous.mwx.command.ExecutionSource;
 import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
-import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.data.Ref;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.Location;
 
-import static ca.encodeous.mwx.command.CommandSubCommand.Position3d;
+import static ca.encodeous.mwx.command.CommandNode.Position3d;
 
 public class FireballCommand extends MissileWarsCommand {
 

@@ -10,7 +10,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import java.util.function.Predicate;
 
-public final class RootCommand extends CommandSubCommand {
+public final class RootCommand extends CommandNode {
 
     private final String[] aliases;
     private final boolean noChecks;
@@ -42,7 +42,7 @@ public final class RootCommand extends CommandSubCommand {
         }
     }
 
-    public RootCommand SubCommand(CommandSubCommand subCommand) {
+    public RootCommand SubCommand(CommandNode subCommand) {
         super.SubCommand(subCommand);
         return this;
     }

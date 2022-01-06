@@ -17,7 +17,7 @@ import java.util.logging.LogManager;
 
 import ca.encodeous.mwx.command.CommandCore;
 import ca.encodeous.mwx.command.RootCommand;
-import ca.encodeous.mwx.command.CommandSubCommand;
+import ca.encodeous.mwx.command.CommandNode;
 import com.mojang.brigadier.CommandDispatcher;
 
 import java.util.logging.Logger;
@@ -100,71 +100,71 @@ public final class MissileWarsX extends JavaPlugin {
         CommandDispatcher<Object> commandDispatcher = Reflection.get("g", vanillaCommandDispatcher);
 
         new RootCommand("testcommand", "tc")
-                .SubCommand(CommandSubCommand.Literal("int")
-                        .SubCommand(CommandSubCommand.Integer("num", 0, 10).Executes(ANY, (context) -> {
+                .SubCommand(CommandNode.Literal("int")
+                        .SubCommand(CommandNode.Integer("num", 0, 10).Executes(ANY, (context) -> {
                             Bukkit.broadcastMessage("Integer: " + context.GetInteger("num"));
                             return 1;
                         })))
-                .SubCommand(CommandSubCommand.Literal("double")
-                        .SubCommand(CommandSubCommand.Double("num", 0, 10).Executes(ANY, (context) -> {
+                .SubCommand(CommandNode.Literal("double")
+                        .SubCommand(CommandNode.Double("num", 0, 10).Executes(ANY, (context) -> {
                             Bukkit.broadcastMessage("Double: " + context.GetDouble("num"));
                             return 1;
                         })))
-                .SubCommand(CommandSubCommand.Literal("message")
-                        .SubCommand(CommandSubCommand.Literal("player").Executes(PLAYER, (context) -> {
+                .SubCommand(CommandNode.Literal("message")
+                        .SubCommand(CommandNode.Literal("player").Executes(PLAYER, (context) -> {
                             context.SendMessage(context.GetSenderName() + " sent this command (Player).");
                             return 1;
                         }))
-                        .SubCommand(CommandSubCommand.Literal("entity").Executes(ENTITY, (context) -> {
+                        .SubCommand(CommandNode.Literal("entity").Executes(ENTITY, (context) -> {
                             context.SendMessage(context.GetSenderName() + " sent this command (Entity).");
                             return 1;
                         }))
-                        .SubCommand(CommandSubCommand.Literal("console").Executes(ANY, (context) -> {
+                        .SubCommand(CommandNode.Literal("console").Executes(ANY, (context) -> {
                             context.SendMessage(context.GetSenderName() + " sent this command (CommandSender).");
                             return 1;
                         })))
-                .SubCommand(CommandSubCommand.Literal("selector")
-                        .SubCommand(CommandSubCommand.Literal("player")
-                                .SubCommand(CommandSubCommand.Literal("single")
-                                        .SubCommand(CommandSubCommand.PlayerSingle("selector").Executes(ANY, context -> {
+                .SubCommand(CommandNode.Literal("selector")
+                        .SubCommand(CommandNode.Literal("player")
+                                .SubCommand(CommandNode.Literal("single")
+                                        .SubCommand(CommandNode.PlayerSingle("selector").Executes(ANY, context -> {
                                             context.SendMessage(Objects.toString(context.GetPlayer("selector")));
                                             return 1;
                                         })))
-                                .SubCommand(CommandSubCommand.Literal("multiple")
-                                        .SubCommand(CommandSubCommand.PlayerMultiple("selector").Executes(ANY, context -> {
+                                .SubCommand(CommandNode.Literal("multiple")
+                                        .SubCommand(CommandNode.PlayerMultiple("selector").Executes(ANY, context -> {
                                             context.SendMessage(Objects.toString(context.GetPlayers("selector")));
                                             return 1;
                                         }))))
-                        .SubCommand(CommandSubCommand.Literal("entity")
-                                .SubCommand(CommandSubCommand.Literal("single")
-                                        .SubCommand(CommandSubCommand.EntitySingle("selector").Executes(ANY, context -> {
+                        .SubCommand(CommandNode.Literal("entity")
+                                .SubCommand(CommandNode.Literal("single")
+                                        .SubCommand(CommandNode.EntitySingle("selector").Executes(ANY, context -> {
                                             context.SendMessage(Objects.toString(context.GetEntity("selector")));
                                             return 1;
                                         })))
-                                .SubCommand(CommandSubCommand.Literal("multiple")
-                                        .SubCommand(CommandSubCommand.EntityMultiple("selector").Executes(ANY, context -> {
+                                .SubCommand(CommandNode.Literal("multiple")
+                                        .SubCommand(CommandNode.EntityMultiple("selector").Executes(ANY, context -> {
                                             context.SendMessage(Objects.toString(context.GetEntities("selector")));
                                             return 1;
                                         })))))
-                .SubCommand(CommandSubCommand.Literal("coordinates")
-                        .SubCommand(CommandSubCommand.Literal("vec3")
-                                .SubCommand(CommandSubCommand.Position3d("position").Executes(PLAYER, context -> {
+                .SubCommand(CommandNode.Literal("coordinates")
+                        .SubCommand(CommandNode.Literal("vec3")
+                                .SubCommand(CommandNode.Position3d("position").Executes(PLAYER, context -> {
                                     context.SendMessage(context.GetPosition("position").toString());
                                     return 1;
                                 }))))
-                .SubCommand(CommandSubCommand.Literal("string")
-                        .SubCommand(CommandSubCommand.Literal("string")
-                                .SubCommand(CommandSubCommand.String("string").Executes(PLAYER, context -> {
+                .SubCommand(CommandNode.Literal("string")
+                        .SubCommand(CommandNode.Literal("string")
+                                .SubCommand(CommandNode.String("string").Executes(PLAYER, context -> {
                                     context.SendMessage(context.GetString("string"));
                                     return 1;
                                 })))
-                        .SubCommand(CommandSubCommand.Literal("greedy").
-                                SubCommand(CommandSubCommand.GreedyString("string").Executes(PLAYER, context -> {
+                        .SubCommand(CommandNode.Literal("greedy").
+                                SubCommand(CommandNode.GreedyString("string").Executes(PLAYER, context -> {
                                     context.SendMessage(context.GetString("string"));
                                     return 1;
                                 })))
-                        .SubCommand(CommandSubCommand.Literal("word").
-                                SubCommand(CommandSubCommand.Word("string").Executes(PLAYER, context -> {
+                        .SubCommand(CommandNode.Literal("word").
+                                SubCommand(CommandNode.Word("string").Executes(PLAYER, context -> {
                                     context.SendMessage(context.GetString("string"));
                                     return 1;
                                 }))))

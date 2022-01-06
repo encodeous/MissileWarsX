@@ -6,11 +6,10 @@ import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.data.Bounds;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.configuration.MissileSchematic;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import static ca.encodeous.mwx.command.CommandSubCommand.*;
+import static ca.encodeous.mwx.command.CommandNode.*;
 
 public class MakeCommand extends MissileWarsCommand {
 
@@ -34,7 +33,7 @@ public class MakeCommand extends MissileWarsCommand {
         return true;
     }
 
-    private CommandSubCommand GetCommandFor(String teamName, boolean isRed){
+    private CommandNode GetCommandFor(String teamName, boolean isRed){
         return Literal(teamName)
                 .Executes(context -> {
                     var name = context.GetString("missileName");

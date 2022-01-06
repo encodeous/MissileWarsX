@@ -7,7 +7,7 @@ import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.entity.Player;
 
-import static ca.encodeous.mwx.command.CommandSubCommand.Literal;
+import static ca.encodeous.mwx.command.CommandNode.Literal;
 
 public class LobbyEditCommand extends MissileWarsCommand {
 

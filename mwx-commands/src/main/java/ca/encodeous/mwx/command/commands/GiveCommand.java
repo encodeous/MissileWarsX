@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 
-import static ca.encodeous.mwx.command.CommandSubCommand.*;
+import static ca.encodeous.mwx.command.CommandNode.*;
 import static ca.encodeous.mwx.command.ExecutionSource.ANY;
 
 public class GiveCommand extends MissileWarsCommand {
@@ -40,7 +40,7 @@ public class GiveCommand extends MissileWarsCommand {
         }
     }
 
-    private CommandSubCommand AddItem(MissileWarsItem item){
+    private CommandNode AddItem(MissileWarsItem item){
         String name = item == null ? "all" : item.MissileWarsItemId;
         return Literal(name)
                 .SubCommand(Integer("count", 1, 64)
@@ -56,7 +56,7 @@ public class GiveCommand extends MissileWarsCommand {
                 });
     }
 
-    private void AddMissiles(CommandSubCommand prevArg){
+    private void AddMissiles(CommandNode prevArg){
         for(MissileWarsItem item : CoreGame.Instance.mwConfig.Items){
             if(item.IsExempt) continue;
             prevArg.SubCommand(AddItem(item));

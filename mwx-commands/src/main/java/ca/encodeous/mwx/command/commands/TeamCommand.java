@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 
-import static ca.encodeous.mwx.command.CommandSubCommand.Literal;
-import static ca.encodeous.mwx.command.CommandSubCommand.PlayerSingle;
+import static ca.encodeous.mwx.command.CommandNode.Literal;
+import static ca.encodeous.mwx.command.CommandNode.PlayerSingle;
 
 public class TeamCommand extends MissileWarsCommand {
 
@@ -31,7 +31,7 @@ public class TeamCommand extends MissileWarsCommand {
         }
     }
 
-    private CommandSubCommand CreateLiteralForTeam(String name){
+    private CommandNode CreateLiteralForTeam(String name){
         return Literal(name)
                 .Executes(context -> {
                     var tgt = context.GetPlayers("targets");

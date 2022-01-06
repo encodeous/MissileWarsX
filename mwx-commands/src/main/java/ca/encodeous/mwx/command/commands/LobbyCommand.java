@@ -1,7 +1,7 @@
 package ca.encodeous.mwx.command.commands;
 
 import ca.encodeous.mwx.command.Command;
-import ca.encodeous.mwx.command.CommandSubCommand;
+import ca.encodeous.mwx.command.CommandNode;
 import ca.encodeous.mwx.command.MissileWarsCommand;
 import ca.encodeous.mwx.command.RootCommand;
 import ca.encodeous.mwx.core.game.CoreGame;
@@ -21,7 +21,7 @@ public class LobbyCommand extends MissileWarsCommand {
                     return 1;
                 })
                 .SubCommand(
-                        CommandSubCommand.Integer("lobby", 1, CoreGame.Instance.mwLobbies.Lobbies.size())
+                        CommandNode.Integer("lobby", 1, CoreGame.Instance.mwLobbies.Lobbies.size())
                                 .Executes(context -> {
                                     int lobby = context.GetInteger("lobby");
                                     if(lobby > LobbyEngine.Lobbies.size()){

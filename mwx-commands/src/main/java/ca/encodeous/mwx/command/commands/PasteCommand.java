@@ -4,15 +4,12 @@ import ca.encodeous.mwx.command.*;
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.Map.Entry;
-
-import static ca.encodeous.mwx.command.CommandSubCommand.*;
+import static ca.encodeous.mwx.command.CommandNode.*;
 
 public class PasteCommand extends MissileWarsCommand {
 
@@ -30,7 +27,7 @@ public class PasteCommand extends MissileWarsCommand {
         }
     }
 
-    private CommandSubCommand GetCommandFor(String missileName, String teamName, boolean isRed){
+    private CommandNode GetCommandFor(String missileName, String teamName, boolean isRed){
         return Literal(teamName)
                 .SubCommand(
                         Boolean("updateBlocks")
@@ -41,7 +38,7 @@ public class PasteCommand extends MissileWarsCommand {
                 );
     }
 
-    private void AddMissiles(CommandSubCommand cmd){
+    private void AddMissiles(CommandNode cmd){
         for(var missileEntry : CoreGame.Instance.mwMissiles.entrySet()) {
             var name = missileEntry.getKey();
             cmd.SubCommand(Literal(name)
