@@ -17,14 +17,14 @@ public class LobbyEditCommand extends MissileWarsCommand {
                 .SubCommand(Literal("auto").Executes((context) -> {
                     Player p = context.GetSendingPlayer();
                     if(LobbyEngine.FromPlayer(p) != null) LobbyEngine.FromPlayer(p).RemovePlayer(p);
-                    p.sendMessage("&aYou are now editing the map. Your changes will be saved once the server shuts down, or run &2/mwedit finish&a.");
+                    context.SendMessage("&aYou are now editing the map. Your changes will be saved once the server shuts down, or run &2/mwedit finish&a.");
                     p.teleport(CoreGame.Instance.mwAuto.getSpawnLocation());
                     return 1;
                 }))
                 .SubCommand(Literal("manual").Executes((context) -> {
                     Player p = context.GetSendingPlayer();
                     if(LobbyEngine.FromPlayer(p) != null) LobbyEngine.FromPlayer(p).RemovePlayer(p);
-                    p.sendMessage("&aYou are now editing the map. Your changes will be saved once the server shuts down, or run &2/mwedit finish&a.");
+                    context.SendMessage("&aYou are now editing the map. Your changes will be saved once the server shuts down, or run &2/mwedit finish&a.");
                     p.teleport(CoreGame.Instance.mwManual.getSpawnLocation());
                     return 1;
                 }))

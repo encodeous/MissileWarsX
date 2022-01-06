@@ -125,6 +125,9 @@ public class MissileWarsRankedMatch extends MissileWarsMatch{
 
     @Override
     public void FinalizeMatch(boolean isDraw) {
+        if(!hasStarted){
+            return;
+        }
         UUID matchId = UUID.randomUUID();
         ArrayList<Player> winTeam = new ArrayList<>();
         ArrayList<Player> loseTeam = new ArrayList<>();
