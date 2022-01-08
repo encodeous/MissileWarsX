@@ -491,6 +491,7 @@ public class Utils {
         }
     }
     public static void DeleteFolder(File folder){
+        if(!folder.exists()) return;
         CheckPath(folder);
         var stk = new Stack<File>();
         while(!stk.empty()){

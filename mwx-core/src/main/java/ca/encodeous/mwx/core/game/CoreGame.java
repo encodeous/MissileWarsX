@@ -4,6 +4,7 @@ import ca.encodeous.mwx.configuration.*;
 import ca.encodeous.mwx.configuration.LobbyConfiguration;
 import ca.encodeous.mwx.configuration.MissileWarsConfiguration;
 import ca.encodeous.mwx.core.utils.MCVersion;
+import ca.encodeous.mwx.core.utils.Utils;
 import ca.encodeous.mwx.data.Bounds;
 import ca.encodeous.mwx.engines.performance.RealTPS;
 import ca.encodeous.mwx.engines.performance.TPSMon;
@@ -41,6 +42,7 @@ import pl.kacperduras.protocoltab.manager.TabManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -292,8 +294,11 @@ public class CoreGame {
 
     public void StopGame(boolean save) {
         LobbyEngine.Shutdown();
-        var folder = Bukkit.getWorlds().get(0).getWorldFolder();
-
+        var w = Bukkit.getWorlds().get(0);
+        w.save();
+        w.setAutoSave(false);
+        var folder = Path.of(w.getWorldFolder().getAbsolutePath(), "playerdata").toFile();
+        Utils.DeleteFolder(folder);
         Stats.close();
         if (save) {
             try {
