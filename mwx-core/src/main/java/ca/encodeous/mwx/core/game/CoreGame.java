@@ -292,13 +292,20 @@ public class CoreGame {
         return null;
     }
 
+    private void DeleteSection(String name, World w){
+        var folder = Path.of(w.getWorldFolder().getAbsolutePath(), name).toFile();
+        Utils.DeleteFolder(folder);
+    }
+
     public void StopGame(boolean save) {
         LobbyEngine.Shutdown();
         var w = Bukkit.getWorlds().get(0);
         w.save();
         w.setAutoSave(false);
-        var folder = Path.of(w.getWorldFolder().getAbsolutePath(), "playerdata").toFile();
-        Utils.DeleteFolder(folder);
+        DeleteSection("playerdata", w);
+        DeleteSection("data", w);
+        DeleteSection("entities", w);
+
         Stats.close();
         if (save) {
             try {

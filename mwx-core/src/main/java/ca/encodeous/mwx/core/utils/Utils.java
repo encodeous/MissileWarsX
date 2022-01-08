@@ -494,15 +494,22 @@ public class Utils {
         if(!folder.exists()) return;
         CheckPath(folder);
         var stk = new Stack<File>();
+        stk.push(folder);
         while(!stk.empty()){
             var f = stk.pop();
+            if(!f.isDirectory() || !f.exists()) continue;
             for(var sub : f.listFiles()){
                 CheckPath(sub);
                 if(sub.isDirectory()){
                     stk.push(sub);
                 }else{
-                    sub.delete();
+                    if(!sub.delete()){
+                        sub.deleteOnExit();
+                    }
                 }
+            }
+            if(!f.delete()){
+                f.deleteOnExit();
             }
         }
     }
