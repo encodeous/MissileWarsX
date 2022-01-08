@@ -73,26 +73,26 @@ public class MissileWars1_13 implements MissileWarsImplementation {
         mtch.mwGreen.setColor(ChatColor.GREEN);
         mtch.mwGreen.setAllowFriendlyFire(true);
         mtch.mwGreen.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
-        mtch.mwGreen.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
+        mtch.mwGreen.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
 
         mtch.mwRed = GetTeam("red", board);
         mtch.mwRed.setColor(ChatColor.RED);
         mtch.mwRed.setAllowFriendlyFire(true);
         mtch.mwRed.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
-        mtch.mwRed.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
+        mtch.mwRed.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
 
         mtch.mwSpectate = GetTeam("spectator", board);
         mtch.mwSpectate.setColor(ChatColor.BLUE);
         mtch.mwSpectate.setAllowFriendlyFire(false);
         mtch.mwSpectate.setCanSeeFriendlyInvisibles(true);
         mtch.mwSpectate.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
-        mtch.mwSpectate.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
+        mtch.mwSpectate.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
 
         mtch.mwLobby = GetTeam("lobby", board);
         mtch.mwLobby.setColor(ChatColor.GRAY);
         mtch.mwLobby.setAllowFriendlyFire(false);
         mtch.mwLobby.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
-        mtch.mwLobby.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OTHER_TEAMS);
+        mtch.mwLobby.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.FOR_OWN_TEAM);
     }
 
     @Override
