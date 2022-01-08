@@ -18,7 +18,6 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.PasteBuilder;
-import com.sk89q.worldedit.world.block.BlockType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,8 +27,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.util.Stack;
 import java.util.logging.Level;
 
 public class Utils {
@@ -482,5 +484,25 @@ public class Utils {
         curBlock.setType(mat);
         curBlock.breakNaturally();
         curBlock.setType(curMat);
+    }
+    public static void CheckPath(File checked){
+        if(Files.isSymbolicLink(checked.toPath())){
+            throw new RuntimeException("Symbolic links are not allowed to be deleted due to security issues. Please contact your server administrator. Path: " + checked.getAbsolutePath());
+        }
+    }
+    public static void DeleteFolder(File folder){
+        CheckPath(folder);
+        var stk = new Stack<File>();
+        while(!stk.empty()){
+            var f = stk.pop();
+            for(var sub : f.listFiles()){
+                CheckPath(sub);
+                if(sub.isDirectory()){
+                    stk.push(sub);
+                }else{
+                    sub.delete();
+                }
+            }
+        }
     }
 }

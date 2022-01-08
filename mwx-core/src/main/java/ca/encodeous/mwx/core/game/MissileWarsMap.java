@@ -200,19 +200,6 @@ public class MissileWarsMap {
         if(!success){
             System.out.println("Unable to unload world " + MswWorld.getName() + " deleting anyways...");
         }
-        boolean symbolic = Files.isSymbolicLink(worldFolder.toPath());
-        if(!symbolic)
-            Delete(worldFolder);
+        Utils.DeleteFolder(worldFolder);
     }
-
-    public static void Delete(File file) {
-        if(Files.isSymbolicLink(file.toPath())) return;
-        if(file.isDirectory()) {
-            for(File f : file.listFiles()) {
-                Delete(f);
-            }
-        }
-        file.delete();
-    }
-
 }

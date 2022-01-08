@@ -292,6 +292,8 @@ public class CoreGame {
 
     public void StopGame(boolean save) {
         LobbyEngine.Shutdown();
+        var folder = Bukkit.getWorlds().get(0).getWorldFolder();
+
         Stats.close();
         if (save) {
             try {
