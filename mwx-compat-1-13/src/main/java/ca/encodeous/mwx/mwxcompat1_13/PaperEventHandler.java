@@ -56,37 +56,41 @@ public class PaperEventHandler implements Listener {
         MissileWarsMatch match = LobbyEngine.FromWorld(event.getEntity().getWorld());
         if(match == null) return;
         TNTPrimed tnt = (TNTPrimed) event.getEntity();
-        Location blockLoc = tnt.getOrigin();
-        Block b = tnt.getWorld().getBlockAt(blockLoc);
-        HashSet<UUID> sources = new HashSet<>();
-        if(tnt.getSource() == null){
-            for(Block block : TraceEngine.GetNeighbors(b)){
-                if(block.getType() == Material.REDSTONE_BLOCK){
-                    TrackedBlock blockt = match.Tracer.GetSources(block);
-                    sources.addAll(blockt.Sources);
+        try{
+            Location blockLoc = tnt.getOrigin();
+            Block b = tnt.getWorld().getBlockAt(blockLoc);
+            HashSet<UUID> sources = new HashSet<>();
+            if(tnt.getSource() == null){
+                for(Block block : TraceEngine.GetNeighbors(b)){
+                    if(block.getType() == Material.REDSTONE_BLOCK){
+                        TrackedBlock blockt = match.Tracer.GetSources(block);
+                        sources.addAll(blockt.Sources);
+                    }
                 }
-            }
-            InterceptTntIgnition(sources, b, tnt, true, match);
-        }else{
-            if(tnt.getSource() instanceof Projectile){
-                ProjectileSource shooter = TraceEngine.ResolveShooter((Projectile) tnt.getSource());
-                UUID latestSource = null;
-                if(shooter instanceof Player){
-                    latestSource = ((Player) shooter).getUniqueId();
-                    sources.add(latestSource);
-                }
-                InterceptTntIgnition(sources, b, tnt, false, match);
-            }else if(tnt.getSource() instanceof TNTPrimed){
-                boolean isRedstoneActivated = false;
-                if(tnt.getSource() instanceof TNTPrimed){
-                    sources.addAll(match.Tracer.FindCause((TNTPrimed)tnt.getSource()));
-                    isRedstoneActivated = match.Tracer.IsRedstoneActivated((TNTPrimed)tnt.getSource());
-                }
-                InterceptTntIgnition(sources, b, tnt, isRedstoneActivated, match);
+                InterceptTntIgnition(sources, b, tnt, true, match);
             }else{
-                sources.add(tnt.getSource().getUniqueId());
-                InterceptTntIgnition(sources, b, tnt, false, match);
+                if(tnt.getSource() instanceof Projectile){
+                    ProjectileSource shooter = TraceEngine.ResolveShooter((Projectile) tnt.getSource());
+                    UUID latestSource = null;
+                    if(shooter instanceof Player){
+                        latestSource = ((Player) shooter).getUniqueId();
+                        sources.add(latestSource);
+                    }
+                    InterceptTntIgnition(sources, b, tnt, false, match);
+                }else if(tnt.getSource() instanceof TNTPrimed){
+                    boolean isRedstoneActivated = false;
+                    if(tnt.getSource() instanceof TNTPrimed){
+                        sources.addAll(match.Tracer.FindCause((TNTPrimed)tnt.getSource()));
+                        isRedstoneActivated = match.Tracer.IsRedstoneActivated((TNTPrimed)tnt.getSource());
+                    }
+                    InterceptTntIgnition(sources, b, tnt, isRedstoneActivated, match);
+                }else{
+                    sources.add(tnt.getSource().getUniqueId());
+                    InterceptTntIgnition(sources, b, tnt, false, match);
+                }
             }
+        }catch (IllegalStateException e){
+            // ignored
         }
     }
 
