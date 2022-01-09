@@ -25,9 +25,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -38,6 +35,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import pl.kacperduras.protocoltab.manager.TabManager;
 
 import java.io.File;
@@ -222,28 +222,33 @@ public class CoreGame {
                     @Override
                     public void onPacketSending(PacketEvent event) {
                         if (event.getPacketType() ==
-                            PacketType.Play.Server.CHAT) {
-                            if (event.getPacket().getChatComponents().getValues().size() == 0 ||
-                                    event.getPacket().getChatComponents().getValues().get(0) == null
-                            ) return;
-                            JsonObject obj = new Gson().fromJson(event.getPacket().getChatComponents().getValues().get(0).getJson(), JsonObject.class);
-                            if (obj.has("translate") && obj.has("with") && obj.get("translate").getAsString().startsWith("death")) {
-                                // dealing with death event
-                                JsonArray withArr = obj.getAsJsonArray("with");
-                                ArrayList<Player> players = new ArrayList<>();
-                                for (int i = 0; i < withArr.size(); i++) {
-                                    players.add(Bukkit.getPlayer(withArr.get(i).getAsJsonObject().get("insertion").getAsString()));
-                                }
-                                HashSet<Player> allPlayers = new HashSet<>();
-                                for (Player p : players) {
-                                    MissileWarsMatch match = LobbyEngine.FromWorld(p.getWorld());
-                                    if (match != null) {
-                                        allPlayers.addAll(match.Teams.keySet());
+                                PacketType.Play.Server.CHAT) {
+                            try {
+                                if (event.getPacket().getChatComponents().getValues().size() == 0 ||
+                                        event.getPacket().getChatComponents().getValues().get(0) == null
+                                ) return;
+                                JSONObject obj = new JSONObject(
+                                        event.getPacket().getChatComponents().getValues().get(0).getJson());
+                                if (obj.has("translate") && obj.has("with") && obj.getString("translate").startsWith("death")) {
+                                    // dealing with death event
+                                    JSONArray withArr = obj.getJSONArray("with");
+                                    ArrayList<Player> players = new ArrayList<>();
+                                    for (int i = 0; i < withArr.length(); i++) {
+                                        players.add(Bukkit.getPlayer(withArr.getJSONObject(i).getString("insertion")));
+                                    }
+                                    HashSet<Player> allPlayers = new HashSet<>();
+                                    for (Player p : players) {
+                                        MissileWarsMatch match = LobbyEngine.FromWorld(p.getWorld());
+                                        if (match != null) {
+                                            allPlayers.addAll(match.Teams.keySet());
+                                        }
+                                    }
+                                    if (!allPlayers.contains(event.getPlayer())) {
+                                        event.setCancelled(true);
                                     }
                                 }
-                                if (!allPlayers.contains(event.getPlayer())) {
-                                    event.setCancelled(true);
-                                }
+                            } catch (JSONException e) {
+                                // ignored
                             }
                         }
                     }
