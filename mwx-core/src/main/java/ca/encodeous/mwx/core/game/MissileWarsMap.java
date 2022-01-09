@@ -4,7 +4,10 @@ import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.data.Bounds;
 import ca.encodeous.mwx.core.utils.Utils;
 import com.fastasyncworldedit.core.extent.clipboard.ReadOnlyClipboard;
+import com.fastasyncworldedit.core.queue.implementation.QueueHandler;
+import com.fastasyncworldedit.core.util.WEManager;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.function.operation.Operation;
@@ -13,6 +16,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.session.PasteBuilder;
+import com.sk89q.worldedit.session.request.Request;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -163,11 +167,7 @@ public class MissileWarsMap {
                 Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, new Runnable() {
                     @Override
                     public void run() {
-                        for(Entity e : MswWorld.getEntities()){
-                            if(!(e instanceof Player)){
-                                e.remove();
-                            }
-                        }
+                        CoreGame.GetImpl().ClearEntities(MswWorld);
                         finished.run();
                     }
                 });

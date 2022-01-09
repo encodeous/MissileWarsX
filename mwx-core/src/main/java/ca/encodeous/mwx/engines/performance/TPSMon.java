@@ -4,6 +4,7 @@ import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.engines.lobby.Lobby;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import ca.encodeous.mwx.core.utils.Chat;
+import com.sk89q.worldedit.session.request.Request;
 import org.bukkit.Bukkit;
 
 public class TPSMon implements Runnable {
@@ -24,19 +25,25 @@ public class TPSMon implements Runnable {
                     isInCriticalZone = false;
                 }
             }
-            if(!isInCriticalZone){
+            if(!isInCriticalZone) {
                 System.out.println("The server is currently lagging severely. MissileWarsX is trying to resolve the problem.");
                 lastCritical = System.currentTimeMillis();
                 isInWarningZone = true;
                 isInCriticalZone = true;
-                for(Lobby lobby : LobbyEngine.Lobbies.values()){
-                    lobby.SendMessage("&cPlease wait while the server wipes your lobby...");
-                    lobby.Match.Map.CleanMap(()->{
+                for (var req : Request.getAll()) {
+                    req.getExtent().cancel();
+                }
+                Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, () -> {
+                    Bukkit.broadcastMessage(Chat.FCL("&cAttention, the server is experiencing critically low tps. All lobbies will be cleaned."));
+                    for (Lobby lobby : LobbyEngine.Lobbies.values()) {
+                        lobby.SendMessage("&cPlease wait while the server wipes your lobby...");
+                    }
+                });
+                for (Lobby lobby : LobbyEngine.Lobbies.values()) {
+                    lobby.Match.Map.CleanMap(() -> {
                         lobby.SendMessage("&cYour lobby has been cleaned");
                     });
                 }
-                Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, () ->
-                        Bukkit.broadcastMessage(Chat.FCL("&cAttention, the server is experiencing critically low tps. All lobbies will be cleaned.")));
             }
         }
         if(tps <= CoreGame.Instance.mwConfig.TpsWarningThreshold){

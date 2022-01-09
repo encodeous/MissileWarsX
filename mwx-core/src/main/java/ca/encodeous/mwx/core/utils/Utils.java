@@ -503,14 +503,10 @@ public class Utils {
                 if(sub.isDirectory()){
                     stk.push(sub);
                 }else{
-                    if(!sub.delete()){
-                        sub.deleteOnExit();
-                    }
+                    sub.deleteOnExit();
                 }
             }
-            if(!f.delete()){
-                f.deleteOnExit();
-            }
+            f.deleteOnExit();
         }
     }
 }

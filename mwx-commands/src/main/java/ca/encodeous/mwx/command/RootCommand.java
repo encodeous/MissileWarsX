@@ -26,14 +26,18 @@ public final class RootCommand extends CommandNode {
     }
 
     public void Register(CommandDispatcher<Object> dispatcher) {
-        var builder = (LiteralArgumentBuilder<Object>) command;
-        Bukkit.getPluginManager().addPermission(new Permission("minecraft.command." + builder.getLiteral(), PermissionDefault.TRUE));
-        for(String alias : aliases) Bukkit.getPluginManager().addPermission(new Permission("minecraft.command." + alias, PermissionDefault.TRUE));
-        var cmd = dispatcher.register(builder);
-        for(String alias : aliases) {
-            var aliasCmd = LiteralArgumentBuilder.literal(alias).redirect(cmd).executes(builder.getCommand());
-            if(builder.getRequirement() != null) aliasCmd.requires(builder.getRequirement());
-            dispatcher.register(aliasCmd);
+        try{
+            var builder = (LiteralArgumentBuilder<Object>) command;
+            Bukkit.getPluginManager().addPermission(new Permission("minecraft.command." + builder.getLiteral(), PermissionDefault.TRUE));
+            for(String alias : aliases) Bukkit.getPluginManager().addPermission(new Permission("minecraft.command." + alias, PermissionDefault.TRUE));
+            var cmd = dispatcher.register(builder);
+            for(String alias : aliases) {
+                var aliasCmd = LiteralArgumentBuilder.literal(alias).redirect(cmd).executes(builder.getCommand());
+                if(builder.getRequirement() != null) aliasCmd.requires(builder.getRequirement());
+                dispatcher.register(aliasCmd);
+            }
+        }catch (IllegalArgumentException e){
+            e.printStackTrace();
         }
     }
 

@@ -296,8 +296,22 @@ public class MissileWars1_13 implements MissileWarsImplementation {
         return Structures;
     }
 
-
-
+    @Override
+    public void ClearEntities(World world) {
+        if(PaperEventHandler.entities.containsKey(world)){
+            for(var e : PaperEventHandler.entities.get(world)){
+                if(!(e instanceof Player) && e.isDead()){
+                    e.remove();
+                }
+            }
+            PaperEventHandler.entities.remove(world);
+        }
+        for(Entity e : world.getEntities()){
+            if(!(e instanceof Player)){
+                e.remove();
+            }
+        }
+    }
 
 
     private MissileWarsMap getMissileWarsMap(String name, MissileWarsMap map) {

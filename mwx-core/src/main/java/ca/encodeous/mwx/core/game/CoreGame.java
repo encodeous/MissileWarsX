@@ -305,8 +305,6 @@ public class CoreGame {
     public void StopGame(boolean save) {
         LobbyEngine.Shutdown();
         var w = Bukkit.getWorlds().get(0);
-        w.save();
-        w.setAutoSave(false);
         DeleteSection("playerdata", w);
         DeleteSection("data", w);
         DeleteSection("entities", w);

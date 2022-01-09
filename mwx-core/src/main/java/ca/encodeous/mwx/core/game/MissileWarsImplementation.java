@@ -34,4 +34,5 @@ public interface MissileWarsImplementation {
     public void PlaySound(Location loc, SoundType type);
     // Structures
     public StructureInterface GetStructureManager();
+    public void ClearEntities(World world);
 }
