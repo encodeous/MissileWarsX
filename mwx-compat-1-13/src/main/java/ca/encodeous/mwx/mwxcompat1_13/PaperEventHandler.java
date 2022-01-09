@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -24,10 +25,26 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PaperEventHandler implements Listener {
     public static ConcurrentHashMap<World, HashSet<Entity>> entities = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<World, Integer> lzEntityQuery = new ConcurrentHashMap<>();
+    private void LzSqrtProcess(World w){
+        if(lzEntityQuery.getOrDefault(w, 0) > 30){
+            lzEntityQuery.put(w, 0);
+            if(!entities.containsKey(w)) return;
+            ArrayList<Entity> removed = new ArrayList<>();
+            for(var e : entities.get(w)){
+                if(e.isDead()){
+                    removed.add(e);
+                }
+            }
+            removed.forEach(entities.get(w)::remove);
+        }
+    }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityRemoveFromWorldEvent(EntityDeathEvent event){
         if(entities.containsKey(event.getEntity().getWorld())){
+            lzEntityQuery.put(event.getEntity().getWorld(), lzEntityQuery.getOrDefault(event.getEntity().getWorld(), 0) + 1);
             entities.get(event.getEntity().getWorld()).remove(event.getEntity());
+            LzSqrtProcess(event.getEntity().getWorld());
             MissileWarsMatch match = LobbyEngine.FromWorld(event.getEntity().getWorld());
             if(match == null) return;
             match.Tracer.RemoveEntity(event.getEntity().getUniqueId());
@@ -35,7 +52,9 @@ public class PaperEventHandler implements Listener {
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityAddEvent(EntitySpawnEvent event){
+        LzSqrtProcess(event.getEntity().getWorld());
         if(CoreGame.Instance.mwConfig.AllowedEntities != null && !CoreGame.Instance.mwConfig.AllowedEntities.isEmpty()){
+            lzEntityQuery.put(event.getEntity().getWorld(), lzEntityQuery.getOrDefault(event.getEntity().getWorld(), 0) + 1);
             if(!CoreGame.Instance.mwConfig.AllowedEntities.contains(event.getEntity().getType().name())){
                 event.setCancelled(true);
                 return;
@@ -46,6 +65,7 @@ public class PaperEventHandler implements Listener {
             entities.put(w, new HashSet<>());
         }
         var wEnt = entities.get(w);
+        lzEntityQuery.put(event.getEntity().getWorld(), lzEntityQuery.getOrDefault(event.getEntity().getWorld(), 0) + 1);
         if(wEnt.size() > CoreGame.Instance.mwConfig.HardEntityLimit){
             if(!(event.getEntity() instanceof Player)){
                 event.setCancelled(true);
