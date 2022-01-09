@@ -7,15 +7,30 @@ import ca.encodeous.mwx.core.utils.Chat;
 import com.sk89q.worldedit.session.request.Request;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayDeque;
+
 public class TPSMon implements Runnable {
     private boolean isInWarningZone;
     private boolean isInCriticalZone;
     private long lastCritical;
     public static TPSMon Instance = new TPSMon();
+    private static ArrayDeque<Double> tpsHist = new ArrayDeque<>();
+    double CalcTPS(){
+        double tps = RealTPS.Instance.getTps();
+        tpsHist.add(tps);
+        while(tpsHist.size() > 5){
+            tpsHist.removeFirst();
+        }
+        double sum = 0;
+        for(var d : tpsHist){
+            sum += d;
+        }
+        return sum / tpsHist.size();
+    }
     @Override
     public void run() {
-        double tps = RealTPS.Instance.getTps();
-        if(System.nanoTime() - RealTPS.Instance.lastTick >= 5L * 1000000000){
+        var tps = CalcTPS();
+        if(System.currentTimeMillis() - RealTPS.Instance.lastTick >= 20000){
             tps = 0;
         }
         if(tps <= CoreGame.Instance.mwConfig.TpsCriticalThreshold){
@@ -32,6 +47,9 @@ public class TPSMon implements Runnable {
                 isInCriticalZone = true;
                 for (var req : Request.getAll()) {
                     req.getExtent().cancel();
+                }
+                for (Lobby lobby : LobbyEngine.Lobbies.values()) {
+                    CoreGame.GetImpl().ClearEntities(lobby.Match.Map.MswWorld);
                 }
                 Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, () -> {
                     Bukkit.broadcastMessage(Chat.FCL("&cAttention, the server is experiencing critically low tps. All lobbies will be cleaned."));

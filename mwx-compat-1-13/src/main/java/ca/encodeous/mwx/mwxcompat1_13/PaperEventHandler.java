@@ -5,6 +5,7 @@ import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.engines.trace.TraceEngine;
 import ca.encodeous.mwx.engines.trace.TrackedBlock;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
+import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -40,7 +41,7 @@ public class PaperEventHandler implements Listener {
         }
     }
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void EntityRemoveFromWorldEvent(EntityDeathEvent event){
+    public void EntityRemoveFromWorldEvent(EntityRemoveFromWorldEvent event){
         if(entities.containsKey(event.getEntity().getWorld())){
             lzEntityQuery.put(event.getEntity().getWorld(), lzEntityQuery.getOrDefault(event.getEntity().getWorld(), 0) + 1);
             entities.get(event.getEntity().getWorld()).remove(event.getEntity());
@@ -52,20 +53,20 @@ public class PaperEventHandler implements Listener {
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void EntityAddEvent(EntitySpawnEvent event){
-        LzSqrtProcess(event.getEntity().getWorld());
+        var w = event.getLocation().getWorld();
+        LzSqrtProcess(w);
         if(CoreGame.Instance.mwConfig.AllowedEntities != null && !CoreGame.Instance.mwConfig.AllowedEntities.isEmpty()){
-            lzEntityQuery.put(event.getEntity().getWorld(), lzEntityQuery.getOrDefault(event.getEntity().getWorld(), 0) + 1);
+            lzEntityQuery.put(w, lzEntityQuery.getOrDefault(w, 0) + 1);
             if(!CoreGame.Instance.mwConfig.AllowedEntities.contains(event.getEntity().getType().name())){
                 event.setCancelled(true);
                 return;
             }
         }
-        var w = event.getEntity().getWorld();
         if(!entities.containsKey(w)){
             entities.put(w, new HashSet<>());
         }
         var wEnt = entities.get(w);
-        lzEntityQuery.put(event.getEntity().getWorld(), lzEntityQuery.getOrDefault(event.getEntity().getWorld(), 0) + 1);
+        lzEntityQuery.put(w, lzEntityQuery.getOrDefault(w, 0) + 1);
         if(wEnt.size() > CoreGame.Instance.mwConfig.HardEntityLimit){
             if(!(event.getEntity() instanceof Player)){
                 event.setCancelled(true);
@@ -74,12 +75,12 @@ public class PaperEventHandler implements Listener {
         }
         wEnt.add(event.getEntity());
         if(!(event.getEntity() instanceof TNTPrimed)) return;
-        MissileWarsMatch match = LobbyEngine.FromWorld(event.getEntity().getWorld());
+        MissileWarsMatch match = LobbyEngine.FromWorld(w);
         if(match == null) return;
         TNTPrimed tnt = (TNTPrimed) event.getEntity();
         try{
-            Location blockLoc = tnt.getOrigin();
-            Block b = tnt.getWorld().getBlockAt(blockLoc);
+            Location blockLoc = event.getLocation().toBlockLocation();
+            Block b = w.getBlockAt(blockLoc);
             HashSet<UUID> sources = new HashSet<>();
             if(tnt.getSource() == null){
                 for(Block block : TraceEngine.GetNeighbors(b)){
