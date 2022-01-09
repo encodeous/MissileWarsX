@@ -15,10 +15,22 @@ public class TPSMon implements Runnable {
     private long lastCritical;
     public static TPSMon Instance = new TPSMon();
     private static ArrayDeque<Double> tpsHist = new ArrayDeque<>();
+    public static long lastTickDuration = -1;
+    public static long lastTick = System.currentTimeMillis();
+    public double getTps(){
+        if(lastTickDuration == -1){
+            return CoreGame.Instance.mwConfig.TpsCriticalThreshold;
+        }
+        else{
+            var v = 1000.0 / lastTickDuration;
+            lastTickDuration = -1;
+            return v;
+        }
+    }
     double CalcTPS(){
-        double tps = RealTPS.Instance.getTps();
+        double tps = getTps();
         tpsHist.add(tps);
-        while(tpsHist.size() > 5){
+        while(tpsHist.size() > 10){
             tpsHist.removeFirst();
         }
         double sum = 0;
@@ -30,7 +42,7 @@ public class TPSMon implements Runnable {
     @Override
     public void run() {
         var tps = CalcTPS();
-        if(System.currentTimeMillis() - RealTPS.Instance.lastTick >= 20000){
+        if(System.currentTimeMillis() - lastTick >= 20000){
             tps = 0;
         }
         if(tps <= CoreGame.Instance.mwConfig.TpsCriticalThreshold){
@@ -48,10 +60,10 @@ public class TPSMon implements Runnable {
                 for (var req : Request.getAll()) {
                     req.getExtent().cancel();
                 }
-                for (Lobby lobby : LobbyEngine.Lobbies.values()) {
-                    CoreGame.GetImpl().ClearEntities(lobby.Match.Map.MswWorld);
-                }
                 Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, () -> {
+                    for (Lobby lobby : LobbyEngine.Lobbies.values()) {
+                        CoreGame.GetImpl().ClearEntities(lobby.Match.Map.MswWorld);
+                    }
                     Bukkit.broadcastMessage(Chat.FCL("&cAttention, the server is experiencing critically low tps. All lobbies will be cleaned."));
                     for (Lobby lobby : LobbyEngine.Lobbies.values()) {
                         lobby.SendMessage("&cPlease wait while the server wipes your lobby...");

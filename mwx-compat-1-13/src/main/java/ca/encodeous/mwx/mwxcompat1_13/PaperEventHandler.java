@@ -2,10 +2,13 @@ package ca.encodeous.mwx.mwxcompat1_13;
 
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.engines.performance.TPSMon;
 import ca.encodeous.mwx.engines.trace.TraceEngine;
 import ca.encodeous.mwx.engines.trace.TrackedBlock;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
+import com.destroystokyo.paper.event.server.ServerTickEndEvent;
+import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -14,12 +17,10 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -122,5 +123,15 @@ public class PaperEventHandler implements Listener {
         sources.addAll(trace.Sources);
         match.Tracer.RemoveBlock(trace.Position);
         match.Tracer.AddEntity(tnt, sources, redstoneActivated);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void TickStart(ServerTickStartEvent start){
+        TPSMon.lastTick = System.currentTimeMillis();
+    }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void TickEnd(ServerTickEndEvent start){
+        TPSMon.lastTickDuration = System.currentTimeMillis() - TPSMon.lastTick;
+        TPSMon.lastTick = System.currentTimeMillis();
     }
 }

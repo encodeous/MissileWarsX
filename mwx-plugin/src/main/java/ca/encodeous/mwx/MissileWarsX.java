@@ -179,6 +179,7 @@ public final class MissileWarsX extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        CoreGame.Instance.hasStopped = true;
         MissileWars.StopGame(true);
     }
 }

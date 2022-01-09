@@ -6,7 +6,6 @@ import ca.encodeous.mwx.configuration.MissileWarsConfiguration;
 import ca.encodeous.mwx.core.utils.MCVersion;
 import ca.encodeous.mwx.core.utils.Utils;
 import ca.encodeous.mwx.data.Bounds;
-import ca.encodeous.mwx.engines.performance.RealTPS;
 import ca.encodeous.mwx.engines.performance.TPSMon;
 import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.engines.trace.TrackedBreakage;
@@ -32,7 +31,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.json.JSONArray;
@@ -95,6 +93,8 @@ public class CoreGame {
     FileConfiguration lobbyConfig = new YamlConfiguration();
     File configFile = null;
     File lobbyFile = null;
+
+    public boolean hasStopped = false;
 
     public void LoadConfig() {
         // load configuration
@@ -212,8 +212,20 @@ public class CoreGame {
                 LobbyEngine.CreateLobby(info.MaxTeamSize, info.AutoJoin, info.LobbyType);
             }
         });
-        scheduler.runTaskTimerAsynchronously(mwPlugin, TPSMon.Instance, 0, 20);
-        scheduler.runTaskTimer(mwPlugin, RealTPS.Instance, 0, 20);
+        if(MCVersion.IsPaper()){
+            var t = new Thread(()->{
+                while(!hasStopped){
+                    try {
+                        Thread.sleep(1000L);
+                        TPSMon.Instance.run();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            t.setDaemon(true);
+            t.start();
+        }
         tabManager = new TabManager(mwPlugin);
 
         protocolManager.addPacketListener(
