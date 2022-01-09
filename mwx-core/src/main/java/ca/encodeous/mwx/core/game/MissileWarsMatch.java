@@ -2,6 +2,8 @@ package ca.encodeous.mwx.core.game;
 
 import ca.encodeous.mwx.configuration.Missile;
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
+import ca.encodeous.mwx.core.settings.BooleanSetting;
+import ca.encodeous.mwx.core.settings.SettingsManager;
 import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.data.Ref;
 import ca.encodeous.mwx.core.lang.Strings;
@@ -29,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MissileWarsMatch {
     // Map info
+    public SettingsManager settingsManager;
     public MissileWarsMap Map;
     // Teams
     public static Team mwGreen, mwRed, mwSpectate, mwLobby;
@@ -57,6 +60,7 @@ public class MissileWarsMatch {
         this.lobby = lobby;
         isActivated = true;
         hasStarted = false;
+        settingsManager = new MissileWarsMatchSettingsManager();
         Green = new HashSet<>();
         None = new HashSet<>();
         Red = new HashSet<>();
@@ -79,6 +83,19 @@ public class MissileWarsMatch {
     public boolean AllowPlayerInteractProtectedRegion(Player p){
         if(p.getGameMode() != GameMode.CREATIVE) return false;
         else return true;
+    }
+
+    public void UpdatePlayers() {
+        Iterator<Player> it = Teams.keys().asIterator();
+        while(it.hasNext()) {
+            RefreshPlayerSettings(it.next());
+        }
+    }
+
+    public void RefreshPlayerSettings(Player player) {
+        boolean noHitDelay = settingsManager.getBooleanSetting("NoHitDelay").getValue();
+        player.setMaximumNoDamageTicks(noHitDelay ? 0 : 20);
+        if(noHitDelay) player.setLastDamage(Integer.MAX_VALUE);
     }
 
     public void GreenPad(Player p){
@@ -164,6 +181,7 @@ public class MissileWarsMatch {
             p.setGameMode(GameMode.SURVIVAL);
         }
         OnGameStart();
+        UpdatePlayers();
         itemCounter.Start();
     }
 
@@ -303,6 +321,7 @@ public class MissileWarsMatch {
         }
         if(affectGame && !hasStarted) CheckGameReadyState();
         if(team != PlayerTeam.Spectator) TeleportPlayer(p, team);
+        RefreshPlayerSettings(p);
     }
 
 
@@ -490,6 +509,7 @@ public class MissileWarsMatch {
         itemCounter.StopCounting();
         startCounter.StopCounting();
         EventHandler = new MissileWarsEvents(this);
+        settingsManager = new MissileWarsMatchSettingsManager();
         Wipe(()->{
             lobby.SendMessage(Strings.MAP_WIPED);
             ArrayList<Player> players = new ArrayList<>(Teams.keySet());
