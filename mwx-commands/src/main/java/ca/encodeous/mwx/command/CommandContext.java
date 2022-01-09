@@ -124,11 +124,17 @@ public class CommandContext {
     }
 
     public Entity GetSendingEntity() {
-        return (Entity) commandSender;
+        if(commandSender instanceof Entity e){
+            return e;
+        }
+        return null;
     }
 
     public Player GetSendingPlayer() {
-        return (Player) commandSender;
+        if(commandSender instanceof Player p){
+            return p;
+        }
+        return null;
     }
 
     public CommandSender GetSender() {

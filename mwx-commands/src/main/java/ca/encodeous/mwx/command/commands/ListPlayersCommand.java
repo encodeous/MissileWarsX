@@ -10,11 +10,13 @@ import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 
+import static ca.encodeous.mwx.command.ExecutionSource.ANY;
+
 public class ListPlayersCommand extends MissileWarsCommand {
 
     @Override
     public RootCommand BuildCommand() {
-        return new RootCommand("players", "online", "p", "glist", "globallist", "mwlist").Executes((context) -> {
+        return new RootCommand("players", "online", "p", "glist", "globallist", "mwlist").Executes(ANY, (context) -> {
             StringBuilder sb = new StringBuilder();
             sb.append(String.format(Strings.PLAYERS_ONLINE, Bukkit.getOnlinePlayers().size()));
             for(Lobby lobby : LobbyEngine.Lobbies.values()){
