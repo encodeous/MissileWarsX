@@ -55,9 +55,9 @@ public class SettingsCommand extends MissileWarsCommand {
             if(s instanceof BooleanSetting)
                 settingNode.SubCommand(Boolean("value").Executes(context -> RunCommand(context, s.getName(), context.GetBoolean("value"))));
             else if(s instanceof IntegerSetting)
-                settingNode.SubCommand(Integer("value").Executes(context -> RunCommand(context, s.getName(), context.GetInteger("value"))));
+                settingNode.SubCommand(Integer("value", 0).Executes(context -> RunCommand(context, s.getName(), context.GetInteger("value"))));
             else if(s instanceof DoubleSetting)
-                settingNode.SubCommand(Double("value").Executes(context -> RunCommand(context, s.getName(), context.GetDouble("value"))));
+                settingNode.SubCommand(Double("value", 0).Executes(context -> RunCommand(context, s.getName(), context.GetDouble("value"))));
 
             root.SubCommand(settingNode);
         }

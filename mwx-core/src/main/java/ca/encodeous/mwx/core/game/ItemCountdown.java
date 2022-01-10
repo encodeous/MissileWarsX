@@ -16,7 +16,8 @@ public class ItemCountdown implements Countable {
     public MissileWarsMatch Match;
     @Override
     public void Count(Counter counter, int count) {
-        if(count % CoreGame.Instance.mwConfig.ResupplySeconds == 0){
+        int resupply = Match.settingsManager.getIntegerSetting("ItemDelay").getValue();
+        if(count % resupply == 0){
             while(true){
                 int item = Match.mwRand.nextInt(CoreGame.Instance.mwConfig.Items.size());
                 MissileWarsItem mwItem = CoreGame.Instance.mwConfig.Items.get(item);
@@ -30,14 +31,14 @@ public class ItemCountdown implements Countable {
                 break;
             }
         }
-        int remTime = CoreGame.Instance.mwConfig.ResupplySeconds - (count % CoreGame.Instance.mwConfig.ResupplySeconds);
+        int remTime = resupply - (count % resupply);
         for(Player p : Match.Green){
             p.setLevel(remTime);
-            p.setExp(remTime / ((float)CoreGame.Instance.mwConfig.ResupplySeconds));
+            p.setExp(remTime / ((float)resupply));
         }
         for(Player p : Match.Red){
             p.setLevel(remTime);
-            p.setExp(remTime / ((float)CoreGame.Instance.mwConfig.ResupplySeconds));
+            p.setExp(remTime / ((float)resupply));
         }
     }
 
