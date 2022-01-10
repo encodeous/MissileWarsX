@@ -19,7 +19,7 @@ import static ca.encodeous.mwx.command.CommandNode.Literal;
 
 public class SettingsCommand extends MissileWarsCommand {
 
-    private int RunCommand(CommandContext context, String settingName, Object v) throws CommandSyntaxException {
+    private int RunCommand(CommandContext context, String settingName, Object v) {
         MissileWarsMatch match = LobbyEngine.FromPlayer(context.GetSendingPlayer());
         if(match instanceof MissileWarsRankedMatch) {
             context.SendMessage(Strings.RANKED_PERM_DENIED);
@@ -32,16 +32,24 @@ public class SettingsCommand extends MissileWarsCommand {
         }
         if(s instanceof BooleanSetting setting) {
             boolean value = (boolean) v;
-            setting.setValue(value);
+            if(!setting.setValue(value, match)) {
+                context.SendMessage("&cSetting does not accept this value!");
+                return 0;
+            }
         }else if(s instanceof IntegerSetting setting) {
             int value = (int) v;
-            setting.setValue(value);
+            if(!setting.setValue(value, match)) {
+                context.SendMessage("&cSetting does not accept this value!");
+                return 0;
+            }
         }else if(s instanceof DoubleSetting setting) {
             double value = (double) v;
-            setting.setValue(value);
+            if(!setting.setValue(value, match)) {
+                context.SendMessage("&cSetting does not accept this value!");
+                return 0;
+            }
         }else return 0;
         context.SendMessage("&aChanged value of &6" + s.getName() + "&a to &6" + s.getValue());
-        s.CallUpdateEvent(match);
         return 1;
     }
 

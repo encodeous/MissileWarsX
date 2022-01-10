@@ -11,23 +11,23 @@ public abstract class Setting<T> {
     public Setting(String name, T defaultValue, SettingUpdateEvent<T> update) {
         this.name = name;
         updateEvent = update;
-        setValue(defaultValue);
+        value = defaultValue;
     }
 
     public String getName() {
         return name;
     }
 
-    public void CallUpdateEvent(MissileWarsMatch match) {
-        updateEvent.update(match, this);
-    }
-
     public T getValue() {
         return value;
     }
 
-    public void setValue(T obj) {
-        value = obj;
+    public boolean setValue(T obj, MissileWarsMatch match) {
+        if(updateEvent.update(match, obj)) {
+            value = obj;
+            return true;
+        }
+        return false;
     }
 
 }
