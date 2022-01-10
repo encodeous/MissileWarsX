@@ -12,6 +12,7 @@ public class MissileWarsMatchSettingsManager implements SettingsManager {
 
     public MissileWarsMatchSettingsManager() {
         settings.add(new BooleanSetting("NoHitDelay", false, (match, setting) -> match.UpdatePlayers()));
+        settings.add(new BooleanSetting("DisableItemLimit", false, (match, setting) -> {}));
     }
 
     @Override

@@ -43,9 +43,13 @@ public class ItemCountdown implements Countable {
 
     public void GivePlayerItem(Player p, MissileWarsItem item){
         int curCnt = Utils.CountItem(p, item);
-        if(item.MaxStackSize > curCnt){
+        boolean DisableItemLimit = Match.settingsManager.getBooleanSetting("DisableItemLimit").getValue();
+        if(item.MaxStackSize > curCnt || DisableItemLimit){
             ItemStack citem = CoreGame.GetImpl().CreateItem(item);
-            citem.setAmount(Math.min(item.StackSize, item.MaxStackSize - curCnt));
+
+            if(!DisableItemLimit) citem.setAmount(Math.min(item.StackSize, item.MaxStackSize - curCnt));
+            else citem.setAmount(item.StackSize);
+
             if(!p.getInventory().addItem(citem).isEmpty()){
                 CoreGame.GetImpl().PlaySound(p, SoundType.ITEM_NOT_GIVEN);
                 CoreGame.GetImpl().SendActionBar(p, Strings.INVENTORY_FULL);
