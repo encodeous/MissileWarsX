@@ -94,12 +94,7 @@ public class MissileWarsMap {
             EditSession session = Utils.GetEditSession(TemplateWorld);
             session.setFastMode(true);
             board = Utils.GetReadonlyClipboard(session, srcRegion);
-            if(Utils.IsWe6){
-                Utils.SetOrigin(board, srcRegion2);
-            }
-            if(!Utils.IsWe6){
-                session.close();
-            }
+            session.close();
             cachedClipboards.put(TemplateWorld, board);
         }
         return cachedClipboards.get(TemplateWorld);
@@ -122,13 +117,8 @@ public class MissileWarsMap {
                         PasteBuilder builder =
                                 Utils.createPaste(Utils.GetHolder(board, TemplateWorld), session, MswWorld)
                                         .ignoreAirBlocks(true);
-                        if(Utils.IsWe6){
-                            Utils.SetTo(builder, destFullRegion);
-                        }
                         Operations.complete(builder.build());
-                        if(!Utils.IsWe6){
-                            session.close();
-                        }
+                        session.close();
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -157,13 +147,8 @@ public class MissileWarsMap {
                 PasteBuilder builder =
                         Utils.createPaste(Utils.GetHolder(board, TemplateWorld), session, MswWorld)
                         .ignoreAirBlocks(true);
-                if(Utils.IsWe6){
-                    Utils.SetTo(builder, destFullRegion);
-                }
                 Operations.complete(builder.build());
-                if(!Utils.IsWe6){
-                    session.close();
-                }
+                session.close();
                 Bukkit.getScheduler().runTask(CoreGame.Instance.mwPlugin, new Runnable() {
                     @Override
                     public void run() {
