@@ -63,18 +63,6 @@
             <artifactId>jskills</artifactId>
             <version>1.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.fastasyncworldedit</groupId>
-            <artifactId>FAWE-Bukkit</artifactId>
-            <version>1.17-157</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>FAWE-Core</artifactId>
-                    <groupId>*</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
     </dependencies>
     <parent>
         <groupId>ca.encodeous.mwx</groupId>
