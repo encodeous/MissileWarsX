@@ -3,6 +3,7 @@ package ca.encodeous.mwx.mwxcompat1_13;
 import ca.encodeous.mwx.configuration.MissileWarsCoreItem;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.game.MissileWarsMatch;
+import ca.encodeous.mwx.core.game.MissileWarsRankedMatch;
 import ca.encodeous.mwx.core.utils.MCVersion;
 import ca.encodeous.mwx.core.utils.Utils;
 import ca.encodeous.mwx.data.PlayerTeam;
@@ -12,6 +13,8 @@ import ca.encodeous.mwx.engines.trace.TraceEngine;
 import ca.encodeous.mwx.data.Ref;
 import ca.encodeous.mwx.engines.structure.StructureUtils;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
+import ca.encodeous.mwx.item.SpecialItem;
+import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -28,6 +31,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.Optional;
@@ -246,6 +250,22 @@ public class MissileWarsEventHandler implements Listener {
         Ref<Boolean> use = new Ref<>(false);
         MissileWarsMatch match = LobbyEngine.FromPlayer(e.getPlayer());
         if(match == null) return;
+        if(!(match instanceof MissileWarsRankedMatch)) {
+            if(e.getItem() != null) {
+                ItemMeta meta = e.getItem().getItemMeta();
+                if(meta != null && meta.hasCustomModelData()) {
+                    for (SpecialItem item : SpecialItem.ITEMS) {
+                        if(e.getItem().getType() == item.getItem() && meta.getCustomModelData() == item.getData()) {
+                            if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                                item.onUse(e);
+                                e.setCancelled(true);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         match.EventHandler.PlayerInteractEvent(e.getPlayer(), e.getAction(), e.getClickedBlock(), e.getItem(), cancel, use);
         if(use.val){
             if(e.getHand() == EquipmentSlot.HAND){

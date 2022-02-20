@@ -11,6 +11,7 @@ import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.engines.trace.TrackedBreakage;
 import ca.encodeous.mwx.configuration.MissileBlock;
 import ca.encodeous.mwx.configuration.MissileSchematic;
+import ca.encodeous.mwx.item.SpecialItem;
 import ca.encodeous.mwx.mwxstats.StatisticManager;
 import ca.encodeous.mwx.engines.structure.ResourceLoader;
 import ca.encodeous.mwx.engines.structure.StructureInterface;
@@ -29,8 +30,10 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.json.JSONArray;
@@ -160,10 +163,32 @@ public class CoreGame {
         InitializeGame();
     }
 
+    private void tick() {
+        for(World w : Bukkit.getWorlds()) {
+            for(Entity e : w.getEntitiesByClasses(TNTPrimed.class)) {
+                if(e.getMetadata("explodeOnImpact").size() != 0) {
+                    TNTPrimed tnt = (TNTPrimed) e;
+                    for(int x = -1; x<=1; x++) {
+                        for(int y = -1; y<=1; y++) {
+                            for (int z = -1; z <= 1; z++) {
+                                if (w.getBlockAt(tnt.getLocation().add(x * 0.51d, y * 0.51d, z * 0.51d)).getType().isSolid()) {
+                                    tnt.setFuseTicks(0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void InitializeGame() {
         if (Instance == null) {
             Instance = this;
             mwImpl.RegisterEvents(mwPlugin);
+            SpecialItem.initialize();
+            BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+            scheduler.runTaskTimer(mwPlugin, this::tick, 1L, 1L);
         }
         if (protocolManager == null) {
             protocolManager = ProtocolLibrary.getProtocolManager();
