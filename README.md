@@ -1,5 +1,8 @@
 ![](assets/cover.png)
 
+![Lines of Code](https://img.shields.io/tokei/lines/github/encodeous/MissileWarsX)
+![Minecraft Version](https://img.shields.io/badge/minecraft-1.16.5%2B-green)
+
 MissileWarsX (or *MwX*) is an open source implementation of the legendary MissileWars mini-game created by SethBling and Cubehamster. This plugin offers a refined experience that is true to the original game. MwX enables other tweaks & performance options that make the game more enjoyable.
 
 ## Getting Started
