@@ -26,12 +26,14 @@ MissileWarsX has a lot of cool & fancy features that make the gameplay more inte
 - Fireballs explode when missiles collide with them.
 - Ties where both portals are exploded within 5 seconds are recorded. In the case of a tie, statistics will reflect the tie.
 - There are two map types, `auto` and `manual`. Players can be automatically distributed to each team when joining, or may choose their own teams.
+- Players can practice techniques (like tnt-launching) in `PRACTICE` lobbies, where they can give themselves creative mode.
 
 ### Gameplay
 
 - Deaths and Kills with tnt are traced to the person who placed it, naturally, this means that players who planted the winning missile is credited with the win.
 - Items have descriptions to help out new players.
 - Instant and seamless map reset, without kicking players.
+- Players have the ability to break blocks at a faster rate than in Vanilla with their bare hands, useful for breaking redstone blocks. This does not simply use the haste effect.
 
 ### Statistics
 - MissileWarsX keeps track of players' activity, and records their statistics.
