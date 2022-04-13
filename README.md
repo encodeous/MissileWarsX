@@ -23,22 +23,15 @@ MissileWarsX has a lot of cool & fancy features that make the gameplay more inte
 ### Mechanics
 
 - MwX sticks to the classic MissileWars experience, with 2 teams, 5 different types of missiles (see below), fireballs, arrows and shields.
-- Fireballs explode when missiles explode
-- The plugin checks for ties, where both sides' portals explode within 5 seconds of each other. In the case of a tie, statistics will be changed.
-- Instant and seamless map reset, without kicking players.
+- Fireballs explode when missiles collide with them.
+- Ties where both portals are exploded within 5 seconds are recorded. In the case of a tie, statistics will reflect the tie.
 - There are two map types, `auto` and `manual`. Players can be automatically distributed to each team when joining, or may choose their own teams.
 
-### Cosmetics
+### Gameplay
 
 - Deaths and Kills with tnt are traced to the person who placed it, naturally, this means that players who planted the winning missile is credited with the win.
 - Items have descriptions to help out new players.
-
-- MissileWarsX offers the classic MissileWars experience, with 2 teams, 5 different types of missiles (see below), and some useful accessories.
-- Lightweight experience, taking very little resources to run
-- Instant and seamless map reset, without disconnecting
-- Configurable and customizable map, allows users to choose teams or have the server automatically select for them
-- Most items and missiles are configurable, and new ones can be added
-- Includes an advanced kill / win credit tracing system that can trace each individual missile to the player that launched it
+- Instant and seamless map reset, without kicking players.
 
 ### Statistics
 - MissileWarsX keeps track of players' activity, and records their statistics.
