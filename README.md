@@ -34,6 +34,7 @@ MissileWarsX has a lot of cool & fancy features that make the gameplay more inte
 - Items have descriptions to help out new players.
 - Instant and seamless map reset, without kicking players.
 - Players have the ability to break blocks at a faster rate than in Vanilla with their bare hands, useful for breaking redstone blocks. This does not simply use the haste effect.
+- MwX displays the player/tab-list with special formatting, adding useful information such as statisics & latency.
 
 ### Statistics
 - MissileWarsX keeps track of players' activity, and records their statistics.
