@@ -1,9 +1,23 @@
 ![](assets/cover.png)
 
-MissileWarsX is an open source implementation of the legendary MissileWars minigame created by SethBling and Cubehamster.
-This plugin is designed to run on Paper Spigot servers, and aims to offer a lightweight and standardized experience.
+MissileWarsX (MwX) is an open source implementation of the legendary MissileWars minigame created by SethBling and Cubehamster. This plugin aims to offer a refined experience that is true to the original game. MwX enables other tweaks & performance options that make the game more enjoyable.
 
-## Features
+## Main Features
+
+### Mechanics
+
+- MwX offers the classic MissileWars experience, with 2 teams, 5 different types of missiles (see below), fireballs, arrows and shields.
+- Fireballs explode when missiles explode
+- The plugin checks for ties, where both sides' portals explode within 5 seconds of each other
+- Instant and seamless map reset, without kicking players.
+- There are two map types, `auto` and `manual`. Players can be automatically distributed to each team when joining, or may choose their own teams.
+
+### 
+
+### Cosmetics
+
+- Deaths and Kills with tnt are traced to the person who placed it, naturally, this means that players who planted the winning missile is credited with the win.
+- Items have descriptions to help out new players.
 
 - MissileWarsX offers the classic MissileWars experience, with 2 teams, 5 different types of missiles (see below), and some useful accessories.
 - Lightweight experience, taking very little resources to run
@@ -77,7 +91,10 @@ The recommended server configuration is stored in the `recommended-config` folde
 # Contributing and Bug Reporting
 
 If you wish to contribute to this project, or if you find any bugs, please create a pull request or file an issue!
-Alternatively, you can message me on Discord: `encodeous#7441`
+Alternatively, you can message me on Discord: `encodeous#7441` 
+
+:thumbsup:
+- Carson 
 
 # Acknowledgements
 
