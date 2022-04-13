@@ -1,18 +1,32 @@
 ![](assets/cover.png)
 
-MissileWarsX (MwX) is an open source implementation of the legendary MissileWars minigame created by SethBling and Cubehamster. This plugin aims to offer a refined experience that is true to the original game. MwX enables other tweaks & performance options that make the game more enjoyable.
+MissileWarsX (or *MwX*) is an open source implementation of the legendary MissileWars mini-game created by SethBling and Cubehamster. This plugin offers a refined experience that is true to the original game. MwX enables other tweaks & performance options that make the game more enjoyable.
+
+## Getting Started
+
+Download the latest build of MissileWarsX from the [Releases](https://github.com/encodeous/MissileWarsX/releases/tag/latest).
+
+MwX requires Paper version 1.16.5+, and supports up to 1.18.2 as of now.
+
+Here are a list of the dependencies required to run MwX:
+- ProtocolLib ([SpigotMC](https://www.spigotmc.org/resources/protocollib.1997/))
+- FastAsyncWorldEdit 2.x.x ([FAWE](https://intellectualsites.github.io/download/fawe.html))
+
+After collecting all the necessary dependencies, copy the config from the [recommended-config](https://github.com/encodeous/MissileWarsX/tree/dev/recommended-config) folder to the root of your server's directory. These settings are recommended to provide a smooth and consistent experience.
+
+*That's all. You can play around with the plugin config, head on over to the [wiki](https://github.com/encodeous/MissileWarsX/wiki) for more info!*
 
 ## Main Features
 
+MissileWarsX has a lot of cool & fancy features that make the gameplay more interesting & smooth.
+
 ### Mechanics
 
-- MwX offers the classic MissileWars experience, with 2 teams, 5 different types of missiles (see below), fireballs, arrows and shields.
+- MwX sticks to the classic MissileWars experience, with 2 teams, 5 different types of missiles (see below), fireballs, arrows and shields.
 - Fireballs explode when missiles explode
-- The plugin checks for ties, where both sides' portals explode within 5 seconds of each other
+- The plugin checks for ties, where both sides' portals explode within 5 seconds of each other. In the case of a tie, statistics will be changed.
 - Instant and seamless map reset, without kicking players.
 - There are two map types, `auto` and `manual`. Players can be automatically distributed to each team when joining, or may choose their own teams.
-
-### 
 
 ### Cosmetics
 
@@ -26,7 +40,13 @@ MissileWarsX (MwX) is an open source implementation of the legendary MissileWars
 - Most items and missiles are configurable, and new ones can be added
 - Includes an advanced kill / win credit tracing system that can trace each individual missile to the player that launched it
 
+### Statistics
+- MissileWarsX keeps track of players' activity, and records their statistics.
+- The plugin can be configured to automatically calculate TrueSkill rating in Ranked lobbies.
+
 ### Default Missiles
+
+Here are the default missiles included with MissileWarsX. These are identical to the ones from the original MissileWars game.
 
 <details>
 <summary>Tomahawk</summary>
@@ -59,42 +79,18 @@ MissileWarsX (MwX) is an open source implementation of the legendary MissileWars
 </details>
 
 
-
-
-
 ## Version Support
 
-MissileWarsX is currently stable on modern versions of Minecraft (1.13-1.17), while legacy support is still experimental. The end goal is to bring MissileWars to all Minecraft versions, 1.8+.
+As mentioned above, MissileWarsX is currently stable on modern versions of Minecraft (1.16.5+). Older versions may be dropped over time due to the lack of manpower to support them.
 
 ## Public Test Server
 
-If you want to try out MissileWarsX before hosting your own server, you can play the minigame on a publicly hosted server at `msw.encodeous.ca`. This server currently runs 1.17.1, and will run on the latest versions.
-
-## Hosting your own server
-
-Currently, there are no public builds of MissileWarsX, but you can build it yourself, or wait for an official release.
-
-To get the standard MissileWars experience, simply install the plugin and run the server. Please note that the plugin 
-is designed to run on a clean Minecraft server. Make sure there are no other worlds or plugins, 
-(unless you like living on the edge, and risk loss of data).
-
-### Server Software
-
-MissileWarsX is designed to run on top of Paper Spigot. Some features may not be available (Missile tracing) if ran without Paper.
-
-The recommended server configuration is stored in the `recommended-config` folder in this repository.
-
-### Plugin Configuration
-
-> Documentation to be added
+If you want to try out MissileWarsX before hosting your own server, you can play the mini-game on a publicly hosted server at `msw.encodeous.ca`. This server currently runs 1.18.2, and will run on the latest versions when they come out.
 
 # Contributing and Bug Reporting
 
 If you wish to contribute to this project, or if you find any bugs, please create a pull request or file an issue!
-Alternatively, you can message me on Discord: `encodeous#7441` 
-
-:thumbsup:
-- Carson 
+Alternatively, you can message me on Discord: `encodeous#7441`
 
 # Acknowledgements
 
