@@ -96,6 +96,7 @@ public class MissileWarsMatch {
         boolean noHitDelay = settingsManager.getBooleanSetting("NoHitDelay").getValue();
         player.setMaximumNoDamageTicks(noHitDelay ? 0 : 20);
         if(noHitDelay) player.setLastDamage(Integer.MAX_VALUE);
+        player.recalculatePermissions();
     }
 
     public void GreenPad(Player p){
@@ -256,6 +257,7 @@ public class MissileWarsMatch {
         }
         for(Player p : lobby.GetPlayers()){
             CoreGame.GetImpl().SendTitle(p, Strings.GAME_RESET, "");
+            p.recalculatePermissions();
         }
         isDraw = true;
         endCounter.Start();
@@ -322,6 +324,7 @@ public class MissileWarsMatch {
         if(affectGame && !hasStarted) CheckGameReadyState();
         if(team != PlayerTeam.Spectator) TeleportPlayer(p, team);
         RefreshPlayerSettings(p);
+        p.recalculatePermissions();
     }
 
 

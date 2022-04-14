@@ -46,6 +46,7 @@ public class Lobby {
     public void AddPlayer(Player p){
         SendMessage(String.format(Strings.PLAYER_JOIN_LOBBY, p.getDisplayName()));
         Match.AddPlayerToTeam(p, PlayerTeam.None);
+        p.recalculatePermissions();
     }
     public void RemovePlayer(Player p){
         SendMessage(String.format(Strings.LEAVE_GAME, p.getDisplayName()));
@@ -53,6 +54,7 @@ public class Lobby {
         if(GetPlayers().isEmpty() && (Match.hasStarted || Match.startCounter.isRunning()) && !Match.endCounter.isRunning()){
             Match.EndGame();
         }
+        p.recalculatePermissions();
     }
     public void SendMessage(String message){
         for(Player p : GetPlayers()){
