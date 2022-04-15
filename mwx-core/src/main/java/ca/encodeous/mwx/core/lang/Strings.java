@@ -49,7 +49,7 @@ public class Strings {
     public static String RANKED_LOCKED = Chat.FCL("&cYou cannot join this game because the teams are locked!");
 
     public static String PRACTICE_INFO = Chat.FCL("&6Welcome to a Practice Lobby!\n" +
-            " &7- &6You will be able to enter creative mode using &e/mode&6.\n" +
+            " &7- &6You will be able switch gamemodes using &e/creative&6 or &e/survival&6.\n" +
             " &7- &6Give yourself any item with &e/mwgive&6.\n" +
             " &7- &6Reset the map with &e/wipe&6.\n" +
             " &7- &6Match Statistics will not be saved.\n" +
