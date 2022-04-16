@@ -14,7 +14,6 @@ import ca.encodeous.mwx.data.Ref;
 import ca.encodeous.mwx.engines.structure.StructureUtils;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import ca.encodeous.mwx.item.SpecialItem;
-import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -363,6 +362,30 @@ public class MissileWarsEventHandler implements Listener {
                 match.EventHandler.PortalChangedEvent(value, (TNTPrimed) e.getEntity());
                 PropagatePortalBreak(value);
             });
+        }
+    }
+
+    @EventHandler
+    public void MoveEvent(PlayerMoveEvent e){
+        Player p = e.getPlayer();
+        var match = LobbyEngine.FromPlayer(p);
+        if(match != null){
+            if(!match.Map.WorldMaxBoundingBox.IsInBounds(e.getTo().toVector())){
+                if(p.isInsideVehicle()){
+                    p.getVehicle().eject();
+                }
+                e.setTo(e.getFrom());
+            }
+        }
+    }
+
+    @EventHandler
+    public void TeleportEvent(PlayerTeleportEvent e){
+        var match = LobbyEngine.FromWorld(e.getPlayer().getWorld());
+        if(match != null){
+            if(!match.Map.WorldMaxBoundingBox.IsInBounds(e.getTo().toVector())){
+                e.setTo(e.getFrom());
+            }
         }
     }
 }

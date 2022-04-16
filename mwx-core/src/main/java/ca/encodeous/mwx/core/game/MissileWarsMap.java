@@ -89,7 +89,6 @@ public class MissileWarsMap {
     private Clipboard getClipboard(){
         if(!cachedClipboards.containsKey(TemplateWorld)){
             CuboidRegion srcRegion = WorldBoundingBox.toWorldeditRegion(TemplateWorld);
-            CuboidRegion srcRegion2 = WorldMaxBoundingBox.toWorldeditRegion(TemplateWorld);
             Clipboard board;
             EditSession session = Utils.GetEditSession(TemplateWorld);
             session.setFastMode(true);

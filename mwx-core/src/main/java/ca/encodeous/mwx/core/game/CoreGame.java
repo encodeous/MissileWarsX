@@ -6,6 +6,7 @@ import ca.encodeous.mwx.configuration.MissileWarsConfiguration;
 import ca.encodeous.mwx.core.utils.MCVersion;
 import ca.encodeous.mwx.core.utils.Utils;
 import ca.encodeous.mwx.data.Bounds;
+import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.engines.performance.TPSMon;
 import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.engines.trace.TrackedBreakage;
@@ -36,6 +37,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.util.Vector;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,6 +84,7 @@ public class CoreGame {
     public static StatisticManager Stats = null;
     public ProtocolManager protocolManager;
     public JavaPlugin mwPlugin;
+    private int entityTaskId;
 
     // Missile Wars
     private MissileWarsImplementation mwImpl;
@@ -237,6 +240,23 @@ public class CoreGame {
                 LobbyEngine.CreateLobby(info.MaxTeamSize, info.AutoJoin, info.LobbyType);
             }
         });
+
+        entityTaskId = scheduler.scheduleSyncRepeatingTask(mwPlugin, () -> {
+            for(var world : Bukkit.getWorlds()){
+                var match = LobbyEngine.FromWorld(world);
+                if(match != null){
+                    for(var e : world.getEntities()){
+                        if(!match.Map.WorldMaxBoundingBox.IsInBounds(e.getLocation().toVector())){
+                            if(e instanceof Player p){
+                                match.AddPlayerToTeam(p, PlayerTeam.None);
+                            }else{
+                                e.remove();
+                            }
+                        }
+                    }
+                }
+            }
+        }, 0, 1);
         if(MCVersion.IsPaper()){
             var t = new Thread(()->{
                 while(!hasStopped){
@@ -325,6 +345,25 @@ public class CoreGame {
                     }
             );
         }
+
+        protocolManager.addPacketListener(
+                new PacketAdapter(mwPlugin, ListenerPriority.NORMAL,
+                        PacketType.Play.Client.POSITION, PacketType.Play.Client.POSITION_LOOK) {
+                    @Override
+                    public void onPacketReceiving(PacketEvent event) {
+                        PacketContainer packet = event.getPacket();
+                        Player p = event.getPlayer();
+                        var dbls = packet.getDoubles();
+                        var nPos = new Vector(dbls.read(0), dbls.read(1), dbls.read(2));
+                        var match = LobbyEngine.FromPlayer(p);
+                        if(match != null){
+                            if(!match.Map.WorldMaxBoundingBox.IsInBounds(nPos)){
+                                event.setCancelled(true);
+                            }
+                        }
+                    }
+                }
+        );
     }
 
     public MissileWarsItem GetItemById(String id) {
@@ -341,6 +380,7 @@ public class CoreGame {
 
     public void StopGame(boolean save) {
         LobbyEngine.Shutdown();
+        Bukkit.getScheduler().cancelTask(entityTaskId);
         var w = Bukkit.getWorlds().get(0);
         DeleteSection("playerdata", w);
         DeleteSection("data", w);
