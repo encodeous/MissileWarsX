@@ -9,8 +9,10 @@ import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.core.utils.Utils;
 import ca.encodeous.mwx.mwxstats.PlayerStats;
+import com.keenant.tabbed.skin.Skin;
 import com.keenant.tabbed.skin.SkinFetcher;
 import de.gesundkrank.jskills.Rating;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import pl.kacperduras.protocoltab.manager.PacketTablist;
@@ -110,7 +112,12 @@ public class LobbyEngine {
         return new TabItem(10000, text);
     }
     private static TabItem CreatePlayer(Player p){
-        return new TabItem(Utils.GetPlayerPing(p), p.getDisplayName(), Fetcher.getPlayer(p));
+        if(Bukkit.getServer().getOnlineMode()){
+            return new TabItem(Utils.GetPlayerPing(p), p.getDisplayName(), Fetcher.getPlayer(p));
+        }
+        else{
+            return new TabItem(Utils.GetPlayerPing(p), p.getDisplayName(), Skin.DEFAULT);
+        }
     }
 
     public static int AllocateWorldId(){
