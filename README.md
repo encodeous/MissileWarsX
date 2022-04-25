@@ -7,6 +7,8 @@ MissileWarsX (or *MwX*) is an open source implementation of the legendary Missil
 
 ## Getting Started
 
+#### CAUTION: MissileWarsX is designed to run on its OWN Minecraft server. The server will automatically be reset into a clean state after every reboot. Do not install MissileWarsX on an existing server, this action will delete data irreversibly!
+
 Download the latest build of MissileWarsX from the [Releases](https://github.com/encodeous/MissileWarsX/releases/tag/latest).
 
 MwX requires Paper version 1.16.5+, and supports up to 1.18.2 as of now.
