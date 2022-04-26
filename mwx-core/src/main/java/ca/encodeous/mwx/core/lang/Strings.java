@@ -9,7 +9,7 @@ public class Strings {
     public static String TABLIST_FOOTER = Chat.FCL("&fUse &6/lobby &fto navigate between lobbies, and &6/players &fto see all players.\n" +
             "&e&oHelp contribute to MissileWarsX at &6https://git.io/missilewars&e!");
     // Change this if you want to
-    public static String JOIN_MESSAGE = Chat.FCL("&f&lWelcome to the &c&lMissile&f&lWars&6&lX &f&ldevelopment and test server!\n" +
+    public static String JOIN_MESSAGE = Chat.FCL("&f&lWelcome to the &c&lMissile&f&lWars&6&lX&f&l!\n" +
             "&eCheck out the MissileWarsX project on GitHub at &6https://git.io/missilewars");
     public static String LEAVE_GAME = Chat.FCL("%s&r has left the game.");
     public static String ENTER_GAME = Chat.FCL("&cYou have entered the game, type &6/lobby &cto return to the lobby.");
