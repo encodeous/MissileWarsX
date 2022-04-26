@@ -48,6 +48,15 @@ public class Bounds implements ConfigurationSerializable {
         return false;
     }
 
+    public boolean IsInVerticalBounds(Vector x){
+        if(Min.getX() <= x.getX() && x.getX() <= Max.getX()){
+            if(Min.getZ() <= x.getZ() && x.getZ() <= Max.getZ()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Bounds clone(){
         Bounds b = new Bounds();
         if(b.Max == null) return b;

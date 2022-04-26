@@ -246,7 +246,7 @@ public class CoreGame {
                 var match = LobbyEngine.FromWorld(world);
                 if(match != null){
                     for(var e : world.getEntities()){
-                        if(!match.Map.WorldMaxBoundingBox.IsInBounds(e.getLocation().toVector())){
+                        if(!match.Map.WorldMaxBoundingBox.IsInVerticalBounds(e.getLocation().toVector())){
                             if(e instanceof Player p){
                                 match.AddPlayerToTeam(p, PlayerTeam.None);
                             }else{
@@ -357,7 +357,7 @@ public class CoreGame {
                         var nPos = new Vector(dbls.read(0), dbls.read(1), dbls.read(2));
                         var match = LobbyEngine.FromPlayer(p);
                         if(match != null){
-                            if(!match.Map.WorldMaxBoundingBox.IsInBounds(nPos)){
+                            if(!match.Map.WorldMaxBoundingBox.IsInVerticalBounds(nPos)){
                                 event.setCancelled(true);
                             }
                         }
