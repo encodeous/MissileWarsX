@@ -370,7 +370,7 @@ public class MissileWarsEventHandler implements Listener {
         Player p = e.getPlayer();
         var match = LobbyEngine.FromPlayer(p);
         if(match != null){
-            if(!match.Map.WorldMaxBoundingBox.IsInBounds(e.getTo().toVector())){
+            if(!match.Map.WorldMaxBoundingBox.IsInVerticalBounds(e.getTo().toVector())){
                 if(p.isInsideVehicle()){
                     p.getVehicle().eject();
                 }
@@ -383,7 +383,7 @@ public class MissileWarsEventHandler implements Listener {
     public void TeleportEvent(PlayerTeleportEvent e){
         var match = LobbyEngine.FromWorld(e.getPlayer().getWorld());
         if(match != null){
-            if(!match.Map.WorldMaxBoundingBox.IsInBounds(e.getTo().toVector())){
+            if(!match.Map.WorldMaxBoundingBox.IsInVerticalBounds(e.getTo().toVector())){
                 e.setTo(e.getFrom());
             }
         }
