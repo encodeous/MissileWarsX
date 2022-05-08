@@ -49,6 +49,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
 
 public class CoreGame {
     static {
@@ -260,6 +261,7 @@ public class CoreGame {
         if(MCVersion.IsPaper()){
             scheduler.scheduleAsyncDelayedTask(mwPlugin, () -> {
                 var t = new Thread(()->{
+                    mwPlugin.getLogger().log(Level.INFO, "Started TPS Monitoring.");
                     while(!hasStopped){
                         try {
                             Thread.sleep(1000L);
