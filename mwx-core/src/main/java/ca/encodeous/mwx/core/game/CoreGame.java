@@ -258,18 +258,20 @@ public class CoreGame {
             }
         }, 0, 1);
         if(MCVersion.IsPaper()){
-            var t = new Thread(()->{
-                while(!hasStopped){
-                    try {
-                        Thread.sleep(1000L);
-                        TPSMon.Instance.run();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+            scheduler.scheduleAsyncDelayedTask(mwPlugin, () -> {
+                var t = new Thread(()->{
+                    while(!hasStopped){
+                        try {
+                            Thread.sleep(1000L);
+                            TPSMon.Instance.run();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
-            t.setDaemon(true);
-            t.start();
+                });
+                t.setDaemon(true);
+                t.start();
+            }, 20 * 60); // delay tps monitoring by 1 minute
         }
         tabManager = new TabManager(mwPlugin);
 

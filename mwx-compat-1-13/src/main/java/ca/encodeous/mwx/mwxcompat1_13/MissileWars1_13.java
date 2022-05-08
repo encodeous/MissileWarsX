@@ -104,7 +104,6 @@ public class MissileWars1_13 implements MissileWarsImplementation {
     @Override
     public World FastVoidWorld(String targetName) {
         WorldCreator wc = new WorldCreator(targetName);
-        wc.type(WorldType.FLAT);
         wc.environment(World.Environment.NORMAL);
         wc.generator(new VoidWorldGen());
         wc.seed(0);
