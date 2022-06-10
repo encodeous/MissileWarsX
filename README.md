@@ -5,7 +5,6 @@
 
 MissileWarsX (or *MwX*) is an open source implementation of the legendary MissileWars mini-game created by SethBling and Cubehamster. This plugin offers a refined experience that is true to the original game. MwX enables other tweaks & performance options that make the game more enjoyable.
 
-
 ## Getting Started
 
 #### CAUTION: MissileWarsX is designed to run on its OWN Minecraft server. The server will automatically be reset into a clean state after every reboot. Do not install MissileWarsX on an existing server, this action will delete data irreversibly!
