@@ -11,7 +11,7 @@ MissileWarsX (or *MwX*) is an open source implementation of the legendary Missil
 
 Download the latest build of MissileWarsX from the [Releases](https://github.com/encodeous/MissileWarsX/releases/tag/latest).
 
-MwX requires Paper version 1.16.5+, and supports up to 1.18.2 as of now.
+MwX requires Paper version 1.16.5+, and supports up to 1.19 as of now.
 
 Here are a list of the dependencies required to run MwX:
 - ProtocolLib ([SpigotMC](https://www.spigotmc.org/resources/protocollib.1997/))
@@ -86,7 +86,7 @@ As mentioned above, MissileWarsX is currently stable on modern versions of Minec
 
 ## Public Test Server
 
-If you want to try out MissileWarsX before hosting your own server, you can play the mini-game on a publicly hosted server at `msw.encodeous.ca`. This server currently runs 1.18.2, and will run on the latest versions when they come out.
+If you want to try out MissileWarsX before hosting your own server, you can play the mini-game on a publicly hosted server at `msw.encodeous.ca`. This server currently runs 1.19, and will run on the latest versions when they come out.
 
 # Contributing and Bug Reporting
 
