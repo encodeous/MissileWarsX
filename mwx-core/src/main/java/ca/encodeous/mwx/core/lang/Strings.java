@@ -62,6 +62,7 @@ public class Strings {
     public static String GAME_FULL = Chat.FCL("&cThis game is full!");
     public static String KICK_RESET = Chat.FCL("&6You have been kicked from this server because the map is resetting.");
     public static String CLEARING_MAP = Chat.FCL("&9Clearing map!");
+    public static String REMOVING_ENTITIES = Chat.FCL("&9Removing entities...");
 
     public static String INVENTORY_FULL = Chat.FCL("&cYour inventory does not have enough space to receive items.");
     public static String ITEM_NOT_GIVEN = Chat.FCL("&6You already have a &f%s&6.");

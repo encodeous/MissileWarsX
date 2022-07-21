@@ -526,7 +526,11 @@ public class MissileWarsMatch {
 
     public void Wipe(Runnable finished){
         Tracer = new TraceEngine();
-        Map.CleanMap(finished);
+        lobby.SendMessage(Strings.REMOVING_ENTITIES);
+        CoreGame.GetImpl().ClearEntities(Map.MswWorld);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CoreGame.Instance.mwPlugin, ()->{
+            Map.CleanMap(finished);
+        }, 1);
     }
 
     /**
