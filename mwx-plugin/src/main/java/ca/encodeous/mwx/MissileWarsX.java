@@ -5,6 +5,7 @@ import ca.encodeous.mwx.mwxcompat1_13.MissileWars1_13;
 import ca.encodeous.mwx.core.game.CoreGame;
 import ca.encodeous.mwx.core.utils.MCVersion;
 import ca.encodeous.mwx.core.game.MissileWarsImplementation;
+import ca.encodeous.virtualedit.VirtualWorld;
 import com.keenant.tabbed.skin.SkinFetcher;
 import ca.encodeous.mwx.engines.lobby.LobbyEngine;
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ public final class MissileWarsX extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        VirtualWorld.initialize(this);
         LogManager.getLogManager().getLogger("").setFilter(new ConsoleFilter());
         Bukkit.getServer().getPluginManager().registerEvents(new MiscEventHandler(), this);
 
@@ -179,6 +181,7 @@ public final class MissileWarsX extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        VirtualWorld.cleanup();
         CoreGame.Instance.hasStopped = true;
         MissileWars.StopGame(true);
     }

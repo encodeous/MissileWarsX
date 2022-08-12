@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import pl.kacperduras.protocoltab.manager.PacketTablist;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,5 +66,9 @@ public class MiscEventHandler implements Listener {
                 event.getPlayer().sendMessage(Chat.FCL("&cYour message was sent to the lobby you were previously on. Please use /lobby to switch to your current lobby before chatting!"));
             }
         }
+    }
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event){
+        LobbyEngine.refreshCosmetics(event.getPlayer());
     }
 }

@@ -75,4 +75,7 @@ public class Strings {
     public static String LOBBY_COMMAND = Chat.FCL("&cThis command must be executed in a lobby.");
 
     public static String LOBBY_NOT_ENOUGH_PLAYERS = Chat.FCL("&9The game needs at least 1 player in each team to start. To forcefully start a game, run &6/start&9.");
+    public static String FEATURE_SHOWN = Chat.FCL("&6The &e%s &6will now be shown.");
+    public static String FEATURE_HIDDEN = Chat.FCL("&6The &e%s &6will now be hidden.");
+    public static String FEATURE_DISABLED = Chat.FCL("&6The &e%s &6cosmetic has automatically been disabled.");
 }

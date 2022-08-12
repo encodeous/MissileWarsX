@@ -5,6 +5,7 @@ import ca.encodeous.mwx.data.PlayerTeam;
 import ca.encodeous.mwx.core.game.*;
 import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.core.utils.Chat;
+import ca.encodeous.virtualedit.VirtualWorld;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
@@ -44,11 +45,15 @@ public class Lobby {
         return allPlayers;
     }
     public void AddPlayer(Player p){
+        var view = VirtualWorld.of(Match.Map.MswWorld);
+        view.addPlayer(p);
         SendMessage(String.format(Strings.PLAYER_JOIN_LOBBY, p.getDisplayName()));
         Match.AddPlayerToTeam(p, PlayerTeam.None);
         p.recalculatePermissions();
     }
     public void RemovePlayer(Player p){
+        var view = VirtualWorld.of(Match.Map.MswWorld);
+        view.removePlayer(p);
         SendMessage(String.format(Strings.LEAVE_GAME, p.getDisplayName()));
         Match.RemovePlayer(p);
         if(GetPlayers().isEmpty() && (Match.hasStarted || Match.startCounter.isRunning()) && !Match.endCounter.isRunning()){

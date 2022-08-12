@@ -8,7 +8,10 @@ import ca.encodeous.mwx.core.game.MissileWarsMatch;
 import ca.encodeous.mwx.core.lang.Strings;
 import ca.encodeous.mwx.core.utils.Chat;
 import ca.encodeous.mwx.core.utils.Utils;
+import ca.encodeous.mwx.engines.lobby.cosmetics.LobbyCosmetic;
+import ca.encodeous.mwx.engines.lobby.cosmetics.LobbyHiderCosmetic;
 import ca.encodeous.mwx.mwxstats.PlayerStats;
+import ca.encodeous.virtualedit.VirtualWorld;
 import com.keenant.tabbed.skin.Skin;
 import com.keenant.tabbed.skin.SkinFetcher;
 import de.gesundkrank.jskills.Rating;
@@ -23,6 +26,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class LobbyEngine {
     public static ConcurrentHashMap<Integer, Lobby> Lobbies = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, PlayerCosmeticState> lobbySettings = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<UUID, Object> playerUpdates = new ConcurrentHashMap<>();
+    private static final LobbyCosmetic[] cosmetics = new LobbyCosmetic[]{
+            new LobbyHiderCosmetic()
+    };
     private static int lobbyCount = 1, worldCount = 1;
     public static SkinFetcher Fetcher;
     public static void BuildTablist(Player p, PacketTablist list){
@@ -126,6 +134,52 @@ public class LobbyEngine {
     public static Lobby GetLobby(Integer lobby){
         if(!Lobbies.containsKey(lobby)) return null;
         return Lobbies.get(lobby);
+    }
+    public static PlayerCosmeticState getSettings(Player p){
+        if(!lobbySettings.containsKey(p.getUniqueId())){
+            lobbySettings.put(p.getUniqueId(), new PlayerCosmeticState());
+        }
+        return lobbySettings.get(p.getUniqueId());
+    }
+
+    public static void refreshCosmetics(Player p){
+        boolean requiresRender = false;
+        var setting = getSettings(p);
+        if(setting.lastWorld != p.getWorld()){
+            renderPlayerCosmetics(p);
+            return;
+        }
+        for(var v : cosmetics){
+            if(v.hasDisplayChanged(setting, p)){
+                requiresRender = true;
+                break;
+            }
+        }
+        if(requiresRender){
+            renderPlayerCosmetics(p);
+        }
+    }
+    private static void renderPlayerCosmetics(Player p){
+        synchronized (playerUpdates){
+            if(playerUpdates.containsKey(p.getUniqueId())) return;
+            playerUpdates.put(p.getUniqueId(), new Object());
+            var setting = getSettings(p);
+            setting.lastWorld = p.getWorld();
+            var match = FromPlayer(p);
+            if(match == null) return;
+            var vWorld = VirtualWorld.of(match.Map.MswWorld);
+            var view = vWorld.getView(p);
+            while(view.peekLayer() != null) view.popLayer();
+            for(var v : cosmetics){
+                if(v.renderCheck(setting, p)){
+                    view.pushLayer(v.render(setting, p));
+                }
+                v.postRender(setting, p);
+            }
+            view.refreshWorldView(()->{
+                playerUpdates.remove(p.getUniqueId());
+            });
+        }
     }
     public static MissileWarsMatch FromPlayer(Player p){
         for(Lobby lobby : Lobbies.values()){
