@@ -86,7 +86,7 @@ As mentioned above, MissileWarsX is currently stable on modern versions of Minec
 
 ## Public Test Server
 
-If you want to try out MissileWarsX before hosting your own server, you can play the mini-game on a publicly hosted server at `msw.encodeous.ca`. This server currently runs 1.19, and will run on the latest versions when they come out.
+If you want to try out MissileWarsX before hosting your own server, you can play the mini-game on a publicly hosted server at `mwx.encodeous.cc`. This server currently runs 1.19, and will run on the latest versions when they come out.
 
 # Contributing and Bug Reporting
 
