@@ -7,19 +7,22 @@ import ca.encodeous.mwx.core.utils.Utils;
 import ca.encodeous.mwx.data.SoundType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import java.security.SecureRandom;
 
 public class ItemCountdown implements Countable {
     public ItemCountdown(MissileWarsMatch match) {
         Match = match;
+        csprng = new SecureRandom();
     }
 
     public MissileWarsMatch Match;
+    private SecureRandom csprng;
     @Override
     public void Count(Counter counter, int count) {
         int resupply = Match.settingsManager.getIntegerSetting("ItemDelay").getValue();
         if(count % resupply == 0){
             while(true){
-                int item = Match.mwRand.nextInt(CoreGame.Instance.mwConfig.Items.size());
+                int item = csprng.nextInt(CoreGame.Instance.mwConfig.Items.size());
                 MissileWarsItem mwItem = CoreGame.Instance.mwConfig.Items.get(item);
                 if(mwItem.IsExempt) continue;
                 for(Player p : Match.Green){
