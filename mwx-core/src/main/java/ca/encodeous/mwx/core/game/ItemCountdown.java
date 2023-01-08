@@ -16,7 +16,7 @@ public class ItemCountdown implements Countable {
     }
 
     public MissileWarsMatch Match;
-    private SecureRandom csprng;
+    private SecureRandom csprng; // credits to iRobo for forcing me to use a csprng lmaooo
     @Override
     public void Count(Counter counter, int count) {
         int resupply = Match.settingsManager.getIntegerSetting("ItemDelay").getValue();
