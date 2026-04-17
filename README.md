@@ -6,6 +6,10 @@ This repo contains the second iteration of MissileWarsX, designed to be more por
 
 ## Getting Started
 
+### Public Test Server
+
+If you wish to try out MwX without installing it, you can play on the public testing server: `mwx.encodeous.ca`. Join with Minecraft 1.21.11
+
 #### CAUTION: Do not install MissileWarsX on your existing Minecraft server. It may destroy or alter your existing worlds.
 
 Please install MwX on a fresh server, as specified below:
