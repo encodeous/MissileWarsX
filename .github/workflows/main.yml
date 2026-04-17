@@ -26,6 +26,9 @@ jobs:
       - name: Build & Test
         run: mvn package
 
+      - name: Remove non-final shaded jars
+        run: rm -f target/original-*.jar
+
       - name: Upload assets to release
         uses: softprops/action-gh-release@v2
         with:
