@@ -375,6 +375,7 @@ public class GameEventListener implements Listener {
         p.setFoodLevel(20);
         p.setFallDistance(0);
         p.setVelocity(new Vector(0, 0, 0));
+        p.setFireTicks(0);
         match.teleportToTeamSpawn(p, match.getTeam(p));
         if (event.deathMessage() == null) return;
         p.getWorld().sendMessage(event.deathMessage());
