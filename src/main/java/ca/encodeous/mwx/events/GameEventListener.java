@@ -234,8 +234,7 @@ public class GameEventListener implements Listener {
         MwMatch match = MwGame.fromWorld(event.getBlock().getWorld());
         if (match == null) return;
         // Retraction moves blocks in the opposite direction
-        BlockFace opposite = event.getDirection().getOppositeFace();
-        match.getTracer().updatePistonPush(event.getBlocks(), opposite);
+        match.getTracer().updatePistonPush(event.getBlocks(), event.getDirection());
     }
 
     // ======================== Entity Explode ========================
